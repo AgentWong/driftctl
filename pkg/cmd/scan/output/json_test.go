@@ -39,14 +39,6 @@ func TestJSON_Write(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{
-			name:       "test json output with Github enumeration alerts",
-			goldenfile: "output_access_denied_alert_github.json",
-			args: args{
-				analysis: fakeAnalysisWithGithubEnumerationError(),
-			},
-			wantErr: false,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

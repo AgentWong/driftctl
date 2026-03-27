@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/snyk/driftctl/pkg/middlewares"
 	globaloutput "github.com/snyk/driftctl/pkg/output"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
+	"github.com/snyk/driftctl/pkg/terraform/plan"
 )
 
 type FmtOptions struct {
@@ -37,7 +39,10 @@ type ScanOptions struct {
 	ProviderVersion  string
 	ConfigDir        string
 	DriftignorePath  string
-	Driftignores     []string
+	Driftignores      []string
+	ExcludeCategories []string
+	Mode              string // "inventory" (default) or "plan"
+	TerraformDir      string // path to terraform root module (required for plan mode)
 }
 
 type DriftCTL struct {
@@ -79,6 +84,11 @@ func NewDriftCTL(remoteSupplier resource.Supplier,
 
 func (d DriftCTL) Run() (*analyser.Analysis, error) {
 	start := time.Now()
+
+	if d.opts.Mode == "plan" {
+		return d.runPlanMode(start)
+	}
+
 	remoteResources, resourcesFromState, err := d.scan()
 	if err != nil {
 		return nil, err
@@ -124,21 +134,12 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 		middlewares.NewAwsEbsEncryptionByDefaultReconciler(d.resourceFactory),
 		middlewares.NewAwsALBTransformer(d.resourceFactory),
 		middlewares.NewAwsALBListenerTransformer(d.resourceFactory),
-
-		middlewares.NewGoogleIAMBindingTransformer(d.resourceFactory),
-		middlewares.NewGoogleIAMPolicyTransformer(d.resourceFactory),
-		middlewares.NewGoogleComputeInstanceGroupManagerReconciler(),
-
-		middlewares.NewAzurermRouteExpander(d.resourceFactory),
-		middlewares.NewAzurermSubnetExpander(d.resourceFactory),
 		middlewares.NewAwsS3BucketPublicAccessBlockReconciler(),
 	)
 
 	if !d.opts.StrictMode {
 		middleware = append(middleware,
 			middlewares.NewAwsDefaults(),
-			middlewares.NewGoogleLegacyBucketIAMMember(),
-			middlewares.NewGoogleDefaultIAMMember(),
 			middlewares.NewAwsDefaultApiGatewayAccount(),
 		)
 	}
@@ -176,6 +177,44 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 	d.store.Bucket(memstore.TelemetryBucket).Set("iac_source_count", d.iacSupplier.SourceCount())
 
 	return &analysis, nil
+}
+
+// runPlanMode runs terraform plan and combines results with cloud inventory
+// to detect attribute-level drift, not just resource existence.
+func (d DriftCTL) runPlanMode(start time.Time) (*analyser.Analysis, error) {
+	runner := plan.NewRunner(d.opts.TerraformDir, "terraform")
+	tfPlan, err := runner.RunPlan(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("plan mode: %w", err)
+	}
+
+	driftResults, err := plan.ParsePlan(tfPlan)
+	if err != nil {
+		return nil, fmt.Errorf("plan mode: failed to parse plan: %w", err)
+	}
+
+	logrus.Info("Start scanning cloud provider")
+	d.scanProgress.Start()
+	remoteResources, err := d.remoteSupplier.Resources()
+	d.scanProgress.Stop()
+	if err != nil {
+		return nil, err
+	}
+
+	pa := analyser.NewPlanAnalyzer(driftResults, remoteResources)
+	analysis, err := pa.Analyze()
+	if err != nil {
+		return nil, err
+	}
+
+	analysis.Duration = time.Since(start)
+	analysis.Date = time.Now()
+
+	d.store.Bucket(memstore.TelemetryBucket).Set("total_resources", analysis.Summary().TotalResources)
+	d.store.Bucket(memstore.TelemetryBucket).Set("total_managed", analysis.Summary().TotalManaged)
+	d.store.Bucket(memstore.TelemetryBucket).Set("duration", uint(analysis.Duration.Seconds()+0.5))
+
+	return analysis, nil
 }
 
 func (d DriftCTL) Stop() {

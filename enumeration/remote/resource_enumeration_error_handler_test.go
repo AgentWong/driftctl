@@ -9,10 +9,6 @@ import (
 	"github.com/snyk/driftctl/enumeration/remote/common"
 	remoteerr "github.com/snyk/driftctl/enumeration/remote/error"
 
-	resourcegithub "github.com/snyk/driftctl/enumeration/resource/github"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -83,84 +79,7 @@ func TestHandleAwsEnumerationErrors(t *testing.T) {
 	}
 }
 
-func TestHandleGithubEnumerationErrors(t *testing.T) {
 
-	tests := []struct {
-		name       string
-		err        error
-		wantAlerts alerter.Alerts
-		wantErr    bool
-	}{
-		{
-			name:       "Handled graphql error",
-			err:        remoteerr.NewResourceListingError(errors.New("Your token has not been granted the required scopes to execute this query."), resourcegithub.GithubTeamResourceType),
-			wantAlerts: alerter.Alerts{"github_team": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteGithubTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("Your token has not been granted the required scopes to execute this query."), "github_team", "github_team"), alerts.EnumerationPhase)}},
-			wantErr:    false,
-		},
-		{
-			name:       "Not handled graphql error",
-			err:        remoteerr.NewResourceListingError(errors.New("This is a not handler graphql error"), resourcegithub.GithubTeamResourceType),
-			wantAlerts: map[string][]alerter.Alert{},
-			wantErr:    true,
-		},
-		{
-			name:       "Not Handled error type",
-			err:        errors.New("error"),
-			wantAlerts: map[string][]alerter.Alert{},
-			wantErr:    true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			alertr := alerter.NewAlerter()
-			gotErr := HandleResourceEnumerationError(tt.err, alertr)
-			assert.Equal(t, tt.wantErr, gotErr != nil)
-
-			retrieve := alertr.Retrieve()
-			assert.Equal(t, tt.wantAlerts, retrieve)
-
-		})
-	}
-}
-
-func TestHandleGoogleEnumerationErrors(t *testing.T) {
-	tests := []struct {
-		name       string
-		err        error
-		wantAlerts alerter.Alerts
-		wantErr    bool
-	}{
-		{
-			name:       "Handled 403 error",
-			err:        remoteerr.NewResourceListingError(status.Error(codes.PermissionDenied, "useless message"), "google_type"),
-			wantAlerts: alerter.Alerts{"google_type": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteGoogleTerraform, remoteerr.NewResourceListingErrorWithType(status.Error(codes.PermissionDenied, "useless message"), "google_type", "google_type"), alerts.EnumerationPhase)}},
-			wantErr:    false,
-		},
-		{
-			name:       "Not handled non 403 error",
-			err:        status.Error(codes.Unknown, ""),
-			wantAlerts: map[string][]alerter.Alert{},
-			wantErr:    true,
-		},
-		{
-			name:       "Not Handled error type",
-			err:        errors.New("error"),
-			wantAlerts: map[string][]alerter.Alert{},
-			wantErr:    true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			alertr := alerter.NewAlerter()
-			gotErr := HandleResourceEnumerationError(tt.err, alertr)
-			assert.Equal(t, tt.wantErr, gotErr != nil)
-
-			retrieve := alertr.Retrieve()
-			assert.Equal(t, tt.wantAlerts, retrieve)
-
-		})
-	}
-}
 
 func TestEnumerationAccessDeniedAlert_GetProviderMessage(t *testing.T) {
 	tests := []struct {
@@ -177,11 +96,6 @@ func TestEnumerationAccessDeniedAlert_GetProviderMessage(t *testing.T) {
 			name:     "test for AWS",
 			provider: common.RemoteAWSTerraform,
 			want:     "It seems that we got access denied exceptions while listing resources.\nThe latest minimal read-only IAM policy for driftctl is always available here, please update yours: https://docs.driftctl.com/aws/policy",
-		},
-		{
-			name:     "test for github",
-			provider: common.RemoteGithubTerraform,
-			want:     "It seems that we got access denied exceptions while listing resources.\nPlease be sure that your Github token has the right permissions, check the last up-to-date documentation there: https://docs.driftctl.com/github/policy",
 		},
 	}
 	for _, tt := range tests {
@@ -209,16 +123,6 @@ func TestDetailsFetchingAccessDeniedAlert_GetProviderMessage(t *testing.T) {
 			name:     "test for AWS",
 			provider: common.RemoteAWSTerraform,
 			want:     "It seems that we got access denied exceptions while reading details of resources.\nThe latest minimal read-only IAM policy for driftctl is always available here, please update yours: https://docs.driftctl.com/aws/policy",
-		},
-		{
-			name:     "test for github",
-			provider: common.RemoteGithubTerraform,
-			want:     "It seems that we got access denied exceptions while reading details of resources.\nPlease be sure that your Github token has the right permissions, check the last up-to-date documentation there: https://docs.driftctl.com/github/policy",
-		},
-		{
-			name:     "test for google",
-			provider: common.RemoteGoogleTerraform,
-			want:     "It seems that we got access denied exceptions while reading details of resources.\nPlease ensure that you have configured the required roles, please check our documentation at https://docs.driftctl.com/google/policy",
 		},
 	}
 	for _, tt := range tests {

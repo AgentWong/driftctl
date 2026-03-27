@@ -33,6 +33,7 @@ type HTMLTemplateParams struct {
 	Summary         analyser.Summary
 	Unmanaged       []*resource.Resource
 	Deleted         []*resource.Resource
+	Drifted         []*analyser.DriftedResource
 	Alerts          alerter.Alerts
 	Stylesheet      template.CSS
 	ScanDuration    string
@@ -82,6 +83,9 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 			resources := make([]*resource.Resource, 0)
 			resources = append(resources, analysis.Unmanaged()...)
 			resources = append(resources, analysis.Deleted()...)
+			for _, dr := range analysis.Drifted() {
+				resources = append(resources, dr.Res)
+			}
 
 			return distinctResourceTypes(resources)
 		},
@@ -113,6 +117,7 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		Summary:         analysis.Summary(),
 		Unmanaged:       analysis.Unmanaged(),
 		Deleted:         analysis.Deleted(),
+		Drifted:         analysis.Drifted(),
 		Alerts:          analysis.Alerts(),
 		Stylesheet:      template.CSS(styleFile),
 		ScanDuration:    analysis.Duration.Round(time.Second).String(),

@@ -409,6 +409,7 @@ input[type="search"], select {
             <span class="strong">40%</span>
             <span class="fraction">6/15</span>
         </div>
+        
     </section>
     <main>
         
@@ -452,6 +453,7 @@ input[type="search"], select {
                         tabindex="-1">
                     Missing Resources (<span data-count="resource-deleted">6</span>)
                 </button>
+                
                 
                 
                 <button type="button" role="tab" aria-selected="false" aria-controls="alerts-tab" id="alerts"
@@ -577,6 +579,7 @@ input[type="search"], select {
                 </div>
                 
                 
+                
                 <div class="is-hidden" tabindex="0" role="tabpanel" id="alerts-tab" aria-labelledby="alerts">
                     <ul>
                         
@@ -644,6 +647,7 @@ input[type="search"], select {
         const map = {
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
+            "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
             "[data-kind='resource-alerts']": "[data-count='resource-alerts']",
         };
         for (const key in map) {

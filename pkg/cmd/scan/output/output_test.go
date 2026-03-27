@@ -138,20 +138,6 @@ func fakeAnalysisWithAWSEnumerationError() *analyser.Analysis {
 	return &a
 }
 
-func fakeAnalysisWithGithubEnumerationError() *analyser.Analysis {
-	a := analyser.Analysis{}
-	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)
-	a.SetAlerts(alerter.Alerts{
-		"": []alerter.Alert{
-			alerts.NewRemoteAccessDeniedAlert(common.RemoteGithubTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("dummy error"), "github_team", "github_team"), alerts.EnumerationPhase),
-			alerts.NewRemoteAccessDeniedAlert(common.RemoteGithubTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("dummy error"), "github_team_membership", "github_team"), alerts.EnumerationPhase),
-		},
-	})
-	a.ProviderName = "AWS"
-	a.ProviderVersion = "3.19.0"
-	return &a
-}
-
 func fakeAnalysisForJSONPlan() *analyser.Analysis {
 	a := analyser.Analysis{}
 	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)

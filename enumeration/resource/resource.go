@@ -103,6 +103,7 @@ type SerializableResource struct {
 	Type               string              `json:"type"`
 	ReadableAttributes map[string]string   `json:"human_readable_attributes,omitempty"`
 	Source             *SerializableSource `json:"source,omitempty"`
+	Category           string              `json:"category,omitempty"`
 }
 
 func NewSerializableResource(res *Resource) *SerializableResource {

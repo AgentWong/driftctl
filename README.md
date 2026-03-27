@@ -1,9 +1,3 @@
-## This project is now in maintenance mode. We cannot promise to review contributions. Please feel free to fork the project to apply any changes you might want to make.
-
-
-
-
-
 <p align="center">
   <img width="200" src="https://docs.driftctl.com/img/driftctl_dark.svg" alt="driftctl">
 </p>
@@ -23,9 +17,8 @@
 </p>
 
 <p align="center">
-  Measures infrastructure as code coverage, and tracks infrastructure drift.<br>
-  <strong>IaC:</strong> Terraform. <strong>Cloud providers:</strong> AWS, GitHub, Azure, GCP.<br>
-  :warning: <strong>This tool is still in beta state and will evolve in the future with potential breaking changes</strong> :warning:
+  Detect infrastructure drift and unmanaged AWS resources using AWS Config and Terraform.<br>
+  <strong>IaC:</strong> Terraform. <strong>Cloud provider:</strong> AWS.<br>
 </p>
 
 <details>
@@ -35,7 +28,7 @@
   </a>
 </details>
 
-## Why driftctl ?
+## Why driftctl?
 
 Infrastructure drift is a blind spot and a source of potential security issues.
 Drift can have multiple causes: from team members creating or updating infrastructure through the web console without backporting changes to Terraform, to unexpected actions from authenticated apps and services.
@@ -44,13 +37,39 @@ You can't efficiently improve what you don't track. We track coverage for unit t
 
 Spot discrepancies as they happen: driftctl is a free and open-source CLI that warns of infrastructure drifts and fills in the missing piece in your DevSecOps toolbox.
 
+## How it works
+
+driftctl offers two scan modes:
+
+- **Inventory mode** (default) — Uses the [AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html) API to discover all resources in your AWS account in a single API call, then compares them against your Terraform state to find unmanaged resources.
+- **Plan mode** — Runs `terraform plan` against your Terraform root module to detect attribute-level configuration drift (e.g. a security group rule changed outside Terraform), then combines the results with AWS Config inventory to also identify unmanaged resources.
+
+Resources are automatically categorized to reduce false positives:
+- **CloudFormation-managed** — resources managed by CloudFormation stacks
+- **Service-linked** — AWS service-linked roles and resources
+- **Unsupported** — resource types not covered by AWS Config
 
 ## Features
 
-- **Scan** cloud provider and map resources with IaC code
-- Analyze diffs, and warn about drift and unwanted unmanaged resources
-- Allow users to **ignore** resources
-- Multiple output formats
+- **Inventory scan** — discover all AWS resources via AWS Config and compare against Terraform state
+- **Plan-based drift detection** — detect attribute-level configuration drift using `terraform plan`
+- **Resource categorization** — automatically classify resources to filter false positives
+- **Multiple output formats** — console, JSON, and HTML reports with drift details
+- Allow users to **ignore** resources via `.driftignore`
+- **132 AWS resource types** supported via AWS Config mapping
+
+## Quick start
+
+```shell
+# Inventory mode: find unmanaged AWS resources
+driftctl scan
+
+# Plan mode: detect configuration drift + unmanaged resources
+driftctl scan --mode plan --terraform-dir /path/to/terraform
+
+# Exclude false positives by category
+driftctl scan --exclude-category cloudformation_managed,service_linked
+```
 
 ## Links
 

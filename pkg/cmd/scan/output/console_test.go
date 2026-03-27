@@ -84,12 +84,6 @@ func TestConsole_Write(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name:       "test console output with Github enumeration alerts",
-			goldenfile: "output_access_denied_alert_github.txt",
-			args:       args{analysis: fakeAnalysisWithGithubEnumerationError()},
-			wantErr:    false,
-		},
-		{
 			name:       "test console output without deep mode",
 			goldenfile: "output_without_deep.txt",
 			args:       args{analysis: fakeAnalysisWithoutDeep()},

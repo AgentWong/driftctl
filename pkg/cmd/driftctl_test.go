@@ -70,7 +70,7 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			env: map[string]string{
 				"DCTL_TO": "test",
 			},
-			err: fmt.Errorf("unsupported cloud provider 'test'\nValid values are: aws+tf,github+tf,gcp+tf,azure+tf"),
+			err: fmt.Errorf("unsupported cloud provider 'test'\nValid values are: aws+tf"),
 		},
 		{
 			env: map[string]string{
@@ -82,7 +82,7 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			env: map[string]string{
 				"DCTL_FROM": "test",
 			},
-			err: fmt.Errorf("Unable to parse from flag 'test': \nAccepted schemes are: tfstate://,tfstate+s3://,tfstate+http://,tfstate+https://,tfstate+tfcloud://,tfstate+gs://,tfstate+azurerm://"),
+			err: fmt.Errorf("Unable to parse from flag 'test': \nAccepted schemes are: tfstate://,tfstate+s3://,tfstate+http://,tfstate+https://,tfstate+tfcloud://,tfstate+gs://"),
 		},
 		{
 			env: map[string]string{

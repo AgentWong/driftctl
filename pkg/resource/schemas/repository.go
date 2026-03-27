@@ -10,9 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
-	"github.com/snyk/driftctl/pkg/resource/azurerm"
-	"github.com/snyk/driftctl/pkg/resource/github"
-	"github.com/snyk/driftctl/pkg/resource/google"
 )
 
 type SchemaRepository struct {
@@ -52,12 +49,6 @@ func (r *SchemaRepository) Init(providerName, providerVersion string, schema map
 		switch providerName {
 		case "aws":
 			providerVersion = "3.19.0"
-		case "github":
-			providerVersion = "4.4.0"
-		case "google":
-			providerVersion = "3.78.0"
-		case "azurerm":
-			providerVersion = "2.71.0"
 		default:
 			return errors.Errorf("unsupported remote '%s'", providerName)
 		}
@@ -86,12 +77,6 @@ func (r *SchemaRepository) Init(providerName, providerVersion string, schema map
 	switch providerName {
 	case "aws":
 		aws.InitResourcesMetadata(r)
-	case "github":
-		github.InitResourcesMetadata(r)
-	case "google":
-		google.InitResourcesMetadata(r)
-	case "azurerm":
-		azurerm.InitResourcesMetadata(r)
 	default:
 		return errors.Errorf("unsupported remote '%s'", providerName)
 	}

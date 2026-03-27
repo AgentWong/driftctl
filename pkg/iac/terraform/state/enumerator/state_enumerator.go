@@ -20,8 +20,6 @@ func GetEnumerator(config config.SupplierConfig, opts *backend.Options) (StateEn
 		return NewS3Enumerator(config), nil
 	case backend.BackendKeyGS:
 		return NewGSEnumerator(config)
-	case backend.BackendKeyAzureRM:
-		return NewAzureRMEnumerator(config, opts.AzureRMBackendOptions)
 	}
 
 	logrus.WithFields(logrus.Fields{

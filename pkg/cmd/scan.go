@@ -23,6 +23,7 @@ import (
 	"github.com/snyk/driftctl/enumeration/terraform"
 	"github.com/snyk/driftctl/enumeration/terraform/lock"
 	"github.com/snyk/driftctl/pkg/analyser"
+	"github.com/snyk/driftctl/pkg/categorizer"
 	"github.com/snyk/driftctl/pkg/iac/config"
 	"github.com/snyk/driftctl/pkg/iac/terraform/state"
 	"github.com/snyk/driftctl/pkg/memstore"
@@ -115,6 +116,30 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 
 			opts.ConfigDir, _ = cmd.Flags().GetString("config-dir")
 
+			opts.Mode, _ = cmd.Flags().GetString("mode")
+			if opts.Mode == "" {
+				opts.Mode = "inventory"
+			}
+			if opts.Mode != "inventory" && opts.Mode != "plan" {
+				return errors.Errorf("unsupported mode '%s', valid values are: inventory, plan", opts.Mode)
+			}
+
+			opts.TerraformDir, _ = cmd.Flags().GetString("terraform-dir")
+			if opts.Mode == "plan" && opts.TerraformDir == "" {
+				return errors.New("--terraform-dir is required when using --mode=plan")
+			}
+
+			validCategories := map[string]bool{
+				"cloudformation_managed": true,
+				"service_linked":         true,
+				"unsupported":            true,
+			}
+			for _, cat := range opts.ExcludeCategories {
+				if !validCategories[cat] {
+					return errors.Errorf("invalid exclude-category '%s', valid values: cloudformation_managed, service_linked, unsupported", cat)
+				}
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -181,16 +206,6 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 		"Terraform Cloud / Enterprise API endpoint.\n"+
 			"Only used with tfstate+tfcloud backend.\n",
 	)
-	fl.StringVar(&opts.BackendOptions.AzureRMBackendOptions.StorageAccount,
-		"azurerm-storage-account",
-		os.Getenv("AZURE_STORAGE_ACCOUNT"),
-		"Azure storage account name for state backend.\n",
-	)
-	fl.StringVar(&opts.BackendOptions.AzureRMBackendOptions.StorageKey,
-		"azurerm-account-key",
-		os.Getenv("AZURE_STORAGE_KEY"),
-		"Azure storage account key for state backend.\n",
-	)
 	fl.String(
 		"tf-provider-version",
 		"",
@@ -213,6 +228,11 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 			"Example: *,!aws_s3* (everything but resources that are prefixed with aws_s3 are ignored) \n"+
 			"When using this parameter the driftignore file is not processed\n"+
 			"When using multiple instances of this argument, order will be respected")
+	fl.StringSliceVar(&opts.ExcludeCategories,
+		"exclude-category",
+		nil,
+		"Exclude unmanaged resources by category: cloudformation_managed, service_linked, unsupported\n",
+	)
 	fl.String(
 		"tf-lockfile",
 		".terraform.lock.hcl",
@@ -227,6 +247,16 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 		"config-dir",
 		configDir,
 		"Directory path that driftctl uses for configuration.\n",
+	)
+	fl.String(
+		"mode",
+		"inventory",
+		"Scan mode: 'inventory' (default) or 'plan'\n",
+	)
+	fl.String(
+		"terraform-dir",
+		"",
+		"Path to Terraform root module (required for --mode=plan)\n",
 	)
 	var deprecatedOnlyUnmanaged bool
 	fl.BoolVar(&deprecatedOnlyUnmanaged,
@@ -281,10 +311,7 @@ func scanRun(opts *pkg.ScanOptions) error {
 	err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
 	if err != nil {
 		if err == aws.AWSCredentialsNotFoundError {
-			// special case command-line advice, because AWS is the default cloud
-			// provider, and users may be confused by a cloud-specific error out of
-			// the box
-			return fmt.Errorf("%s\n\n%s", err, "To use a different cloud provider, use --to=\"gcp+tf\" for GCP or --to=\"azure+tf\" for Azure.")
+			return err
 		}
 		return err
 	}
@@ -340,6 +367,29 @@ func scanRun(opts *pkg.ScanOptions) error {
 	analysis.ProviderVersion = opts.ProviderVersion
 	analysis.ProviderName = opts.To
 	store.Bucket(memstore.TelemetryBucket).Set("provider_name", analysis.ProviderName)
+
+	// Categorize unmanaged resources for AWS providers
+	if strings.HasPrefix(opts.To, "aws") && len(analysis.Unmanaged()) > 0 {
+		chain := categorizer.NewChain(
+			categorizer.NewCloudFormationCategorizer(),
+			categorizer.NewServiceLinkedCategorizer(),
+			categorizer.NewUnsupportedCategorizer(aws.ConfigSupportedTerraformTypes()),
+		)
+		cats := make(map[string]string, len(analysis.Unmanaged()))
+		for _, r := range analysis.Unmanaged() {
+			key := r.ResourceType() + "." + r.ResourceId()
+			cats[key] = string(chain.Categorize(r))
+		}
+		analysis.SetUnmanagedCategories(cats)
+
+		if len(opts.ExcludeCategories) > 0 {
+			excludeSet := make(map[string]bool, len(opts.ExcludeCategories))
+			for _, c := range opts.ExcludeCategories {
+				excludeSet[c] = true
+			}
+			analysis.FilterUnmanagedByCategory(excludeSet)
+		}
+	}
 
 	validOutput := false
 	for _, o := range opts.Output {

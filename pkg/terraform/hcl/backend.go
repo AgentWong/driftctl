@@ -31,8 +31,6 @@ func (b BackendBlock) SupplierConfig(workspace string) *config.SupplierConfig {
 		return b.parseS3Backend(workspace)
 	case "gcs":
 		return b.parseGCSBackend(workspace)
-	case "azurerm":
-		return b.parseAzurermBackend(workspace)
 	}
 	return nil
 }
@@ -76,19 +74,5 @@ func (b BackendBlock) parseGCSBackend(ws string) *config.SupplierConfig {
 		Key:     state.TerraformStateReaderSupplier,
 		Backend: backend.BackendKeyGS,
 		Path:    fmt.Sprintf("%s.tfstate", path.Join(b.Bucket, b.Prefix, ws)),
-	}
-}
-
-func (b BackendBlock) parseAzurermBackend(ws string) *config.SupplierConfig {
-	if b.ContainerName == "" || b.Key == "" {
-		return nil
-	}
-	if ws != DefaultStateName {
-		b.Key = fmt.Sprintf("%senv:%s", b.Key, ws)
-	}
-	return &config.SupplierConfig{
-		Key:     state.TerraformStateReaderSupplier,
-		Backend: backend.BackendKeyAzureRM,
-		Path:    path.Join(b.ContainerName, b.Key),
 	}
 }

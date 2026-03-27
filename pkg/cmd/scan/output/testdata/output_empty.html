@@ -409,6 +409,7 @@ input[type="search"], select {
             <span class="strong">0%</span>
             <span class="fraction">0/0</span>
         </div>
+        
     </section>
     <main>
         
@@ -452,6 +453,7 @@ input[type="search"], select {
         const map = {
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
+            "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
             "[data-kind='resource-alerts']": "[data-count='resource-alerts']",
         };
         for (const key in map) {

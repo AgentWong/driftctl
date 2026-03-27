@@ -11,24 +11,43 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+type AttributeChange struct {
+	Path   string      `json:"path"`
+	Before interface{} `json:"before"`
+	After  interface{} `json:"after"`
+}
+
+type DriftedResource struct {
+	Res              *resource.Resource
+	AttributeChanges []AttributeChange
+}
+
 type Summary struct {
 	TotalResources      int  `json:"total_resources"`
 	TotalUnmanaged      int  `json:"total_unmanaged"`
 	TotalDeleted        int  `json:"total_missing"`
 	TotalManaged        int  `json:"total_managed"`
+	TotalDrifted        int  `json:"total_drifted"`
 	TotalIaCSourceCount uint `json:"total_iac_source_count"`
 }
 
 type Analysis struct {
-	unmanaged       []*resource.Resource
-	managed         []*resource.Resource
-	deleted         []*resource.Resource
-	summary         Summary
-	alerts          alerter.Alerts
-	Duration        time.Duration
-	Date            time.Time
-	ProviderName    string
-	ProviderVersion string
+	unmanaged           []*resource.Resource
+	managed             []*resource.Resource
+	deleted             []*resource.Resource
+	drifted             []*DriftedResource
+	summary             Summary
+	alerts              alerter.Alerts
+	unmanagedCategories map[string]string
+	Duration            time.Duration
+	Date                time.Time
+	ProviderName        string
+	ProviderVersion     string
+}
+
+type serializableDriftedResource struct {
+	Res              resource.SerializableResource `json:"resource"`
+	AttributeChanges []AttributeChange             `json:"attribute_changes,omitempty"`
 }
 
 type serializableAnalysis struct {
@@ -36,6 +55,7 @@ type serializableAnalysis struct {
 	Managed         []resource.SerializableResource        `json:"managed"`
 	Unmanaged       []resource.SerializableResource        `json:"unmanaged"`
 	Deleted         []resource.SerializableResource        `json:"missing"`
+	Drifted         []serializableDriftedResource           `json:"drifted"`
 	Coverage        int                                    `json:"coverage"`
 	Alerts          map[string][]alerter.SerializableAlert `json:"alerts"`
 	ProviderName    string                                 `json:"provider_name"`
@@ -62,10 +82,23 @@ func (a Analysis) MarshalJSON() ([]byte, error) {
 		bla.Managed = append(bla.Managed, *resource.NewSerializableResource(m))
 	}
 	for _, u := range a.unmanaged {
-		bla.Unmanaged = append(bla.Unmanaged, *resource.NewSerializableResource(u))
+		sr := *resource.NewSerializableResource(u)
+		if a.unmanagedCategories != nil {
+			key := u.ResourceType() + "." + u.ResourceId()
+			if cat, ok := a.unmanagedCategories[key]; ok {
+				sr.Category = cat
+			}
+		}
+		bla.Unmanaged = append(bla.Unmanaged, sr)
 	}
 	for _, d := range a.deleted {
 		bla.Deleted = append(bla.Deleted, *resource.NewSerializableResource(d))
+	}
+	for _, dr := range a.drifted {
+		bla.Drifted = append(bla.Drifted, serializableDriftedResource{
+			Res:              *resource.NewSerializableResource(dr.Res),
+			AttributeChanges: dr.AttributeChanges,
+		})
 	}
 	if len(a.alerts) > 0 {
 		bla.Alerts = make(map[string][]alerter.SerializableAlert)
@@ -139,7 +172,7 @@ func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 }
 
 func (a *Analysis) IsSync() bool {
-	return a.summary.TotalUnmanaged == 0 && a.summary.TotalDeleted == 0
+	return a.summary.TotalUnmanaged == 0 && a.summary.TotalDeleted == 0 && a.summary.TotalDrifted == 0
 }
 
 func (a *Analysis) AddDeleted(resources ...*resource.Resource) {
@@ -187,12 +220,57 @@ func (a *Analysis) Deleted() []*resource.Resource {
 	return a.deleted
 }
 
+func (a *Analysis) Drifted() []*DriftedResource {
+	return a.drifted
+}
+
+func (a *Analysis) AddDrifted(d *DriftedResource) {
+	a.drifted = append(a.drifted, d)
+	a.summary.TotalResources++
+	a.summary.TotalDrifted++
+}
+
 func (a *Analysis) Summary() Summary {
 	return a.summary
 }
 
 func (a *Analysis) Alerts() alerter.Alerts {
 	return a.alerts
+}
+
+func (a *Analysis) HasCategories() bool {
+	return a.unmanagedCategories != nil
+}
+
+func (a *Analysis) UnmanagedCategory(r *resource.Resource) string {
+	if a.unmanagedCategories == nil {
+		return ""
+	}
+	return a.unmanagedCategories[r.ResourceType()+"."+r.ResourceId()]
+}
+
+func (a *Analysis) SetUnmanagedCategories(cats map[string]string) {
+	a.unmanagedCategories = cats
+}
+
+func (a *Analysis) FilterUnmanagedByCategory(excludeCategories map[string]bool) {
+	if a.unmanagedCategories == nil {
+		return
+	}
+	var filtered []*resource.Resource
+	removed := 0
+	for _, r := range a.unmanaged {
+		key := r.ResourceType() + "." + r.ResourceId()
+		cat := a.unmanagedCategories[key]
+		if !excludeCategories[cat] {
+			filtered = append(filtered, r)
+		} else {
+			removed++
+		}
+	}
+	a.unmanaged = filtered
+	a.summary.TotalUnmanaged -= removed
+	a.summary.TotalResources -= removed
 }
 
 func (a *Analysis) SortResources() {

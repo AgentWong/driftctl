@@ -47,6 +47,13 @@
             <span class="strong">{{rate .Summary.TotalDeleted}}%</span>
             <span class="fraction">{{.Summary.TotalDeleted}}/{{.Summary.TotalResources}}</span>
         </div>
+        {{if (gt .Summary.TotalDrifted 0)}}
+        <div class="card">
+            <span>Drifted:</span>
+            <span class="strong">{{rate .Summary.TotalDrifted}}%</span>
+            <span class="fraction">{{.Summary.TotalDrifted}}/{{.Summary.TotalResources}}</span>
+        </div>
+        {{end}}
     </section>
     <main>
         {{ if not .IsSync }}
@@ -81,6 +88,12 @@
                 <button type="button" role="tab" aria-selected="false" aria-controls="missing-tab" id="missing"
                         tabindex="-1">
                     Missing Resources (<span data-count="resource-deleted">{{len .Deleted}}</span>)
+                </button>
+                {{end}}
+                {{if (gt (len .Drifted) 0)}}
+                <button type="button" role="tab" aria-selected="false" aria-controls="drifted-tab" id="drifted"
+                        tabindex="-1">
+                    Drifted Resources (<span data-count="resource-drifted">{{len .Drifted}}</span>)
                 </button>
                 {{end}}
                 {{if (gt (len .Alerts) 0)}}
@@ -132,6 +145,35 @@
                                 <span data-type="resource-type" style="display:none;">{{$res.ResourceType}}</span>
                             </td>
                             {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ end }}
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .Drifted) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="drifted-tab" aria-labelledby="drifted">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Resource ID</th>
+                            <th>Resource Type</th>
+                            <th>Changes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $dr := .Drifted}}
+                        <tr data-kind="resource-drifted" class="resource-item row">
+                            <td data-type="resource-id">{{$dr.Res.ResourceId}}</td>
+                            <td data-type="resource-type">{{$dr.Res.ResourceType}}</td>
+                            <td>
+                                {{range $change := $dr.AttributeChanges}}
+                                <div>~ {{$change.Path}}: {{$change.Before}} =&gt; {{$change.After}}</div>
+                                {{end}}
+                            </td>
                         </tr>
                         {{end}}
                         </tbody>
@@ -203,6 +245,7 @@
         const map = {
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
+            "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
             "[data-kind='resource-alerts']": "[data-count='resource-alerts']",
         };
         for (const key in map) {

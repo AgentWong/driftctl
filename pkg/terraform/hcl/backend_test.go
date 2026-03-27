@@ -58,20 +58,12 @@ func TestBackend_SupplierConfig(t *testing.T) {
 		{
 			name:     "test with Azure backend block",
 			filename: "testdata/azurerm_backend_block.tf",
-			want: &config.SupplierConfig{
-				Key:     "tfstate",
-				Backend: "azurerm",
-				Path:    "states/prod.terraform.tfstate",
-			},
+			want:     nil,
 		},
 		{
 			name:     "test with Azure backend block with non-default workspace",
 			filename: "testdata/azurerm_backend_workspace/azurerm_backend_block.tf",
-			want: &config.SupplierConfig{
-				Key:     "tfstate",
-				Backend: "azurerm",
-				Path:    "states/prod.terraform.tfstateenv:bar",
-			},
+			want:     nil,
 		},
 		{
 			name:     "test with unknown backend",

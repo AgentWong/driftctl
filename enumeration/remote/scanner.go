@@ -52,7 +52,43 @@ loop:
 }
 
 func (s *Scanner) scan() ([]*resource.Resource, error) {
+	var allResources []*resource.Resource
+	coveredTypes := make(map[resource.ResourceType]bool)
+
+	// BulkEnumerators each cover many resource types in a single API call,
+	// so we run them first and track which types they handle.
+	for _, be := range s.remoteLibrary.GetBulkEnumerators() {
+		resources, err := be.Enumerate(s.filter)
+		if err != nil {
+			err = HandleResourceEnumerationError(err, s.alerter)
+			if err != nil {
+				return nil, err
+			}
+			// error was handled (e.g. access denied alert sent); skip this bulk enumerator
+			for _, t := range be.SupportedTypes() {
+				coveredTypes[t] = true
+			}
+			continue
+		}
+		for _, res := range resources {
+			if res != nil {
+				logrus.WithFields(logrus.Fields{
+					"id":   res.ResourceId(),
+					"type": res.ResourceType(),
+				}).Debug("Found cloud resource")
+				allResources = append(allResources, res)
+			}
+		}
+		for _, t := range be.SupportedTypes() {
+			coveredTypes[t] = true
+		}
+	}
+
 	for _, enum := range s.remoteLibrary.Enumerators() {
+		// skip types already discovered by a BulkEnumerator
+		if coveredTypes[enum.SupportedType()] {
+			continue
+		}
 		if s.filter.IsTypeIgnored(enum.SupportedType()) {
 			logrus.WithFields(logrus.Fields{
 				"type": enum.SupportedType(),
@@ -87,7 +123,8 @@ func (s *Scanner) scan() ([]*resource.Resource, error) {
 		return nil, err
 	}
 
-	return enumerationResult, nil
+	allResources = append(allResources, enumerationResult...)
+	return allResources, nil
 }
 
 func (s *Scanner) Resources() ([]*resource.Resource, error) {
