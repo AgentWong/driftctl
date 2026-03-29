@@ -12,7 +12,7 @@ resource "aws_config_configuration_recorder" "this" {
   }
 
   recording_mode {
-    recording_frequency = "DAILY"
+    recording_frequency = "CONTINUOUS"
   }
 }
 
