@@ -37,12 +37,11 @@ Execute the binary against real AWS. Use the test-output directory for reports:
 
 ```bash
 ./bin/driftctl scan \
+  --from tfstate+s3://terraform-state-07027b6d-e4ba-4f0a-abcf-1520f93ebd4d//** \
   --output console:// \
   --output json://test-output/report.json \
   --output html://test-output/report.html
 ```
-
-If a Terraform state source is needed, add `--from tfstate://PATH_TO_TFSTATE`. If no tfstate path is known, ask the user.
 
 ### Step 3: Analyze
 
