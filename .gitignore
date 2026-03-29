@@ -37,3 +37,7 @@
 .ai_references
 .env
 *.tfvars
+
+# Integration test output (HTML/JSON reports)
+/test-output/*
+!/test-output/.gitkeep
