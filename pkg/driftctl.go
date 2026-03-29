@@ -26,19 +26,19 @@ type FmtOptions struct {
 }
 
 type ScanOptions struct {
-	Coverage         bool
-	Detect           bool
-	From             []config.SupplierConfig
-	To               string
-	Output           []output.OutputConfig
-	Filter           *jmespath.JMESPath
-	Quiet            bool
-	BackendOptions   *backend.Options
-	StrictMode       bool
-	DisableTelemetry bool
-	ProviderVersion  string
-	ConfigDir        string
-	DriftignorePath  string
+	Coverage          bool
+	Detect            bool
+	From              []config.SupplierConfig
+	To                string
+	Output            []output.OutputConfig
+	Filter            *jmespath.JMESPath
+	Quiet             bool
+	BackendOptions    *backend.Options
+	StrictMode        bool
+	DisableTelemetry  bool
+	ProviderVersion   string
+	ConfigDir         string
+	DriftignorePath   string
 	Driftignores      []string
 	ExcludeCategories []string
 	Mode              string // "inventory" (default) or "plan"
