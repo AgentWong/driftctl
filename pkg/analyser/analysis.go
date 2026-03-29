@@ -23,18 +23,21 @@ type DriftedResource struct {
 }
 
 type Summary struct {
-	TotalResources      int  `json:"total_resources"`
-	TotalUnmanaged      int  `json:"total_unmanaged"`
-	TotalDeleted        int  `json:"total_missing"`
-	TotalManaged        int  `json:"total_managed"`
-	TotalDrifted        int  `json:"total_drifted"`
-	TotalIaCSourceCount uint `json:"total_iac_source_count"`
+	TotalResources             int  `json:"total_resources"`
+	TotalUnmanaged             int  `json:"total_unmanaged"`
+	TotalDeleted               int  `json:"total_missing"`
+	TotalManaged               int  `json:"total_managed"`
+	TotalDrifted               int  `json:"total_drifted"`
+	TotalUnsupported           int  `json:"total_unsupported"`
+	TotalCloudFormationManaged int  `json:"total_cloudformation_managed"`
+	TotalIaCSourceCount        uint `json:"total_iac_source_count"`
 }
 
 type Analysis struct {
 	unmanaged           []*resource.Resource
 	managed             []*resource.Resource
 	deleted             []*resource.Resource
+	unsupported         []*resource.Resource
 	drifted             []*DriftedResource
 	summary             Summary
 	alerts              alerter.Alerts
@@ -55,7 +58,8 @@ type serializableAnalysis struct {
 	Managed         []resource.SerializableResource        `json:"managed"`
 	Unmanaged       []resource.SerializableResource        `json:"unmanaged"`
 	Deleted         []resource.SerializableResource        `json:"missing"`
-	Drifted         []serializableDriftedResource           `json:"drifted"`
+	Unsupported     []resource.SerializableResource        `json:"unsupported,omitempty"`
+	Drifted         []serializableDriftedResource          `json:"drifted"`
 	Coverage        int                                    `json:"coverage"`
 	Alerts          map[string][]alerter.SerializableAlert `json:"alerts"`
 	ProviderName    string                                 `json:"provider_name"`
@@ -93,6 +97,9 @@ func (a Analysis) MarshalJSON() ([]byte, error) {
 	}
 	for _, d := range a.deleted {
 		bla.Deleted = append(bla.Deleted, *resource.NewSerializableResource(d))
+	}
+	for _, u := range a.unsupported {
+		bla.Unsupported = append(bla.Unsupported, *resource.NewSerializableResource(u))
 	}
 	for _, dr := range a.drifted {
 		bla.Drifted = append(bla.Drifted, serializableDriftedResource{
@@ -134,6 +141,14 @@ func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 			Id:   d.Id,
 			Type: d.Type,
 		})
+	}
+	for _, u := range bla.Unsupported {
+		a.unsupported = append(a.unsupported, &resource.Resource{
+			Id:   u.Id,
+			Type: u.Type,
+		})
+		a.summary.TotalUnsupported++
+		a.summary.TotalResources++
 	}
 	for _, m := range bla.Managed {
 		res := &resource.Resource{
@@ -220,6 +235,10 @@ func (a *Analysis) Deleted() []*resource.Resource {
 	return a.deleted
 }
 
+func (a *Analysis) Unsupported() []*resource.Resource {
+	return a.unsupported
+}
+
 func (a *Analysis) Drifted() []*DriftedResource {
 	return a.drifted
 }
@@ -251,6 +270,31 @@ func (a *Analysis) UnmanagedCategory(r *resource.Resource) string {
 
 func (a *Analysis) SetUnmanagedCategories(cats map[string]string) {
 	a.unmanagedCategories = cats
+}
+
+// ReclassifyMissingAsUnsupported moves deleted resources whose Terraform type
+// is not discoverable by AWS Config into a separate "unsupported" bucket.
+func (a *Analysis) ReclassifyMissingAsUnsupported(supportedTypes map[string]bool) {
+	var trueMissing []*resource.Resource
+	for _, r := range a.deleted {
+		if supportedTypes[r.ResourceType()] {
+			trueMissing = append(trueMissing, r)
+		} else {
+			a.unsupported = append(a.unsupported, r)
+		}
+	}
+	moved := len(a.deleted) - len(trueMissing)
+	a.deleted = trueMissing
+	a.summary.TotalDeleted -= moved
+	a.summary.TotalUnsupported += moved
+}
+
+// AdjustSummaryForCloudFormation shifts cfnCount resources from the unmanaged
+// total into the managed total so CloudFormation-managed resources count as IaC.
+func (a *Analysis) AdjustSummaryForCloudFormation(cfnCount int) {
+	a.summary.TotalCloudFormationManaged = cfnCount
+	a.summary.TotalManaged += cfnCount
+	a.summary.TotalUnmanaged -= cfnCount
 }
 
 func (a *Analysis) FilterUnmanagedByCategory(excludeCategories map[string]bool) {

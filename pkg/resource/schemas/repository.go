@@ -48,7 +48,7 @@ func (r *SchemaRepository) Init(providerName, providerVersion string, schema map
 	if providerVersion == "" {
 		switch providerName {
 		case "aws":
-			providerVersion = "5.82.2"
+			providerVersion = "6.38.0"
 		default:
 			return errors.Errorf("unsupported remote '%s'", providerName)
 		}

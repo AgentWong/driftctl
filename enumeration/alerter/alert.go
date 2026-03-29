@@ -2,7 +2,6 @@ package alerter
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/snyk/driftctl/enumeration/resource"
 )
@@ -15,25 +14,6 @@ type Alert interface {
 	Resource() *resource.Resource
 }
 
-type UnsupportedResourcetypeAlert struct {
-	Typ string
-}
-
-func NewUnsupportedResourcetypeAlert(typ string) *UnsupportedResourcetypeAlert {
-	return &UnsupportedResourcetypeAlert{Typ: typ}
-}
-
-func (f *UnsupportedResourcetypeAlert) Message() string {
-	return fmt.Sprintf("%s is not supported...", f.Typ)
-}
-
-func (f *UnsupportedResourcetypeAlert) ShouldIgnoreResource() bool {
-	return false
-}
-
-func (f *UnsupportedResourcetypeAlert) Resource() *resource.Resource {
-	return nil
-}
 
 type FakeAlert struct {
 	Msg            string

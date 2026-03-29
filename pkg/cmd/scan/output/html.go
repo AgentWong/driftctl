@@ -27,20 +27,23 @@ type HTML struct {
 }
 
 type HTMLTemplateParams struct {
-	IsSync          bool
-	ScanDate        string
-	Coverage        int
-	Summary         analyser.Summary
-	Unmanaged       []*resource.Resource
-	Deleted         []*resource.Resource
-	Drifted         []*analyser.DriftedResource
-	Alerts          alerter.Alerts
-	Stylesheet      template.CSS
-	ScanDuration    string
-	ProviderName    string
-	ProviderVersion string
-	LogoSvg         template.HTML
-	FaviconBase64   string
+	IsSync                bool
+	ScanDate              string
+	Coverage              int
+	Summary               analyser.Summary
+	Managed               []*resource.Resource
+	Unmanaged             []*resource.Resource
+	CloudFormationManaged []*resource.Resource
+	Unsupported           []*resource.Resource
+	Deleted               []*resource.Resource
+	Drifted               []*analyser.DriftedResource
+	Alerts                alerter.Alerts
+	Stylesheet            template.CSS
+	ScanDuration          string
+	ProviderName          string
+	ProviderVersion       string
+	LogoSvg               template.HTML
+	FaviconBase64         string
 }
 
 func NewHTML(path string) *HTML {
@@ -81,8 +84,10 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 	funcMap := template.FuncMap{
 		"getResourceTypes": func() []string {
 			resources := make([]*resource.Resource, 0)
+			resources = append(resources, analysis.Managed()...)
 			resources = append(resources, analysis.Unmanaged()...)
 			resources = append(resources, analysis.Deleted()...)
+			resources = append(resources, analysis.Unsupported()...)
 			for _, dr := range analysis.Drifted() {
 				resources = append(resources, dr.Res)
 			}
@@ -92,6 +97,7 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		"getIaCSources": func() []string {
 			resources := make([]*resource.Resource, 0)
 			resources = append(resources, analysis.Deleted()...)
+			resources = append(resources, analysis.Unsupported()...)
 			resources = append(resources, analysis.Managed()...)
 
 			return distinctIaCSources(resources)
@@ -110,21 +116,38 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		return err
 	}
 
+	// split unmanaged resources by category for separate tabs
+	var cfnManaged, otherUnmanaged []*resource.Resource
+	if analysis.HasCategories() {
+		for _, r := range analysis.Unmanaged() {
+			if analysis.UnmanagedCategory(r) == "cloudformation_managed" {
+				cfnManaged = append(cfnManaged, r)
+			} else {
+				otherUnmanaged = append(otherUnmanaged, r)
+			}
+		}
+	} else {
+		otherUnmanaged = analysis.Unmanaged()
+	}
+
 	data := &HTMLTemplateParams{
-		IsSync:          analysis.IsSync(),
-		ScanDate:        analysis.Date.Format("Jan 02, 2006"),
-		Coverage:        analysis.Coverage(),
-		Summary:         analysis.Summary(),
-		Unmanaged:       analysis.Unmanaged(),
-		Deleted:         analysis.Deleted(),
-		Drifted:         analysis.Drifted(),
-		Alerts:          analysis.Alerts(),
-		Stylesheet:      template.CSS(styleFile),
-		ScanDuration:    analysis.Duration.Round(time.Second).String(),
-		ProviderName:    analysis.ProviderName,
-		ProviderVersion: analysis.ProviderVersion,
-		LogoSvg:         template.HTML(logoSvgFile),
-		FaviconBase64:   base64.StdEncoding.EncodeToString(faviconFile),
+		IsSync:                analysis.IsSync(),
+		ScanDate:              analysis.Date.Format("Jan 02, 2006"),
+		Coverage:              analysis.Coverage(),
+		Summary:               analysis.Summary(),
+		Managed:               analysis.Managed(),
+		Unmanaged:             otherUnmanaged,
+		CloudFormationManaged: cfnManaged,
+		Unsupported:           analysis.Unsupported(),
+		Deleted:               analysis.Deleted(),
+		Drifted:               analysis.Drifted(),
+		Alerts:                analysis.Alerts(),
+		Stylesheet:            template.CSS(styleFile),
+		ScanDuration:          analysis.Duration.Round(time.Second).String(),
+		ProviderName:          analysis.ProviderName,
+		ProviderVersion:       analysis.ProviderVersion,
+		LogoSvg:               template.HTML(logoSvgFile),
+		FaviconBase64:         base64.StdEncoding.EncodeToString(faviconFile),
 	}
 
 	err = tmpl.Execute(file, data)

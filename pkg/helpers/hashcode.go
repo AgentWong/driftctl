@@ -1,8 +1,6 @@
 package helpers
 
 import (
-	"bytes"
-	"fmt"
 	"hash/crc32"
 )
 
@@ -21,15 +19,4 @@ func HashcodeString(s string) int {
 	}
 	// v == MinInt
 	return 0
-}
-
-// HashcodeStrings hashes a list of strings to a unique hashcode.
-func HashcodeStrings(strings []string) string {
-	var buf bytes.Buffer
-
-	for _, s := range strings {
-		buf.WriteString(fmt.Sprintf("%s-", s))
-	}
-
-	return fmt.Sprintf("%d", HashcodeString(buf.String()))
 }

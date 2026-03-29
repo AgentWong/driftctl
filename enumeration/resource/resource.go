@@ -82,6 +82,24 @@ func (r *Resource) SourceString() string {
 	return fmt.Sprintf("%s.%s.%s", r.Source.Namespace(), r.ResourceType(), r.Source.InternalName())
 }
 
+// DisplayName returns a human-readable name for the resource, falling back to
+// config_name attribute, then the Name tag, then empty string.
+func (r *Resource) DisplayName() string {
+	if r.Attrs == nil {
+		return ""
+	}
+	attrs := *r.Attrs
+	if name, ok := attrs["config_name"].(string); ok && name != "" {
+		return name
+	}
+	if tags, ok := attrs["tags"].(map[string]interface{}); ok {
+		if name, ok := tags["Name"].(string); ok && name != "" {
+			return name
+		}
+	}
+	return ""
+}
+
 func (r *Resource) Equal(res *Resource) bool {
 	if r.ResourceId() != res.ResourceId() || r.ResourceType() != res.ResourceType() {
 		return false
@@ -101,6 +119,7 @@ type ResourceFactory interface {
 type SerializableResource struct {
 	Id                 string              `json:"id"`
 	Type               string              `json:"type"`
+	Name               string              `json:"name,omitempty"`
 	ReadableAttributes map[string]string   `json:"human_readable_attributes,omitempty"`
 	Source             *SerializableSource `json:"source,omitempty"`
 	Category           string              `json:"category,omitempty"`
@@ -115,12 +134,33 @@ func NewSerializableResource(res *Resource) *SerializableResource {
 			Name: res.Src().InternalName(),
 		}
 	}
-	return &SerializableResource{
+	sr := &SerializableResource{
 		Id:                 res.ResourceId(),
 		Type:               res.ResourceType(),
+		Name:               extractResourceName(res),
 		ReadableAttributes: formatReadableAttributes(res),
 		Source:             src,
 	}
+	return sr
+}
+
+// extractResourceName derives a human-friendly name from Config metadata or tags.
+func extractResourceName(res *Resource) string {
+	if res.Attrs == nil {
+		return ""
+	}
+	attrs := *res.Attrs
+	// prefer the Config-supplied resourceName
+	if name, ok := attrs["config_name"].(string); ok && name != "" {
+		return name
+	}
+	// fall back to the "Name" tag
+	if tags, ok := attrs["tags"].(map[string]interface{}); ok {
+		if name, ok := tags["Name"].(string); ok && name != "" {
+			return name
+		}
+	}
+	return ""
 }
 
 func formatReadableAttributes(res *Resource) map[string]string {

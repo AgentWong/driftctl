@@ -2,10 +2,12 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/configservice"
-	"github.com/aws/aws-sdk-go-v2/service/configservice/types"
 	"github.com/snyk/driftctl/enumeration/remote/cache"
 )
 
@@ -13,11 +15,12 @@ type ConfigDiscoveredResource struct {
 	Type string
 	ID   string
 	Name string
+	ARN  string
+	Tags map[string]string
 }
 
 type ConfigRepository interface {
-	ListAllDiscoveredResources() ([]*ConfigDiscoveredResource, error)
-	GetSupportedResourceTypes() ([]string, error)
+	ListAllDiscoveredResources(resourceTypes []string) ([]*ConfigDiscoveredResource, error)
 }
 
 type configRepository struct {
@@ -32,34 +35,26 @@ func NewConfigRepository(cfg aws.Config, c cache.Cache) *configRepository {
 	}
 }
 
-func (r *configRepository) GetSupportedResourceTypes() ([]string, error) {
-	cacheKey := "configGetSupportedResourceTypes"
-	v := r.cache.GetAndLock(cacheKey)
-	defer r.cache.Unlock(cacheKey)
-	if v != nil {
-		return v.([]string), nil
-	}
-
-	var resourceTypes []string
-	input := &configservice.GetDiscoveredResourceCountsInput{}
-	paginator := configservice.NewGetDiscoveredResourceCountsPaginator(r.client, input)
-	for paginator.HasMorePages() {
-		resp, err := paginator.NextPage(context.Background())
-		if err != nil {
-			return nil, err
-		}
-		for _, rc := range resp.ResourceCounts {
-			if rc.ResourceType != "" {
-				resourceTypes = append(resourceTypes, string(rc.ResourceType))
-			}
-		}
-	}
-
-	r.cache.Put(cacheKey, resourceTypes)
-	return resourceTypes, nil
+// selectResourceResult maps the JSON returned by SelectResourceConfig.
+type selectResourceResult struct {
+	ResourceType string           `json:"resourceType"`
+	ResourceID   string           `json:"resourceId"`
+	ResourceName string           `json:"resourceName"`
+	ARN          string           `json:"arn"`
+	Tags         []selectTagEntry `json:"tags"`
 }
 
-func (r *configRepository) ListAllDiscoveredResources() ([]*ConfigDiscoveredResource, error) {
+// selectTagEntry represents a single tag from the Config query result.
+type selectTagEntry struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+// ListAllDiscoveredResources uses the SelectResourceConfig (Advanced Query)
+// API, which queries Config's resource index directly and returns results
+// immediately — unlike ListDiscoveredResources + GetDiscoveredResourceCounts,
+// which lag on newly-started recorders.
+func (r *configRepository) ListAllDiscoveredResources(resourceTypes []string) ([]*ConfigDiscoveredResource, error) {
 	cacheKey := "configListAllDiscoveredResources"
 	v := r.cache.GetAndLock(cacheKey)
 	defer r.cache.Unlock(cacheKey)
@@ -67,14 +62,16 @@ func (r *configRepository) ListAllDiscoveredResources() ([]*ConfigDiscoveredReso
 		return v.([]*ConfigDiscoveredResource), nil
 	}
 
-	resourceTypes, err := r.GetSupportedResourceTypes()
-	if err != nil {
-		return nil, err
-	}
-
 	var allResources []*ConfigDiscoveredResource
-	for _, rt := range resourceTypes {
-		resources, err := r.listResourcesByType(rt)
+
+	// chunk types to stay under the 4 KB SQL expression limit
+	const chunkSize = 50
+	for i := 0; i < len(resourceTypes); i += chunkSize {
+		end := i + chunkSize
+		if end > len(resourceTypes) {
+			end = len(resourceTypes)
+		}
+		resources, err := r.selectResources(resourceTypes[i:end])
 		if err != nil {
 			return nil, err
 		}
@@ -85,30 +82,43 @@ func (r *configRepository) ListAllDiscoveredResources() ([]*ConfigDiscoveredReso
 	return allResources, nil
 }
 
-func (r *configRepository) listResourcesByType(resourceType string) ([]*ConfigDiscoveredResource, error) {
-	var resources []*ConfigDiscoveredResource
-	input := &configservice.ListDiscoveredResourcesInput{
-		ResourceType:            types.ResourceType(resourceType),
-		IncludeDeletedResources: false,
+// selectResources runs a single SelectResourceConfig query for a batch of types.
+func (r *configRepository) selectResources(resourceTypes []string) ([]*ConfigDiscoveredResource, error) {
+	quoted := make([]string, len(resourceTypes))
+	for i, rt := range resourceTypes {
+		quoted[i] = fmt.Sprintf("'%s'", rt)
 	}
+	expr := fmt.Sprintf(
+		"SELECT resourceId, resourceType, resourceName, arn, tags WHERE resourceType IN (%s)",
+		strings.Join(quoted, ", "),
+	)
 
-	paginator := configservice.NewListDiscoveredResourcesPaginator(r.client, input)
+	var resources []*ConfigDiscoveredResource
+	paginator := configservice.NewSelectResourceConfigPaginator(r.client, &configservice.SelectResourceConfigInput{
+		Expression: aws.String(expr),
+	})
 	for paginator.HasMorePages() {
 		resp, err := paginator.NextPage(context.Background())
 		if err != nil {
 			return nil, err
 		}
-		for _, ri := range resp.ResourceIdentifiers {
-			res := &ConfigDiscoveredResource{
-				Type: resourceType,
+		for _, raw := range resp.Results {
+			var parsed selectResourceResult
+			if err := json.Unmarshal([]byte(raw), &parsed); err != nil {
+				continue
 			}
-			if ri.ResourceId != nil {
-				res.ID = *ri.ResourceId
+			// flatten tag list into a map for easier downstream consumption
+			tags := make(map[string]string, len(parsed.Tags))
+			for _, t := range parsed.Tags {
+				tags[t.Key] = t.Value
 			}
-			if ri.ResourceName != nil {
-				res.Name = *ri.ResourceName
-			}
-			resources = append(resources, res)
+			resources = append(resources, &ConfigDiscoveredResource{
+				Type: parsed.ResourceType,
+				ID:   parsed.ResourceID,
+				Name: parsed.ResourceName,
+				ARN:  parsed.ARN,
+				Tags: tags,
+			})
 		}
 	}
 

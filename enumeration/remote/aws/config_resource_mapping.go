@@ -1,6 +1,5 @@
 package aws
 
-import "github.com/snyk/driftctl/enumeration/resource"
 
 // ConfigToTerraformMapping maps AWS Config resource type strings to Terraform resource type strings.
 // Only types that AWS Config can discover are included; sub-resources (e.g. security group rules,
@@ -240,29 +239,6 @@ func init() {
 			terraformToConfigMapping[tfType] = configType
 		}
 	}
-}
-
-func ConfigTypeToTerraformType(configType string) (string, bool) {
-	tfType, ok := ConfigToTerraformMapping[configType]
-	return tfType, ok
-}
-
-func TerraformTypeToConfigType(tfType string) (string, bool) {
-	configType, ok := terraformToConfigMapping[tfType]
-	return configType, ok
-}
-
-// UnsupportedByConfig returns Terraform resource types from the mapping that exist as
-// supported driftctl types but have no corresponding AWS Config resource type.
-// This helps identify gaps where individual enumerators are still needed.
-func UnsupportedByConfig() []string {
-	var unsupported []string
-	for _, tfType := range ConfigToTerraformMapping {
-		if !resource.IsResourceTypeSupported(tfType) {
-			unsupported = append(unsupported, tfType)
-		}
-	}
-	return unsupported
 }
 
 // ConfigSupportedTerraformTypes returns a set of Terraform resource types that have

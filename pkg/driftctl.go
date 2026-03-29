@@ -98,6 +98,7 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 		middlewares.NewRoute53RecordIDReconcilier(),
 		middlewares.NewRoute53DefaultZoneRecordSanitizer(),
 		middlewares.NewS3BucketAcl(),
+		middlewares.NewAwsIamIDReconciler(),
 		middlewares.NewAwsInstanceBlockDeviceResourceMapper(d.resourceFactory),
 		middlewares.NewAwsDefaultSecurityGroupRule(),
 		middlewares.NewVPCDefaultSecurityGroupSanitizer(),

@@ -369,25 +369,44 @@ func scanRun(opts *pkg.ScanOptions) error {
 	store.Bucket(memstore.TelemetryBucket).Set("provider_name", analysis.ProviderName)
 
 	// Categorize unmanaged resources for AWS providers
-	if strings.HasPrefix(opts.To, "aws") && len(analysis.Unmanaged()) > 0 {
-		chain := categorizer.NewChain(
-			categorizer.NewCloudFormationCategorizer(),
-			categorizer.NewServiceLinkedCategorizer(),
-			categorizer.NewUnsupportedCategorizer(aws.ConfigSupportedTerraformTypes()),
-		)
-		cats := make(map[string]string, len(analysis.Unmanaged()))
-		for _, r := range analysis.Unmanaged() {
-			key := r.ResourceType() + "." + r.ResourceId()
-			cats[key] = string(chain.Categorize(r))
-		}
-		analysis.SetUnmanagedCategories(cats)
+	if strings.HasPrefix(opts.To, "aws") {
+		configSupported := aws.ConfigSupportedTerraformTypes()
 
-		if len(opts.ExcludeCategories) > 0 {
-			excludeSet := make(map[string]bool, len(opts.ExcludeCategories))
-			for _, c := range opts.ExcludeCategories {
-				excludeSet[c] = true
+		if len(analysis.Unmanaged()) > 0 {
+			chain := categorizer.NewChain(
+				categorizer.NewCloudFormationCategorizer(),
+				categorizer.NewServiceLinkedCategorizer(),
+				categorizer.NewUnsupportedCategorizer(configSupported),
+			)
+			cats := make(map[string]string, len(analysis.Unmanaged()))
+			cfnCount := 0
+			for _, r := range analysis.Unmanaged() {
+				key := r.ResourceType() + "." + r.ResourceId()
+				cat := string(chain.Categorize(r))
+				cats[key] = cat
+				if cat == string(categorizer.CategoryCloudFormationManaged) {
+					cfnCount++
+				}
 			}
-			analysis.FilterUnmanagedByCategory(excludeSet)
+			analysis.SetUnmanagedCategories(cats)
+
+			// CloudFormation-managed resources are IaC — count them as managed
+			if cfnCount > 0 {
+				analysis.AdjustSummaryForCloudFormation(cfnCount)
+			}
+
+			if len(opts.ExcludeCategories) > 0 {
+				excludeSet := make(map[string]bool, len(opts.ExcludeCategories))
+				for _, c := range opts.ExcludeCategories {
+					excludeSet[c] = true
+				}
+				analysis.FilterUnmanagedByCategory(excludeSet)
+			}
+		}
+
+		// Reclassify missing resources whose type Config can't discover
+		if len(analysis.Deleted()) > 0 {
+			analysis.ReclassifyMissingAsUnsupported(configSupported)
 		}
 	}
 

@@ -410,6 +410,7 @@ input[type="search"], select {
             <span class="fraction">0/0</span>
         </div>
         
+        
     </section>
     <main>
         
@@ -451,9 +452,12 @@ input[type="search"], select {
 
     function refreshCounters() {
         const map = {
+            "[data-kind='resource-managed']": "[data-count='resource-managed']",
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
+            "[data-kind='resource-cfn']": "[data-count='resource-cfn']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
             "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
+            "[data-kind='resource-unsupported']": "[data-count='resource-unsupported']",
             "[data-kind='resource-alerts']": "[data-count='resource-alerts']",
         };
         for (const key in map) {
@@ -472,11 +476,16 @@ input[type="search"], select {
         if (id === "") {
             return true;
         }
-        const el = res.querySelector("[data-type='resource-id']");
-        if (!el) {
-            return false;
+        const idEl = res.querySelector("[data-type='resource-id']");
+        const nameEl = res.querySelector("[data-type='resource-name']");
+        const needle = id.toLowerCase();
+        if (idEl && idEl.innerText.toLowerCase().includes(needle)) {
+            return true;
         }
-        return el.innerText.toLowerCase().includes(id.toLowerCase());
+        if (nameEl && nameEl.innerText.toLowerCase().includes(needle)) {
+            return true;
+        }
+        return false;
     }
 
     function resourceTypeEquals(res, type) {
@@ -615,6 +624,11 @@ input[type="search"], select {
         if (target === document.activeElement) {
             activateTab(target, false)
         }
+    }
+
+    
+    if (tabs.length > 0) {
+        activateTab(tabs[0], false)
     }
 </script>
 </body>

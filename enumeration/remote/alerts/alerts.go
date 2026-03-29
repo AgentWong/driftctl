@@ -104,7 +104,3 @@ func sendRemoteAccessDeniedAlert(provider string, alerter alerter.AlerterInterfa
 func SendEnumerationAlert(provider string, alerter alerter.AlerterInterface, listError *remoteerror.ResourceScanningError) {
 	sendRemoteAccessDeniedAlert(provider, alerter, listError, EnumerationPhase)
 }
-
-func SendDetailsFetchingAlert(provider string, alerter alerter.AlerterInterface, listError *remoteerror.ResourceScanningError) {
-	sendRemoteAccessDeniedAlert(provider, alerter, listError, DetailsFetchingPhase)
-}

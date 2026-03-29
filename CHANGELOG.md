@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-03-29
 
+### Added
+- **AWS Config query now returns ARN, tags, and resource name** in `config_repository.go` — the `SelectResourceConfig` SQL expression now selects `arn` and `tags` in addition to the existing fields, enabling downstream categorization and richer display
+- **Config enumerator populates resource attributes** in `config_enumerator.go` — tags, ARN, and Config resource name are seeded into `CreateAbstractResource` so categorizers and output formatters can use them
+- **Resource `Name` field in JSON output** — `SerializableResource` now includes a `name` field derived from Config's `resourceName` or the `Name` tag; `Resource.DisplayName()` method added for template use
+- **Managed Resources tab in HTML report** — new tab displays Terraform-managed resources with ID, Type, Name, and IaC Source columns
+- **CloudFormation Managed tab in HTML report** — unmanaged resources categorized as `cloudformation_managed` are now shown in a dedicated tab, separate from other unmanaged resources
+- **Name column in all HTML report tables** — all resource tables (Managed, Unmanaged, CloudFormation Managed, Missing, Drifted) now include a Name column for human-readable identification
+- **Selective JSON report parsing instructions** in `.github/agents/build-test-fix.md` — added Step 3a with `jq`-based parsing patterns to avoid overwhelming LLM context with large reports
+
+### Changed
+- **AWS Terraform provider default** — updated from `5.82.2` to `6.38.0` in `enumeration/remote/aws/provider.go` and `pkg/resource/schemas/repository.go`
+- **HTML report search** — search box now matches against both Resource ID and Name fields
+- **HTML report tab initialization** — JavaScript now selects the first available tab on page load, fixing edge cases where no tab was initially active
+
+### Changed
+- **Config enumeration — switched to SelectResourceConfig (Advanced Query) API** in `enumeration/remote/aws/repository/config_repository.go`. Replaces the previous `ListDiscoveredResources` + `GetDiscoveredResourceCounts` approach, which lagged on newly-started Config recorders. The new API queries the Config resource index directly via SQL expressions, returning results immediately and reducing scan time (8s → 2s for enumeration). Types are batched into chunks of 50 to stay within the 4 KB SQL expression limit.
+- **Removed `GetSupportedResourceTypes()`** from `ConfigRepository` interface — no longer needed since the enumerator passes its known mapping keys directly.
+- **Config enumerator passes resource types explicitly** in `enumeration/remote/aws/config_enumerator.go` — extracts Config type keys from the mapping and passes them to `ListAllDiscoveredResources` rather than relying on the repository to discover types.
+
 ### Fixed
 - **Test suite — all 26 packages now pass** after fixing test expectations broken by prior refactoring:
   - `pkg/cmd/scan_test.go`, `pkg/cmd/driftctl_test.go`, `pkg/iac/supplier/supplier_test.go` — removed `gs://` (GCS) from expected scheme/backend error messages

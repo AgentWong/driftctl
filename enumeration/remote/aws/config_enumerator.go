@@ -35,7 +35,13 @@ func (e *ConfigEnumerator) SupportedTypes() []resource.ResourceType {
 }
 
 func (e *ConfigEnumerator) Enumerate(filter common.EnumerationFilter) ([]*resource.Resource, error) {
-	discovered, err := e.repo.ListAllDiscoveredResources()
+	// pass Config type keys so the repo queries those directly instead of
+	// relying on GetDiscoveredResourceCounts (which lags on new recorders)
+	configTypes := make([]string, 0, len(e.mapping))
+	for ct := range e.mapping {
+		configTypes = append(configTypes, ct)
+	}
+	discovered, err := e.repo.ListAllDiscoveredResources(configTypes)
 	if err != nil {
 		return nil, remoteerror.NewResourceListingError(err, "aws_config_discovered_resources")
 	}
@@ -51,7 +57,26 @@ func (e *ConfigEnumerator) Enumerate(filter common.EnumerationFilter) ([]*resour
 			continue
 		}
 
-		res := e.factory.CreateAbstractResource(tfType, r.ID, map[string]interface{}{})
+		// seed resource attributes with data from Config so downstream
+		// categorizers and output formatters have access to tags/ARN/name
+		attrs := map[string]interface{}{}
+		if len(r.Tags) > 0 {
+			// store as map[string]interface{} so the CloudFormation categorizer
+			// can type-assert against map[string]interface{}
+			tagMap := make(map[string]interface{}, len(r.Tags))
+			for k, v := range r.Tags {
+				tagMap[k] = v
+			}
+			attrs["tags"] = tagMap
+		}
+		if r.ARN != "" {
+			attrs["arn"] = r.ARN
+		}
+		if r.Name != "" {
+			attrs["config_name"] = r.Name
+		}
+
+		res := e.factory.CreateAbstractResource(tfType, r.ID, attrs)
 
 		if filter != nil && filter.IsResourceIgnored(res) {
 			continue

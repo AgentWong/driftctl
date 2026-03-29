@@ -69,6 +69,37 @@ For runtime errors, read the error output and `test-output/report.json`. Common 
 - **Resource enumeration errors:** check if the AWS Config recorder is enabled in the target region
 - **State deserialization errors ("Unable to decode resource from state"):** driftctl uses provider v3.19.0 schemas. State files written by newer provider versions may have new/changed attributes. The `convertInstance` fallback in `terraform_state_reader.go` handles most cases; check there if new decode errors appear.
 
+### Step 3a: Parse JSON Report Selectively
+
+The `test-output/report.json` file can be very large (1000+ lines). **Do not** read the entire file into context. Instead, use `jq` to extract only the sections you need:
+
+```bash
+# Summary overview (always start here)
+jq '.summary' test-output/report.json
+
+# Category breakdown for unmanaged resources
+jq '[.unmanaged[] | .category] | group_by(.) | map({key: .[0], count: length})' test-output/report.json
+
+# CloudFormation-managed resources (check if categorizer is working)
+jq '[.unmanaged[] | select(.category == "cloudformation_managed")] | length' test-output/report.json
+
+# Sample a few resources with their names to verify enrichment
+jq '.unmanaged[0:5] | .[] | {id, type, name, category}' test-output/report.json
+jq '.managed[0:5] | .[] | {id, type, name}' test-output/report.json
+
+# Check for specific resource types
+jq '[.unmanaged[] | select(.type == "aws_iam_role")] | .[0:3]' test-output/report.json
+
+# Alerts and errors
+jq '.alerts' test-output/report.json
+```
+
+**Rules for JSON parsing:**
+- Always query `.summary` first to get the high-level picture
+- Use `jq` filters with `select()`, `[0:N]` slicing, and field projection (`{id, type, name}`) to limit output
+- Never pipe the entire JSON file to `cat` or read it with `read_file`
+- When investigating a specific resource type, filter by `.type` and limit to 3-5 examples
+
 ### Step 4: Fix and Repeat
 
 If there are runtime errors:
@@ -91,3 +122,11 @@ Continue looping until the scan completes without runtime errors (exit code 0 or
   - AWS remote implementation is in `enumeration/remote/aws/`
   - CLI commands use cobra, defined in `pkg/cmd/`
   - S3 state reader uses `DCTL_S3_` env var prefix (via `envproxy`) to override AWS config for the S3 client independently of the scan region
+
+## CHANGELOG
+
+After making any code changes, **always** append an entry to `CHANGELOG.md` under the `## [1.0.0]` section for the current date. If a section for today's date already exists, add to it; otherwise create a new `## [1.0.0] - YYYY-MM-DD` block below the header.
+
+Use [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) categories: `### Added`, `### Changed`, `### Fixed`, `### Removed`.
+
+Keep entries concise and reference the affected files or packages. Do not duplicate entries that already exist in the CHANGELOG.

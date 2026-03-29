@@ -410,15 +410,20 @@ input[type="search"], select {
             <span class="fraction">6/15</span>
         </div>
         
+        
     </section>
     <main>
         
         <form role="search">
-            <label for="search" class="visuallyhidden">Search resources by id:</label>
-            <input type="search" id="search" name="search" placeholder="Search resources by id...">
+            <label for="search" class="visuallyhidden">Search resources by id or name:</label>
+            <input type="search" id="search" name="search" placeholder="Search resources by id or name...">
             <label for="resource-type-select" class="visuallyhidden">Select a resource type:</label>
             <select id="resource-type-select" name="resource-type-select">
                 <option value="">Select a resource type</option>
+                
+                <option value="aws_diff_resource">aws_diff_resource</option>
+                
+                <option value="aws_no_diff_resource">aws_no_diff_resource</option>
                 
                 <option value="aws_unmanaged_resource">aws_unmanaged_resource</option>
                 
@@ -444,15 +449,23 @@ input[type="search"], select {
         <div class="tabs-wrapper">
             <div role="tablist" aria-label="List of tabs">
                 
-                <button type="button" role="tab" aria-selected="true" aria-controls="unmanaged-tab" id="unmanaged">
+                <button type="button" role="tab" aria-selected="true" aria-controls="managed-tab" id="managed">
+                    Terraform Managed (<span data-count="resource-managed">4</span>)
+                </button>
+                
+                
+                <button type="button" role="tab" aria-selected="false" aria-controls="unmanaged-tab" id="unmanaged"
+                        tabindex="-1">
                     Unmanaged Resources (<span data-count="resource-unmanaged">5</span>)
                 </button>
+                
                 
                 
                 <button type="button" role="tab" aria-selected="false" aria-controls="missing-tab" id="missing"
                         tabindex="-1">
                     Missing Resources (<span data-count="resource-deleted">6</span>)
                 </button>
+                
                 
                 
                 
@@ -464,39 +477,44 @@ input[type="search"], select {
             </div>
             <div class="panels">
                 
-                <div tabindex="0" role="tabpanel" id="unmanaged-tab" aria-labelledby="unmanaged">
+                <div tabindex="0" role="tabpanel" id="managed-tab" aria-labelledby="managed">
                     <table>
                         <thead>
                         <tr class="table-header">
-                            <th>Resource ID</th>
+                            <th>Name</th>
                             <th>Resource Type</th>
+                            <th>Resource ID</th>
+                            <th>IaC Source</th>
                         </tr>
                         </thead>
                         <tbody>
                         
-                        <tr data-kind="resource-unmanaged" class="resource-item row">
-                            <td data-type="resource-id">unmanaged-id-1</td>
-                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                        <tr data-kind="resource-managed" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_diff_resource</td>
+                            <td data-type="resource-id">diff-id-1</td>
+                            <td></td>
                         </tr>
                         
-                        <tr data-kind="resource-unmanaged" class="resource-item row">
-                            <td data-type="resource-id">unmanaged-id-2</td>
-                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                        <tr data-kind="resource-managed" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_no_diff_resource</td>
+                            <td data-type="resource-id">no-diff-id-1</td>
+                            <td></td>
                         </tr>
                         
-                        <tr data-kind="resource-unmanaged" class="resource-item row">
-                            <td data-type="resource-id">unmanaged-id-3</td>
-                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                        <tr data-kind="resource-managed" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_diff_resource</td>
+                            <td data-type="resource-id">diff-id-2</td>
+                            <td data-type="resource-source">tfstate://state.tfstate</td>
                         </tr>
                         
-                        <tr data-kind="resource-unmanaged" class="resource-item row">
-                            <td data-type="resource-id">unmanaged-id-4</td>
-                            <td data-type="resource-type">aws_unmanaged_resource</td>
-                        </tr>
-                        
-                        <tr data-kind="resource-unmanaged" class="resource-item row">
-                            <td data-type="resource-id">unmanaged-id-5</td>
-                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                        <tr data-kind="resource-managed" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_diff_resource</td>
+                            <td data-type="resource-id">diff-id-3</td>
+                            <td data-type="resource-source">tfstate&#43;s3://state2.tfstate</td>
                         </tr>
                         
                         </tbody>
@@ -505,70 +523,110 @@ input[type="search"], select {
                         <p>No results matched your filters</p>
                     </div>
                 </div>
+                
+                
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="unmanaged-tab" aria-labelledby="unmanaged">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        
+                        <tr data-kind="resource-unmanaged" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                            <td data-type="resource-id">unmanaged-id-1</td>
+                        </tr>
+                        
+                        <tr data-kind="resource-unmanaged" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                            <td data-type="resource-id">unmanaged-id-2</td>
+                        </tr>
+                        
+                        <tr data-kind="resource-unmanaged" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                            <td data-type="resource-id">unmanaged-id-3</td>
+                        </tr>
+                        
+                        <tr data-kind="resource-unmanaged" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                            <td data-type="resource-id">unmanaged-id-4</td>
+                        </tr>
+                        
+                        <tr data-kind="resource-unmanaged" class="resource-item row">
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_unmanaged_resource</td>
+                            <td data-type="resource-id">unmanaged-id-5</td>
+                        </tr>
+                        
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                
                 
                 
                 <div class="is-hidden" tabindex="0" role="tabpanel" id="missing-tab" aria-labelledby="missing">
                     <table>
                         <thead>
                         <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
                             <th>Resource ID</th>
-                            <th>IaC source</th>
+                            <th>IaC Source</th>
                         </tr>
                         </thead>
                         <tbody>
                         
                         <tr data-kind="resource-deleted" class="resource-item row">
-                            <td>
-                                <span data-type="resource-id">deleted-id-1</span>
-                                <span>(module.aws_deleted_resource.name)</span>
-                                <span data-type="resource-type" style="display:none;">aws_deleted_resource</span>
-                            </td>
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_deleted_resource</td>
+                            <td data-type="resource-id">deleted-id-1</td>
                             <td data-type="resource-source">tfstate://delete_state.tfstate</td>
                         </tr>
                         
                         <tr data-kind="resource-deleted" class="resource-item row">
-                            <td>
-                                <span data-type="resource-id">deleted-id-2</span>
-                                <span>(aws_deleted_resource)</span>
-                                <span data-type="resource-type" style="display:none;">aws_deleted_resource</span>
-                            </td>
-                            
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_deleted_resource</td>
+                            <td data-type="resource-id">deleted-id-2</td>
+                            <td></td>
                         </tr>
                         
                         <tr data-kind="resource-deleted" class="resource-item row">
-                            <td>
-                                <span data-type="resource-id">deleted-id-3</span>
-                                <span>(aws_deleted_resource.deleted-id-3)</span>
-                                <span data-type="resource-type" style="display:none;">aws_deleted_resource</span>
-                            </td>
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_deleted_resource</td>
+                            <td data-type="resource-id">deleted-id-3</td>
                             <td data-type="resource-source">tfstate://deleted/terraform.tfstate</td>
                         </tr>
                         
                         <tr data-kind="resource-deleted" class="resource-item row">
-                            <td>
-                                <span data-type="resource-id">deleted-id-4</span>
-                                <span>(aws_deleted_resource.deleted-id-3)</span>
-                                <span data-type="resource-type" style="display:none;">aws_deleted_resource</span>
-                            </td>
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_deleted_resource</td>
+                            <td data-type="resource-id">deleted-id-4</td>
                             <td data-type="resource-source">tfstate://deleted/terraform.tfstate</td>
                         </tr>
                         
                         <tr data-kind="resource-deleted" class="resource-item row">
-                            <td>
-                                <span data-type="resource-id">deleted-id-5</span>
-                                <span>(module-1.aws_deleted_resource.deleted-id-3)</span>
-                                <span data-type="resource-type" style="display:none;">aws_deleted_resource</span>
-                            </td>
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_deleted_resource</td>
+                            <td data-type="resource-id">deleted-id-5</td>
                             <td data-type="resource-source">tfstate://deleted/terraform.tfstate</td>
                         </tr>
                         
                         <tr data-kind="resource-deleted" class="resource-item row">
-                            <td>
-                                <span data-type="resource-id">deleted-id-6</span>
-                                <span>(aws_deleted_resource)</span>
-                                <span data-type="resource-type" style="display:none;">aws_deleted_resource</span>
-                            </td>
-                            
+                            <td data-type="resource-name"></td>
+                            <td data-type="resource-type">aws_deleted_resource</td>
+                            <td data-type="resource-id">deleted-id-6</td>
+                            <td></td>
                         </tr>
                         
                         </tbody>
@@ -577,6 +635,7 @@ input[type="search"], select {
                         <p>No results matched your filters</p>
                     </div>
                 </div>
+                
                 
                 
                 
@@ -645,9 +704,12 @@ input[type="search"], select {
 
     function refreshCounters() {
         const map = {
+            "[data-kind='resource-managed']": "[data-count='resource-managed']",
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
+            "[data-kind='resource-cfn']": "[data-count='resource-cfn']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
             "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
+            "[data-kind='resource-unsupported']": "[data-count='resource-unsupported']",
             "[data-kind='resource-alerts']": "[data-count='resource-alerts']",
         };
         for (const key in map) {
@@ -666,11 +728,16 @@ input[type="search"], select {
         if (id === "") {
             return true;
         }
-        const el = res.querySelector("[data-type='resource-id']");
-        if (!el) {
-            return false;
+        const idEl = res.querySelector("[data-type='resource-id']");
+        const nameEl = res.querySelector("[data-type='resource-name']");
+        const needle = id.toLowerCase();
+        if (idEl && idEl.innerText.toLowerCase().includes(needle)) {
+            return true;
         }
-        return el.innerText.toLowerCase().includes(id.toLowerCase());
+        if (nameEl && nameEl.innerText.toLowerCase().includes(needle)) {
+            return true;
+        }
+        return false;
     }
 
     function resourceTypeEquals(res, type) {
@@ -809,6 +876,11 @@ input[type="search"], select {
         if (target === document.activeElement) {
             activateTab(target, false)
         }
+    }
+
+    
+    if (tabs.length > 0) {
+        activateTab(tabs[0], false)
     }
 </script>
 </body>
