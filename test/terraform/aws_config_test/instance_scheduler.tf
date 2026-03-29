@@ -12,19 +12,13 @@ resource "aws_cloudformation_stack" "instance_scheduler" {
   parameters = {
     TagName                     = "Schedule"
     DefaultTimezone             = "US/Pacific"
-    ScheduleEC2                 = "Enabled"
-    ScheduleRds                 = "Enabled"
-    EnableRdsClusterScheduling  = "Disabled"
-    ScheduleASGs                = "Disabled"
-    ScheduleDocDb               = "Disabled"
-    ScheduleLambdaAccount       = "Yes"
     SchedulingActive            = "Yes"
     CreateRdsSnapshot           = "No"
     LogRetentionDays            = "1"
     EnableSSMMaintenanceWindows = "No"
     UsingAWSOrganizations       = "No"
-    ddbDeletionProtection       = "Disabled"
-    Principals                  = ""
+    RetainDataAndLogs           = "Disabled"
+    OpsMonitoring               = "Disabled"
   }
 }
 
