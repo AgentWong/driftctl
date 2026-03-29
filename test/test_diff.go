@@ -2,12 +2,12 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 
 	"github.com/snyk/driftctl/enumeration/terraform"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/test/goldenfile"
@@ -76,7 +76,7 @@ func TestAgainstGoldenFileNoCty(
 	}
 	if len(changelog) > 0 {
 		for _, change := range changelog {
-			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 		}
 	}
 }
@@ -138,7 +138,7 @@ func testAgainstGoldenFileCty(
 	}
 	if len(changelog) > 0 {
 		for _, change := range changelog {
-			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 		}
 	}
 }

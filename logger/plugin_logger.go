@@ -88,6 +88,10 @@ func (t TerraformPluginLogger) ResetNamed(name string) hclog.Logger {
 	return t
 }
 
+func (t TerraformPluginLogger) GetLevel() hclog.Level {
+	return hclog.Trace
+}
+
 func (t TerraformPluginLogger) SetLevel(level hclog.Level) {}
 
 func (t TerraformPluginLogger) StandardLogger(opts *hclog.StandardLoggerOptions) *log.Logger {

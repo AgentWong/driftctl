@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/snyk/driftctl/pkg/helpers"
 	"github.com/snyk/driftctl/enumeration/resource"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
@@ -249,5 +249,5 @@ func CreateNetworkACLRuleID(networkAclId string, ruleNumber int64, egress bool, 
 	buf.WriteString(fmt.Sprintf("%d-", ruleNumber))
 	buf.WriteString(fmt.Sprintf("%t-", egress))
 	buf.WriteString(fmt.Sprintf("%s-", protocol))
-	return fmt.Sprintf("nacl-%d", hashcode.String(buf.String()))
+	return fmt.Sprintf("nacl-%d", helpers.HashcodeString(buf.String()))
 }

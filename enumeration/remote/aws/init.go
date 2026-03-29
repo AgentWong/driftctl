@@ -34,7 +34,7 @@ func Init(version string, alerter alerter.AlerterInterface, providerLibrary *ter
 
 	providerLibrary.AddProvider(terraform.AWS, provider)
 
-	configRepo := repository.NewConfigRepository(provider.session, repositoryCache)
+	configRepo := repository.NewConfigRepository(provider.AwsCfg, repositoryCache)
 	configEnumerator := NewConfigEnumerator(configRepo, factory)
 	remoteLibrary.AddBulkEnumerator(configEnumerator)
 

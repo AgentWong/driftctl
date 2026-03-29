@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/configservice"
-	"github.com/aws/aws-sdk-go/service/configservice/configserviceiface"
+	"context"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/configservice"
+	"github.com/aws/aws-sdk-go-v2/service/configservice/types"
 	"github.com/snyk/driftctl/enumeration/remote/cache"
 )
 
@@ -20,13 +21,13 @@ type ConfigRepository interface {
 }
 
 type configRepository struct {
-	client configserviceiface.ConfigServiceAPI
+	client *configservice.Client
 	cache  cache.Cache
 }
 
-func NewConfigRepository(session *session.Session, c cache.Cache) *configRepository {
+func NewConfigRepository(cfg aws.Config, c cache.Cache) *configRepository {
 	return &configRepository{
-		configservice.New(session),
+		configservice.NewFromConfig(cfg),
 		c,
 	}
 }
@@ -41,16 +42,17 @@ func (r *configRepository) GetSupportedResourceTypes() ([]string, error) {
 
 	var resourceTypes []string
 	input := &configservice.GetDiscoveredResourceCountsInput{}
-	err := r.client.GetDiscoveredResourceCountsPages(input, func(resp *configservice.GetDiscoveredResourceCountsOutput, lastPage bool) bool {
+	paginator := configservice.NewGetDiscoveredResourceCountsPaginator(r.client, input)
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		for _, rc := range resp.ResourceCounts {
-			if rc.ResourceType != nil {
-				resourceTypes = append(resourceTypes, *rc.ResourceType)
+			if rc.ResourceType != "" {
+				resourceTypes = append(resourceTypes, string(rc.ResourceType))
 			}
 		}
-		return !lastPage
-	})
-	if err != nil {
-		return nil, err
 	}
 
 	r.cache.Put(cacheKey, resourceTypes)
@@ -86,11 +88,16 @@ func (r *configRepository) ListAllDiscoveredResources() ([]*ConfigDiscoveredReso
 func (r *configRepository) listResourcesByType(resourceType string) ([]*ConfigDiscoveredResource, error) {
 	var resources []*ConfigDiscoveredResource
 	input := &configservice.ListDiscoveredResourcesInput{
-		ResourceType:           aws.String(resourceType),
-		IncludeDeletedResources: aws.Bool(false),
+		ResourceType:            types.ResourceType(resourceType),
+		IncludeDeletedResources: false,
 	}
 
-	err := r.client.ListDiscoveredResourcesPages(input, func(resp *configservice.ListDiscoveredResourcesOutput, lastPage bool) bool {
+	paginator := configservice.NewListDiscoveredResourcesPaginator(r.client, input)
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		for _, ri := range resp.ResourceIdentifiers {
 			res := &ConfigDiscoveredResource{
 				Type: resourceType,
@@ -103,10 +110,6 @@ func (r *configRepository) listResourcesByType(resourceType string) ([]*ConfigDi
 			}
 			resources = append(resources, res)
 		}
-		return !lastPage
-	})
-	if err != nil {
-		return nil, err
 	}
 
 	return resources, nil

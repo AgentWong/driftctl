@@ -27,14 +27,14 @@ func TestUnsupportedVersions(t *testing.T) {
 			constraints: UnsupportedVersionConstraints,
 			version:     "test",
 			supported:   false,
-			err:         errors.New("Malformed version: test"),
+			err:         errors.New("malformed version: test"),
 		},
 		{
 			name:        "should return error on constraint parsing",
 			constraints: []string{"bad_constraint"},
 			version:     "0.14",
 			supported:   false,
-			err:         errors.New("Malformed constraint: bad_constraint"),
+			err:         errors.New("malformed constraint: bad_constraint"),
 		},
 		{
 			name:        "should support 0.11",

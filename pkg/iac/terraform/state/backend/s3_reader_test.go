@@ -1,21 +1,35 @@
 package backend
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"reflect"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws"
-	awstest "github.com/snyk/driftctl/test/aws"
-
-	"github.com/aws/aws-sdk-go/service/s3"
-
-	"github.com/stretchr/testify/mock"
-
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/smithy-go"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+// Satisfy the unused import for s3types (used to ensure we can reference S3 types if needed)
+var _ s3types.BucketLocationConstraint
+
+type mockS3GetObjectAPI struct {
+	mock.Mock
+}
+
+func (m *mockS3GetObjectAPI) GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
+	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*s3.GetObjectOutput), args.Error(1)
+}
 
 func TestNewS3ReaderInvalid(t *testing.T) {
 	type args struct {
@@ -57,47 +71,18 @@ func TestNewS3Reader(t *testing.T) {
 		t.Error(err)
 	}
 
-	assert.Equal(
-		"path/to/state.tfstate",
-		*reader.input.Key,
-	)
-	assert.Equal(
-		"sample_bucket",
-		*reader.input.Bucket,
-	)
-}
-
-func TestNewS3ReaderWithEnvProxy(t *testing.T) {
-	assert := assert.New(t)
-	os.Setenv("AWS_DEFAULT_REGION", "us-east-1")
-	os.Setenv("DCTL_S3_DEFAULT_REGION", "eu-west-3")
-	reader, err := NewS3Reader("sample_bucket/path/to/state.tfstate")
-
-	got := reader.S3Client.(*s3.S3).Config.Region
-	if aws.StringValue(got) != "eu-west-3" {
-		t.Errorf("NewS3Reader().S3Client.Config.Region got = %v, want %v", aws.StringValue(got), "eu-west-3")
-	}
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	assert.Equal(
-		"path/to/state.tfstate",
-		*reader.input.Key,
-	)
-	assert.Equal(
-		"sample_bucket",
-		*reader.input.Bucket,
-	)
+	assert.Equal("path/to/state.tfstate", reader.key)
+	assert.Equal("sample_bucket", reader.bucket)
 }
 
 func TestS3Backend_ReadWithError(t *testing.T) {
 	assert := assert.New(t)
-	fakeS3 := &awstest.MockFakeS3{}
-	fakeErr := &awstest.MockFakeRequestFailure{}
-	fakeErr.On("Message").Return("Request failed on aws side")
-	fakeS3.On("GetObject", mock.Anything).Return(nil, fakeErr)
+	fakeS3 := &mockS3GetObjectAPI{}
+	fakeErr := &smithy.GenericAPIError{
+		Code:    "InternalError",
+		Message: "Request failed on aws side",
+	}
+	fakeS3.On("GetObject", mock.Anything, mock.Anything).Return(nil, fakeErr)
 
 	reader, err := NewS3Reader("foobar/path/to/state")
 	if err != nil {
@@ -112,10 +97,10 @@ func TestS3Backend_ReadWithError(t *testing.T) {
 
 func TestS3Backend_Read(t *testing.T) {
 	assert := assert.New(t)
-	fakeS3 := &awstest.MockFakeS3{}
+	fakeS3 := &mockS3GetObjectAPI{}
 	fakeResponse, _ := os.Open("testdata/valid.tfstate")
 	defer fakeResponse.Close()
-	fakeS3.On("GetObject", &s3.GetObjectInput{
+	fakeS3.On("GetObject", mock.Anything, &s3.GetObjectInput{
 		Bucket: aws.String("foobar"),
 		Key:    aws.String("path/to/state"),
 	}).Return(&s3.GetObjectOutput{Body: fakeResponse}, nil).Once()

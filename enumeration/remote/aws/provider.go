@@ -1,10 +1,11 @@
 package aws
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sts"
+	"context"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/enumeration"
@@ -12,7 +13,7 @@ import (
 	tf "github.com/snyk/driftctl/enumeration/terraform"
 )
 
-type awsConfig struct {
+type awsProviderConfig struct {
 	AccessKey     string
 	SecretKey     string
 	CredsFilename string
@@ -43,7 +44,7 @@ type awsConfig struct {
 
 type AWSTerraformProvider struct {
 	*terraform.TerraformProvider
-	session   *session.Session
+	AwsCfg    aws.Config
 	name      string
 	version   string
 	accountId string
@@ -51,7 +52,7 @@ type AWSTerraformProvider struct {
 
 func NewAWSTerraformProvider(version string, progress enumeration.ProgressCounter, configDir string) (*AWSTerraformProvider, error) {
 	if version == "" {
-		version = "3.19.0"
+		version = "5.82.2"
 	}
 	p := &AWSTerraformProvider{
 		version: version,
@@ -66,18 +67,16 @@ func NewAWSTerraformProvider(version string, progress enumeration.ProgressCounte
 		return nil, err
 	}
 
-	p.session, err = session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	})
+	p.AwsCfg, err = awsconfig.LoadDefaultConfig(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
 	tfProvider, err := terraform.NewTerraformProvider(installer, terraform.TerraformProviderConfig{
 		Name:         p.name,
-		DefaultAlias: *p.session.Config.Region,
+		DefaultAlias: p.AwsCfg.Region,
 		GetProviderConfig: func(alias string) interface{} {
-			return awsConfig{
+			return awsProviderConfig{
 				Region: alias,
 				// Those two parameters are used to make sure that the credentials are not validated when calling
 				// Configure(). Credentials validation is now handled directly in driftctl
@@ -107,23 +106,23 @@ var AWSCredentialsNotFoundError = errors.New("Could not find a way to authentica
 	"Please refer to AWS documentation: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html")
 
 func (p *AWSTerraformProvider) CheckCredentialsExist() error {
-	_, err := p.session.Config.Credentials.Get()
-	if err == credentials.ErrNoValidProvidersFoundInChain {
+	creds, err := p.AwsCfg.Credentials.Retrieve(context.Background())
+	if err != nil {
 		return AWSCredentialsNotFoundError
 	}
-	if err != nil {
-		return err
+	if !creds.HasKeys() {
+		return AWSCredentialsNotFoundError
 	}
 	// This call is to make sure that the credentials are valid
 	// A more complex logic exist in terraform provider, but it's probably not worth to implement it
-	// https://github.com/hashicorp/terraform-provider-aws/blob/e3959651092864925045a6044961a73137095798/aws/auth_helpers.go#L111
-	identity, err := sts.New(p.session).GetCallerIdentity(&sts.GetCallerIdentityInput{})
+	stsClient := sts.NewFromConfig(p.AwsCfg)
+	identity, err := stsClient.GetCallerIdentity(context.Background(), &sts.GetCallerIdentityInput{})
 	if err != nil {
 		logrus.Debug(err)
 		return errors.New("Could not authenticate successfully on AWS with the provided credentials.\n" +
 			"Please refer to the AWS documentation: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html\n")
 	}
 
-	p.accountId = aws.StringValue(identity.Account)
+	p.accountId = aws.ToString(identity.Account)
 	return nil
 }

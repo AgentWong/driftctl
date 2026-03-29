@@ -1,14 +1,13 @@
 package enumerator
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/pkg/errors"
 	"github.com/snyk/driftctl/pkg/envproxy"
 
@@ -18,19 +17,21 @@ import (
 
 type S3Enumerator struct {
 	config config.SupplierConfig
-	client s3iface.S3API
+	client s3.ListObjectsV2APIClient
 }
 
 func NewS3Enumerator(config config.SupplierConfig) *S3Enumerator {
 	envProxy := envproxy.NewEnvProxy("DCTL_S3_", "AWS_")
 	envProxy.Apply()
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
+	cfg, err := awsconfig.LoadDefaultConfig(context.Background())
 	envProxy.Restore()
+	if err != nil {
+		// Maintain same behavior as session.Must - panic on config error
+		panic("failed to load AWS config: " + err.Error())
+	}
 	return &S3Enumerator{
 		config,
-		s3.New(sess),
+		s3.NewFromConfig(cfg),
 	}
 }
 
@@ -57,19 +58,20 @@ func (s *S3Enumerator) Enumerate() ([]string, error) {
 		Bucket: &bucket,
 		Prefix: &prefix,
 	}
-	err := s.client.ListObjectsV2Pages(input, func(output *s3.ListObjectsV2Output, lastPage bool) bool {
+	paginator := s3.NewListObjectsV2Paginator(s.client, input)
+	for paginator.HasMorePages() {
+		output, err := paginator.NextPage(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		for _, metadata := range output.Contents {
-			if aws.Int64Value(metadata.Size) > 0 {
+			if metadata.Size != nil && *metadata.Size > 0 {
 				key := *metadata.Key
 				if match, _ := doublestar.Match(fullPattern, key); match {
 					files = append(files, strings.Join([]string{bucket, key}, "/"))
 				}
 			}
 		}
-		return !lastPage
-	})
-	if err != nil {
-		return nil, err
 	}
 
 	if len(files) == 0 {

@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
@@ -373,7 +373,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

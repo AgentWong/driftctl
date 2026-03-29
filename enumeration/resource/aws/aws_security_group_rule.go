@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/snyk/driftctl/pkg/helpers"
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
@@ -50,5 +50,5 @@ func CreateSecurityGroupRuleIdHash(attrs *resource.Attributes) string {
 		buf.WriteString("-")
 	}
 
-	return fmt.Sprintf("sgrule-%d", hashcode.String(buf.String()))
+	return fmt.Sprintf("sgrule-%d", helpers.HashcodeString(buf.String()))
 }

@@ -2,6 +2,7 @@ package remote
 
 import (
 	"errors"
+	"net/http"
 	"testing"
 
 	"github.com/snyk/driftctl/enumeration/alerter"
@@ -11,9 +12,25 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/smithy-go"
+	smithyhttp "github.com/aws/smithy-go/transport/http"
 	resourceaws "github.com/snyk/driftctl/enumeration/resource/aws"
 )
+
+// newSmithyResponseError creates a smithy-go ResponseError for testing.
+func newSmithyResponseError(statusCode int, code string) error {
+	return &smithyhttp.ResponseError{
+		Response: &smithyhttp.Response{
+			Response: &http.Response{
+				StatusCode: statusCode,
+			},
+		},
+		Err: &smithy.GenericAPIError{
+			Code:    code,
+			Message: "",
+		},
+	}
+}
 
 func TestHandleAwsEnumerationErrors(t *testing.T) {
 
@@ -25,19 +42,19 @@ func TestHandleAwsEnumerationErrors(t *testing.T) {
 	}{
 		{
 			name:       "Handled error 403",
-			err:        remoteerr.NewResourceListingError(awserr.NewRequestFailure(awserr.New("", "", errors.New("")), 403, ""), resourceaws.AwsVpcResourceType),
-			wantAlerts: alerter.Alerts{"aws_vpc": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(awserr.NewRequestFailure(awserr.New("", "", errors.New("")), 403, ""), "aws_vpc", "aws_vpc"), alerts.EnumerationPhase)}},
+			err:        remoteerr.NewResourceListingError(newSmithyResponseError(403, ""), resourceaws.AwsVpcResourceType),
+			wantAlerts: alerter.Alerts{"aws_vpc": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(newSmithyResponseError(403, ""), "aws_vpc", "aws_vpc"), alerts.EnumerationPhase)}},
 			wantErr:    false,
 		},
 		{
 			name:       "Handled error AccessDenied",
-			err:        remoteerr.NewResourceListingError(awserr.NewRequestFailure(awserr.New("AccessDeniedException", "", errors.New("")), 403, ""), resourceaws.AwsDynamodbTableResourceType),
-			wantAlerts: alerter.Alerts{"aws_dynamodb_table": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(awserr.NewRequestFailure(awserr.New("AccessDeniedException", "", errors.New("")), 403, ""), "aws_dynamodb_table", "aws_dynamodb_table"), alerts.EnumerationPhase)}},
+			err:        remoteerr.NewResourceListingError(newSmithyResponseError(403, "AccessDeniedException"), resourceaws.AwsDynamodbTableResourceType),
+			wantAlerts: alerter.Alerts{"aws_dynamodb_table": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(newSmithyResponseError(403, "AccessDeniedException"), "aws_dynamodb_table", "aws_dynamodb_table"), alerts.EnumerationPhase)}},
 			wantErr:    false,
 		},
 		{
 			name:       "Not Handled error code",
-			err:        remoteerr.NewResourceListingError(awserr.NewRequestFailure(awserr.New("", "", errors.New("")), 404, ""), resourceaws.AwsVpcResourceType),
+			err:        remoteerr.NewResourceListingError(newSmithyResponseError(404, ""), resourceaws.AwsVpcResourceType),
 			wantAlerts: map[string][]alerter.Alert{},
 			wantErr:    true,
 		},
@@ -78,8 +95,6 @@ func TestHandleAwsEnumerationErrors(t *testing.T) {
 		})
 	}
 }
-
-
 
 func TestEnumerationAccessDeniedAlert_GetProviderMessage(t *testing.T) {
 	tests := []struct {
@@ -145,8 +160,8 @@ func TestResourceScanningErrorMethods(t *testing.T) {
 	}{
 		{
 			name:                 "Handled error AccessDenied",
-			err:                  remoteerr.NewResourceListingError(awserr.NewRequestFailure(awserr.New("AccessDeniedException", "", errors.New("")), 403, ""), resourceaws.AwsDynamodbTableResourceType),
-			expectedError:        "error scanning resource type aws_dynamodb_table: AccessDeniedException: \n\tstatus code: 403, request id: \ncaused by: ",
+			err:                  remoteerr.NewResourceListingError(newSmithyResponseError(403, "AccessDeniedException"), resourceaws.AwsDynamodbTableResourceType),
+			expectedError:        "error scanning resource type aws_dynamodb_table: http response error StatusCode: 403, api error AccessDeniedException: ",
 			expectedResourceType: resourceaws.AwsDynamodbTableResourceType,
 		},
 		{

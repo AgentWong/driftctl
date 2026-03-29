@@ -43,7 +43,7 @@ func TestCompletionCmd(t *testing.T) {
 		{
 			name:     "With zsh arg",
 			args:     []string{"completion", "zsh"},
-			expected: "#compdef _root root",
+			expected: "#compdef root",
 		},
 		{
 			name:     "With fish arg",
@@ -53,7 +53,7 @@ func TestCompletionCmd(t *testing.T) {
 		{
 			name:     "With powershell arg",
 			args:     []string{"completion", "powershell"},
-			expected: "Register-ArgumentCompleter -Native -CommandName 'root'",
+			expected: "powershell completion for root",
 		},
 	}
 

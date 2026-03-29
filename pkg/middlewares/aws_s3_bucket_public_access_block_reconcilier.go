@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	awssdk "github.com/aws/aws-sdk-go/aws"
+	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -72,10 +72,10 @@ func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourc
 }
 
 func (r AwsS3BucketPublicAccessBlockReconciler) isDefaultPublicAccessBlock(res *resource.Resource) bool {
-	if !awssdk.BoolValue(res.Attributes().GetBool("block_public_acls")) &&
-		!awssdk.BoolValue(res.Attributes().GetBool("block_public_policy")) &&
-		!awssdk.BoolValue(res.Attributes().GetBool("ignore_public_acls")) &&
-		!awssdk.BoolValue(res.Attributes().GetBool("restrict_public_buckets")) {
+	if !awssdk.ToBool(res.Attributes().GetBool("block_public_acls")) &&
+		!awssdk.ToBool(res.Attributes().GetBool("block_public_policy")) &&
+		!awssdk.ToBool(res.Attributes().GetBool("ignore_public_acls")) &&
+		!awssdk.ToBool(res.Attributes().GetBool("restrict_public_buckets")) {
 		return true
 	}
 

@@ -440,14 +440,14 @@ func TestDriftIgnore_IsTypeIgnored(t *testing.T) {
 					Type: "aws_iam_policy_attachment",
 					Id:   "foobar",
 				},
-				// This type should not be ignored because `azurerm_route` type is not ignored and is a child of `azurerm_route_table`
+				// This type should not be ignored because `aws_route` type is not ignored and is a child of `aws_route_table`
 				{
-					Type: "azurerm_route_table",
+					Type: "aws_route_table",
 					Id:   "uselessId",
 				},
-				// This type should not be ignored because of `!azurerm_route.barfoo` expression
+				// This type should not be ignored because of `!aws_route.barfoo` expression
 				{
-					Type: "azurerm_route",
+					Type: "aws_route",
 					Id:   "barfoo",
 				},
 			},
@@ -457,7 +457,7 @@ func TestDriftIgnore_IsTypeIgnored(t *testing.T) {
 				false,
 			},
 			path:    "",
-			ignores: []string{"*", "!aws_iam_policy_attachment.foobar", "!azurerm_route.barfoo"},
+			ignores: []string{"*", "!aws_iam_policy_attachment.foobar", "!aws_route.barfoo"},
 		},
 		{
 			name: "ignore type wildcard while excluding one",

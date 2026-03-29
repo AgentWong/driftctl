@@ -1,7 +1,6 @@
 package hcl
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/hashicorp/hcl/v2"
@@ -29,8 +28,6 @@ func (b BackendBlock) SupplierConfig(workspace string) *config.SupplierConfig {
 		return b.parseLocalBackend()
 	case "s3":
 		return b.parseS3Backend(workspace)
-	case "gcs":
-		return b.parseGCSBackend(workspace)
 	}
 	return nil
 }
@@ -66,13 +63,3 @@ func (b BackendBlock) parseS3Backend(ws string) *config.SupplierConfig {
 	}
 }
 
-func (b BackendBlock) parseGCSBackend(ws string) *config.SupplierConfig {
-	if b.Bucket == "" || b.Prefix == "" {
-		return nil
-	}
-	return &config.SupplierConfig{
-		Key:     state.TerraformStateReaderSupplier,
-		Backend: backend.BackendKeyGS,
-		Path:    fmt.Sprintf("%s.tfstate", path.Join(b.Bucket, b.Prefix, ws)),
-	}
-}

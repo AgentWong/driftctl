@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/fs"
+	iofs "io/fs"
 	"os"
 	"path"
 	"strings"
@@ -14,21 +14,22 @@ import (
 	"time"
 
 	"github.com/eapache/go-resiliency/retrier"
+	goversion "github.com/hashicorp/go-version"
+	install "github.com/hashicorp/hc-install"
+	hcfs "github.com/hashicorp/hc-install/fs"
+	"github.com/hashicorp/hc-install/product"
+	"github.com/hashicorp/hc-install/releases"
+	"github.com/hashicorp/hc-install/src"
+	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/pkg/errors"
-	"github.com/snyk/driftctl/pkg/analyser"
-	cmderrors "github.com/snyk/driftctl/pkg/cmd/errors"
-
 	"github.com/sirupsen/logrus"
-
-	"github.com/snyk/driftctl/test"
-
 	"github.com/spf13/cobra"
 
 	"github.com/snyk/driftctl/logger"
+	"github.com/snyk/driftctl/pkg/analyser"
 	"github.com/snyk/driftctl/pkg/cmd"
-
-	"github.com/hashicorp/terraform-exec/tfexec"
-	"github.com/hashicorp/terraform-exec/tfinstall"
+	cmderrors "github.com/snyk/driftctl/pkg/cmd/errors"
+	"github.com/snyk/driftctl/test"
 )
 
 type ShouldRetryFunc func(result *test.ScanResult, retryDuration time.Duration, retryCount uint8) bool
@@ -59,25 +60,37 @@ type AccTestCase struct {
 
 func (c *AccTestCase) initTerraformExecutor() error {
 	logrus.Debug("Initializing terraform...")
-	installPath := path.Join(os.TempDir(), "terraform-bin", c.TerraformVersion)
-	binPath := path.Join(installPath, "terraform")
-	execPathFinderOptions := make([]tfinstall.ExecPathFinder, 0)
+	installDir := path.Join(os.TempDir(), "terraform-bin", c.TerraformVersion)
+	binPath := path.Join(installDir, "terraform")
 
-	err := os.MkdirAll(installPath, fs.ModePerm)
+	err := os.MkdirAll(installDir, iofs.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	_, err = os.Stat(binPath)
-	if os.IsNotExist(err) {
-		execPathFinderOptions = append(execPathFinderOptions, tfinstall.ExactVersion(c.TerraformVersion, installPath))
+	var execPath string
+	if _, statErr := os.Stat(binPath); os.IsNotExist(statErr) {
+		installer := install.NewInstaller()
+		v := goversion.Must(goversion.NewVersion(c.TerraformVersion))
+		execPath, err = installer.Ensure(context.Background(), []src.Source{
+			&releases.ExactVersion{
+				Product:    product.Terraform,
+				Version:    v,
+				InstallDir: installDir,
+			},
+		})
+		if err != nil {
+			return err
+		}
 	} else {
-		execPathFinderOptions = append(execPathFinderOptions, tfinstall.ExactPath(binPath))
-	}
-
-	execPath, err := tfinstall.Find(context.Background(), execPathFinderOptions...)
-	if err != nil {
-		return err
+		execPath, err = install.NewInstaller().Ensure(context.Background(), []src.Source{
+			&hcfs.AnyVersion{
+				ExactBinPath: binPath,
+			},
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	c.tf = make(map[string]*tfexec.Terraform, 1)

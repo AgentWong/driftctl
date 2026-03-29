@@ -1,6 +1,8 @@
 package remote
 
 import (
+	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/snyk/driftctl/enumeration/alerter"
@@ -8,7 +10,8 @@ import (
 	"github.com/snyk/driftctl/enumeration/remote/common"
 	remoteerror "github.com/snyk/driftctl/enumeration/remote/error"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/smithy-go"
+	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
 func HandleResourceEnumerationError(err error, alerter alerter.AlerterInterface) error {
@@ -19,9 +22,19 @@ func HandleResourceEnumerationError(err error, alerter alerter.AlerterInterface)
 
 	rootCause := listError.RootCause()
 
-	reqerr, ok := rootCause.(awserr.RequestFailure)
-	if ok {
-		return handleAWSError(alerter, listError, reqerr)
+	// Check for AWS API errors (SDK v2)
+	var respErr *smithyhttp.ResponseError
+	if errors.As(rootCause, &respErr) {
+		return handleAWSError(alerter, listError, respErr)
+	}
+
+	// Check for smithy API errors without HTTP response
+	var apiErr smithy.APIError
+	if errors.As(rootCause, &apiErr) {
+		if strings.Contains(apiErr.ErrorCode(), "AccessDenied") {
+			alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
+			return nil
+		}
 	}
 
 	// This handles access denied errors like the following:
@@ -34,11 +47,15 @@ func HandleResourceEnumerationError(err error, alerter alerter.AlerterInterface)
 	return err
 }
 
-func handleAWSError(alerter alerter.AlerterInterface, listError *remoteerror.ResourceScanningError, reqerr awserr.RequestFailure) error {
-	if reqerr.StatusCode() == 403 || (reqerr.StatusCode() == 400 && strings.Contains(reqerr.Code(), "AccessDenied")) {
-		alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
-		return nil
+func handleAWSError(alerter alerter.AlerterInterface, listError *remoteerror.ResourceScanningError, respErr *smithyhttp.ResponseError) error {
+	statusCode := respErr.HTTPStatusCode()
+	var apiErr smithy.APIError
+	if errors.As(respErr, &apiErr) {
+		if statusCode == http.StatusForbidden || (statusCode == http.StatusBadRequest && strings.Contains(apiErr.ErrorCode(), "AccessDenied")) {
+			alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
+			return nil
+		}
 	}
 
-	return reqerr
+	return respErr
 }
