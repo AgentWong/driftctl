@@ -6,8 +6,10 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
+// AwsInstanceEIP is a middleware.
 type AwsInstanceEIP struct{}
 
+// Execute applies the AwsInstanceEIP middleware.
 func (a AwsInstanceEIP) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	for _, remoteResource := range *remoteResources {
 		// Ignore all resources other than aws_instance
@@ -19,7 +21,7 @@ func (a AwsInstanceEIP) Execute(remoteResources, resourcesFromState *[]*resource
 			logrus.WithFields(logrus.Fields{
 				"instance": remoteResource.ResourceId(),
 			}).Debug("Ignore instance public ip and dns as it has an eip attached")
-			a.ignorePublicIpAndDns(remoteResource, remoteResources, resourcesFromState)
+			a.ignorePublicIPAndDNS(remoteResource, remoteResources, resourcesFromState)
 		}
 	}
 
@@ -43,7 +45,7 @@ func (a AwsInstanceEIP) hasEIP(instance *resource.Resource, resources *[]*resour
 	return false
 }
 
-func (a AwsInstanceEIP) ignorePublicIpAndDns(instance *resource.Resource, resourcesSet ...*[]*resource.Resource) {
+func (a AwsInstanceEIP) ignorePublicIPAndDNS(instance *resource.Resource, resourcesSet ...*[]*resource.Resource) {
 	for _, resources := range resourcesSet {
 		for _, res := range *resources {
 			if res.ResourceType() == instance.ResourceType() &&

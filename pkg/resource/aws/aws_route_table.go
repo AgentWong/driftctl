@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsRouteTableResourceType is the Terraform resource type for AWS VPC route tables.
 const AwsRouteTableResourceType = "aws_route_table"
 
 func initAwsRouteTableMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

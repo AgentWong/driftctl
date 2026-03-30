@@ -6,20 +6,22 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// AwsDefaultApiGatewayAccount is a middleware that ignores the default API Gateway account resource in the current region.
-type AwsDefaultApiGatewayAccount struct{}
+// AwsDefaultAPIGatewayAccount is a middleware that ignores the default API Gateway account resource in the current region.
+type AwsDefaultAPIGatewayAccount struct{}
 
-func NewAwsDefaultApiGatewayAccount() AwsDefaultApiGatewayAccount {
-	return AwsDefaultApiGatewayAccount{}
+// NewAwsDefaultAPIGatewayAccount creates a AwsDefaultAPIGatewayAccount.
+func NewAwsDefaultAPIGatewayAccount() AwsDefaultAPIGatewayAccount {
+	return AwsDefaultAPIGatewayAccount{}
 }
 
-func (m AwsDefaultApiGatewayAccount) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsDefaultAPIGatewayAccount middleware.
+func (m AwsDefaultAPIGatewayAccount) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
 		// Ignore all resources other than API gateway account
-		if remoteResource.ResourceType() != aws.AwsApiGatewayAccountResourceType {
+		if remoteResource.ResourceType() != aws.AwsAPIGatewayAccountResourceType {
 			newRemoteResources = append(newRemoteResources, remoteResource)
 			continue
 		}

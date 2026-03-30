@@ -1,3 +1,4 @@
+// Package plan provides types and utilities for parsing and running Terraform plan files.
 package plan
 
 import (
@@ -9,6 +10,7 @@ import (
 // Action represents the type of drift detected from a terraform plan.
 type Action string
 
+// Action constants represent the possible drift actions for a Terraform resource.
 const (
 	ActionCreate Action = "create"
 	ActionUpdate Action = "update"

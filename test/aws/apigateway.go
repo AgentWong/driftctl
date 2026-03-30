@@ -1,9 +1,11 @@
+// Package aws provides test fakes for AWS SDK service interfaces.
 package aws
 
 import (
 	"github.com/aws/aws-sdk-go/service/apigateway/apigatewayiface"
 )
 
-type FakeApiGateway interface {
+// FakeAPIGateway embeds the API Gateway interface for mock generation.
+type FakeAPIGateway interface {
 	apigatewayiface.APIGatewayAPI
 }

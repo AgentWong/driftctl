@@ -23,7 +23,7 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 			mocks: func(factory *dctlresource.MockResourceFactory) {
 				factory.On(
 					"CreateAbstractResource",
-					aws.AwsApiGatewayRestApiPolicyResourceType,
+					aws.AwsAPIGatewayRestAPIPolicyResourceType,
 					"foo",
 					map[string]interface{}{
 						"id":          "foo",
@@ -32,13 +32,13 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 					},
 				).Once().Return(&resource.Resource{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiPolicyResourceType,
+					Type: aws.AwsAPIGatewayRestAPIPolicyResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"execute-api:Invoke\",\"Resource\":\"arn:aws:execute-api:us-east-1:011111111111:rrwhncu4h2/*\"}]}",
 					},
@@ -47,12 +47,12 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{
 					Id:    "foo",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiPolicyResourceType,
+					Type: aws.AwsAPIGatewayRestAPIPolicyResourceType,
 				},
 			},
 		},
@@ -61,23 +61,23 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:    "foo",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiPolicyResourceType,
+					Type: aws.AwsAPIGatewayRestAPIPolicyResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:    "foo",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiPolicyResourceType,
+					Type: aws.AwsAPIGatewayRestAPIPolicyResourceType,
 				},
 			},
 		},
@@ -86,25 +86,25 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"execute-api:Invoke\",\"Resource\":\"arn:aws:execute-api:us-east-1:011111111111:rrwhncu4h2/*\"}]}",
 					},
 				},
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiPolicyResourceType,
+					Type: aws.AwsAPIGatewayRestAPIPolicyResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:    "foo",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiPolicyResourceType,
+					Type: aws.AwsAPIGatewayRestAPIPolicyResourceType,
 				},
 			},
 		},
@@ -113,7 +113,7 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"policy": "",
 					},
@@ -122,7 +122,7 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"policy": "",
 					},
@@ -138,7 +138,7 @@ func TestAwsApiGatewayRestApiPolicyPolicyExpander_Execute(t *testing.T) {
 				tt.mocks(factory)
 			}
 
-			m := NewAwsApiGatewayRestApiPolicyExpander(factory)
+			m := NewAwsAPIGatewayRestAPIPolicyExpander(factory)
 			err := m.Execute(&[]*resource.Resource{}, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)

@@ -61,7 +61,7 @@ func TestAwsALBListenerTransformer_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"body": "{\"info\":{\"title\":\"example\",\"version\":\"1.0\"},\"openapi\":\"3.0.1\",\"paths\":{\"/path1\":{\"get\":{\"parameters\":[{\"in\":\"query\",\"name\":\"type\",\"schema\":{\"type\":\"string\"}},{\"in\":\"query\",\"name\":\"page\",\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pets\"}}},\"description\":\"200 response\",\"headers\":{\"Access-Control-Allow-Origin\":{\"schema\":{\"type\":\"string\"}}}}},\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\",\"responses\":{\"2\\\\d{2}\":{\"responseTemplates\":{\"application/json\":\"#set ($root=$input.path('$')) { \\\"stage\\\": \\\"$root.name\\\", \\\"user-id\\\": \\\"$root.key\\\" }\",\"application/xml\":\"#set ($root=$input.path('$')) \\u003cstage\\u003e$root.name\\u003c/stage\\u003e \"},\"statusCode\":\"200\"}}}}},\"/path1/path2\":{\"get\":{\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\"}}}}}",
 					},
@@ -80,7 +80,7 @@ func TestAwsALBListenerTransformer_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"body": "{\"info\":{\"title\":\"example\",\"version\":\"1.0\"},\"openapi\":\"3.0.1\",\"paths\":{\"/path1\":{\"get\":{\"parameters\":[{\"in\":\"query\",\"name\":\"type\",\"schema\":{\"type\":\"string\"}},{\"in\":\"query\",\"name\":\"page\",\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pets\"}}},\"description\":\"200 response\",\"headers\":{\"Access-Control-Allow-Origin\":{\"schema\":{\"type\":\"string\"}}}}},\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\",\"responses\":{\"2\\\\d{2}\":{\"responseTemplates\":{\"application/json\":\"#set ($root=$input.path('$')) { \\\"stage\\\": \\\"$root.name\\\", \\\"user-id\\\": \\\"$root.key\\\" }\",\"application/xml\":\"#set ($root=$input.path('$')) \\u003cstage\\u003e$root.name\\u003c/stage\\u003e \"},\"statusCode\":\"200\"}}}}},\"/path1/path2\":{\"get\":{\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\"}}}}}",
 					},

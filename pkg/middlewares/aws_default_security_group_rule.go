@@ -6,13 +6,15 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Remove default security group rules of the default security group from remote resources
+// AwsDefaultSecurityGroupRule remove default security group rules of the default security group from remote resources
 type AwsDefaultSecurityGroupRule struct{}
 
+// NewAwsDefaultSecurityGroupRule creates a AwsDefaultSecurityGroupRule.
 func NewAwsDefaultSecurityGroupRule() AwsDefaultSecurityGroupRule {
 	return AwsDefaultSecurityGroupRule{}
 }
 
+// Execute applies the AwsDefaultSecurityGroupRule middleware.
 func (m AwsDefaultSecurityGroupRule) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 
@@ -80,11 +82,11 @@ func isDefaultIngress(rule *resource.Resource, remoteResources *[]*resource.Reso
 	if self := rule.Attrs.GetBool("self"); self == nil || !*self {
 		return false
 	}
-	sgId := rule.Attrs.GetString("security_group_id")
-	if sgId == nil {
+	sgID := rule.Attrs.GetString("security_group_id")
+	if sgID == nil {
 		return false
 	}
-	return isFromDefaultSecurityGroup(sgId, remoteResources)
+	return isFromDefaultSecurityGroup(sgID, remoteResources)
 }
 
 func isDefaultEgress(rule *resource.Resource, remoteResources *[]*resource.Resource) bool {
@@ -112,19 +114,19 @@ func isDefaultEgress(rule *resource.Resource, remoteResources *[]*resource.Resou
 	if self := rule.Attrs.GetBool("self"); self == nil || *self {
 		return false
 	}
-	sgId := rule.Attrs.GetString("security_group_id")
-	if sgId == nil {
+	sgID := rule.Attrs.GetString("security_group_id")
+	if sgID == nil {
 		return false
 	}
-	return isFromDefaultSecurityGroup(sgId, remoteResources)
+	return isFromDefaultSecurityGroup(sgID, remoteResources)
 }
 
-func isFromDefaultSecurityGroup(sgId *string, remoteResources *[]*resource.Resource) bool {
+func isFromDefaultSecurityGroup(sgID *string, remoteResources *[]*resource.Resource) bool {
 	for _, remoteResource := range *remoteResources {
 		if remoteResource.ResourceType() != aws.AwsDefaultSecurityGroupResourceType {
 			continue
 		}
-		if *sgId == remoteResource.ResourceId() {
+		if *sgID == remoteResource.ResourceId() {
 			return true
 		}
 	}

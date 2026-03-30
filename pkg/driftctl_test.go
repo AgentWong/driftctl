@@ -75,7 +75,7 @@ func runTest(t *testing.T, cases TestCases) {
 			remoteSupplier := &resource.MockSupplier{}
 			remoteSupplier.On("Resources").Return(c.remoteResources, nil)
 
-			var resourceFactory resource.ResourceFactory = dctlresource.NewDriftctlResourceFactory(repo)
+			var resourceFactory resource.Factory = dctlresource.NewDriftctlResourceFactory(repo)
 
 			if c.options == nil {
 				c.options = &pkg.ScanOptions{}
@@ -115,11 +115,11 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			name:            "analysis duration is set",
 			stateResources:  []*resource.Resource{},
 			remoteResources: []*resource.Resource{},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, err error) {
 				result.NotZero(result.Duration)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
-			assertStore: func(t *testing.T, store memstore.Store) {
+			assertStore: func(_ *testing.T, store memstore.Store) {
 				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
 				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
 				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
@@ -150,13 +150,13 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				result.AssertInfrastructureIsInSync()
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
-			assertStore: func(t *testing.T, store memstore.Store) {
+			assertStore: func(_ *testing.T, store memstore.Store) {
 				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
 				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
 				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
 				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				return &pkg.ScanOptions{}
 			}(t),
 		},
@@ -265,7 +265,7 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
 				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				return &pkg.ScanOptions{
 					StrictMode: false,
 				}
@@ -344,7 +344,7 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
 				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				return &pkg.ScanOptions{
 					StrictMode: true,
 				}
@@ -424,7 +424,7 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
 				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Id=='role-test-1'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -463,7 +463,7 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 				result.AssertUnmanagedCount(1)
 				result.AssertResourceUnmanaged("res2", "filtered")
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='filtered'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -492,7 +492,7 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 				result.AssertUnmanagedCount(1)
 				result.AssertResourceUnmanaged("res2", "filtered")
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Id=='res2'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -523,7 +523,7 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 				result.AssertUnmanagedCount(1)
 				result.AssertResourceUnmanaged("res1", "filtered")
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Attr.test_field=='value to filter on'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -566,7 +566,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			assert: func(t *testing.T, result *test.ScanResult, err error) {
 				result.AssertManagedCount(1)
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_s3_bucket_policy' && Attr.bucket=='foo'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -622,7 +622,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			assert: func(t *testing.T, result *test.ScanResult, err error) {
 				result.AssertManagedCount(2)
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_ebs_volume' && Attr.availability_zone=='us-east-1'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -683,7 +683,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				result.AssertManagedCount(2)
 				result.AssertInfrastructureIsInSync()
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_route' && Attr.gateway_id=='igw-07b7844a8fd17a638'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -720,7 +720,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			assert: func(t *testing.T, result *test.ScanResult, err error) {
 				result.AssertManagedCount(1)
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_sns_topic_policy' && Attr.arn=='arn'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -756,7 +756,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			assert: func(t *testing.T, result *test.ScanResult, err error) {
 				result.AssertManagedCount(1)
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_sqs_queue_policy' && Attr.queue_url=='foo'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -935,7 +935,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				result.AssertManagedCount(7)
 				result.AssertInfrastructureIsInSync()
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_security_group_rule' && Attr.security_group_id=='sg-0254c038e32f25530'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
@@ -1015,7 +1015,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				result.AssertManagedCount(2)
 				result.AssertInfrastructureIsInSync()
 			},
-			options: func(t *testing.T) *pkg.ScanOptions {
+			options: func(_ *testing.T) *pkg.ScanOptions {
 				filterStr := "Type=='aws_iam_policy_attachment'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {

@@ -15,9 +15,10 @@ import (
  * Required to use Scanner
  */
 
-func Init(version string, alerter alerter.AlerterInterface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.ResourceFactory, configDir string) error {
+// Init configures the AWS provider and registers its enumerators with the remote library.
+func Init(version string, _ alerter.Interface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.Factory, configDir string) error {
 
-	provider, err := NewAWSTerraformProvider(version, progress, configDir)
+	provider, err := NewTerraformProvider(version, progress, configDir)
 	if err != nil {
 		return err
 	}

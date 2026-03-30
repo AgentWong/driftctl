@@ -13,20 +13,25 @@ import (
 	"github.com/pkg/errors"
 )
 
+// BackendKeyTFCloud is the backend key for Terraform Cloud state.
 const BackendKeyTFCloud = "tfcloud"
 
+// TFCloudAttributes holds the attributes returned by the Terraform Cloud state version API.
 type TFCloudAttributes struct {
-	HostedStateDownloadUrl string `json:"hosted-state-download-url"`
+	HostedStateDownloadURL string `json:"hosted-state-download-url"`
 }
 
+// TFCloudData wraps the data object in a Terraform Cloud API response.
 type TFCloudData struct {
 	Attributes TFCloudAttributes `json:"attributes"`
 }
 
+// TFCloudBody is the top-level JSON structure of a Terraform Cloud state version response.
 type TFCloudBody struct {
 	Data TFCloudData `json:"data"`
 }
 
+// TFCloudBackend reads Terraform state from Terraform Cloud.
 type TFCloudBackend struct {
 	client        *tfe.Client
 	reader        io.ReadCloser
@@ -34,6 +39,7 @@ type TFCloudBackend struct {
 	workspacePath string
 }
 
+// NewTFCloudReader creates a TFCloudBackend for the given workspace path.
 func NewTFCloudReader(workspacePath string, opts *Options) *TFCloudBackend {
 	return &TFCloudBackend{opts: opts, workspacePath: workspacePath}
 }
@@ -50,7 +56,7 @@ func (t *TFCloudBackend) getToken() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 		reader := NewTFCloudConfigReader(file)
 
 		u, err := url.Parse(t.opts.TFCloudEndpoint)
@@ -70,7 +76,7 @@ func isValidWorkspaceID(v string) bool {
 	return v != "" && reStringID.MatchString(v)
 }
 
-func (t *TFCloudBackend) getWorkspaceId() (string, error) {
+func (t *TFCloudBackend) getWorkspaceID() (string, error) {
 	if isValidWorkspaceID(t.workspacePath) {
 		return t.workspacePath, nil
 	}
@@ -110,12 +116,12 @@ func (t *TFCloudBackend) Read(p []byte) (n int, err error) {
 			}
 		}
 
-		workspaceId, err := t.getWorkspaceId()
+		workspaceID, err := t.getWorkspaceID()
 		if err != nil {
 			return 0, err
 		}
 
-		stateVersion, err := t.client.StateVersions.Current(context.Background(), workspaceId)
+		stateVersion, err := t.client.StateVersions.Current(context.Background(), workspaceID)
 		if err != nil {
 			return 0, errors.Errorf("unable to read current state version: %s", err.Error())
 		}
@@ -129,6 +135,7 @@ func (t *TFCloudBackend) Read(p []byte) (n int, err error) {
 	return t.reader.Read(p)
 }
 
+// Close releases the underlying response body.
 func (t *TFCloudBackend) Close() error {
 	if t.reader != nil {
 		return t.reader.Close()

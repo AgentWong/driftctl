@@ -16,13 +16,15 @@ var awsIamUniqueIDPattern = regexp.MustCompile(`^(AROA|AIDA|ANPA|ANVA)[A-Z0-9]{1
 // AwsIamIDReconciler rewrites remote IAM resource IDs so they match
 // the Terraform convention. AWS Config returns internal unique IDs
 // (AROA… for roles, AIDA… for users) but Terraform uses the friendly
-// name. For IAM policies Terraform uses the ARN.
+// AwsIamIDReconciler name. For IAM policies Terraform uses the ARN.
 type AwsIamIDReconciler struct{}
 
+// NewAwsIamIDReconciler creates a AwsIamIDReconciler.
 func NewAwsIamIDReconciler() *AwsIamIDReconciler {
 	return &AwsIamIDReconciler{}
 }
 
+// Execute applies the AwsIamIDReconciler middleware.
 func (m AwsIamIDReconciler) Execute(remoteResources, _ *[]*resource.Resource) error {
 	// types where Terraform uses the name as the ID
 	nameTypes := map[string]bool{

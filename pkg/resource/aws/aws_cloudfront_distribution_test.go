@@ -58,7 +58,7 @@ func TestAcc_Aws_CloudfrontDistribution(t *testing.T) {
 						t.Fatal(err)
 					}
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(_ *test.ScanResult, stdout string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

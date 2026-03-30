@@ -1,3 +1,4 @@
+// Package backend provides Terraform state backend implementations.
 package backend
 
 import (
@@ -17,14 +18,17 @@ var supportedBackends = []string{
 	BackendKeyTFCloud,
 }
 
+// Backend represents a readable and closable state backend.
 type Backend io.ReadCloser
 
+// Options holds optional configuration for backend readers.
 type Options struct {
 	Headers         map[string]string
 	TFCloudToken    string
 	TFCloudEndpoint string
 }
 
+// IsSupported reports whether the given backend key is supported.
 func IsSupported(backend string) bool {
 	for _, b := range supportedBackends {
 		if b == backend {
@@ -35,6 +39,7 @@ func IsSupported(backend string) bool {
 	return false
 }
 
+// GetBackend returns a Backend reader for the given supplier configuration.
 func GetBackend(config config.SupplierConfig, opts *Options) (Backend, error) {
 	backend := config.Backend
 
@@ -58,6 +63,7 @@ func GetBackend(config config.SupplierConfig, opts *Options) (Backend, error) {
 	}
 }
 
+// GetSupportedBackends returns the list of supported backend keys (excluding the default file backend).
 func GetSupportedBackends() []string {
 	return supportedBackends[1:]
 }

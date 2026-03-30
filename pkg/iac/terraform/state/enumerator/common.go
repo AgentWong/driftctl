@@ -1,3 +1,4 @@
+// Package enumerator provides state file discovery for local and S3 backends.
 package enumerator
 
 import (

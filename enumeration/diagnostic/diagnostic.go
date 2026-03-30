@@ -1,3 +1,4 @@
+// Package diagnostic converts enumeration alerts into structured diagnostics.
 package diagnostic
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// Diagnostic represents a single diagnostic message produced during a scan.
 type Diagnostic interface {
 	Code() string
 	Message() string
@@ -40,8 +42,10 @@ func (d *diagnosticImpl) Resource() *resource.Resource {
 	return d.alert.Resource()
 }
 
+// Diagnostics is a slice of Diagnostic values.
 type Diagnostics []Diagnostic
 
+// FromAlerts converts an alert map into Diagnostics.
 func FromAlerts(alertMap alerter.Alerts) Diagnostics {
 	var results Diagnostics
 	for _, v := range alertMap {

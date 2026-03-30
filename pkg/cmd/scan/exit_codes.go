@@ -1,7 +1,11 @@
+// Package scan provides the CLI scan command and its associated exit codes and options.
 package scan
 
 const (
-	EXIT_IN_SYNC     = 0
-	EXIT_NOT_IN_SYNC = 1
-	EXIT_ERROR       = 2
+	// ExitInSync is the exit code when infrastructure is in sync.
+	ExitInSync = 0
+	// ExitNotInSync is the exit code when infrastructure is not in sync.
+	ExitNotInSync = 1
+	// ExitError is the exit code when an error occurs during scanning.
+	ExitError = 2
 )

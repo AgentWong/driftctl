@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsEipResourceType is the Terraform resource type for Elastic IP addresses.
 const AwsEipResourceType = "aws_eip"
 
 func initAwsEipMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

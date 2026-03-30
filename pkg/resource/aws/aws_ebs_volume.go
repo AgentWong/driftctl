@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsEbsVolumeResourceType is the Terraform resource type for EBS volumes.
 const AwsEbsVolumeResourceType = "aws_ebs_volume"
 
 func initAwsEbsVolumeMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

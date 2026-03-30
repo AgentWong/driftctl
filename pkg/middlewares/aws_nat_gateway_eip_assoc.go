@@ -6,8 +6,10 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
+// AwsNatGatewayEipAssoc is a middleware.
 type AwsNatGatewayEipAssoc struct{}
 
+// NewAwsNatGatewayEipAssoc creates a AwsNatGatewayEipAssoc.
 func NewAwsNatGatewayEipAssoc() AwsNatGatewayEipAssoc {
 	return AwsNatGatewayEipAssoc{}
 }
@@ -15,7 +17,7 @@ func NewAwsNatGatewayEipAssoc() AwsNatGatewayEipAssoc {
 // When creating a nat gateway, we associate an EIP to the gateway
 // It implies that driftctl read a aws_eip_association resource from remote
 // As we cannot use aws_eip_association in terraform to assign an eip to an aws_nat_gateway
-// we should remove this association to ensure we do not output noise in unmanaged resources
+// Execute we should remove this association to ensure we do not output noise in unmanaged resources
 func (a AwsNatGatewayEipAssoc) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0, len(*remoteResources))
 	var newResources []*resource.Resource
@@ -66,10 +68,10 @@ func (a AwsNatGatewayEipAssoc) isAssociatedToNatGateway(cur *resource.Resource, 
 	// Search for a nat gateway associated with our EIP
 	for _, res := range *resourceSet {
 		if res.ResourceType() == aws.AwsNatGatewayResourceType {
-			allocationId, allocationIdExist := res.Attrs.Get("allocation_id")
-			eipAssocAllocId, eipAssocAllocIdExist := cur.Attrs.Get("allocation_id")
-			if allocationIdExist && eipAssocAllocIdExist &&
-				allocationId == eipAssocAllocId {
+			allocationID, allocationIDExist := res.Attrs.Get("allocation_id")
+			eipAssocAllocID, eipAssocAllocIDExist := cur.Attrs.Get("allocation_id")
+			if allocationIDExist && eipAssocAllocIDExist &&
+				allocationID == eipAssocAllocID {
 				return true
 			}
 		}

@@ -7,22 +7,24 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Explodes api gateway default resource found in aws_api_gateway_rest_api.root_resource_id from state resources to dedicated resources
-type AwsApiGatewayResourceExpander struct {
-	resourceFactory resource.ResourceFactory
+// AwsAPIGatewayResourceExpander explodes api gateway default resource found in aws_api_gateway_rest_api.root_resource_id from state resources to dedicated resources
+type AwsAPIGatewayResourceExpander struct {
+	resourceFactory resource.Factory
 }
 
-func NewAwsApiGatewayResourceExpander(resourceFactory resource.ResourceFactory) AwsApiGatewayResourceExpander {
-	return AwsApiGatewayResourceExpander{
+// NewAwsAPIGatewayResourceExpander creates a AwsAPIGatewayResourceExpander.
+func NewAwsAPIGatewayResourceExpander(resourceFactory resource.Factory) AwsAPIGatewayResourceExpander {
+	return AwsAPIGatewayResourceExpander{
 		resourceFactory: resourceFactory,
 	}
 }
 
-func (m AwsApiGatewayResourceExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsAPIGatewayResourceExpander middleware.
+func (m AwsAPIGatewayResourceExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
 	newStateResources := make([]*resource.Resource, 0)
 	for _, res := range *resourcesFromState {
 		// Ignore all resources other than aws_api_gateway_rest_api
-		if res.ResourceType() != aws.AwsApiGatewayRestApiResourceType {
+		if res.ResourceType() != aws.AwsAPIGatewayRestAPIResourceType {
 			newStateResources = append(newStateResources, res)
 			continue
 		}
@@ -38,13 +40,13 @@ func (m AwsApiGatewayResourceExpander) Execute(_, resourcesFromState *[]*resourc
 	return nil
 }
 
-func (m *AwsApiGatewayResourceExpander) handleResource(api *resource.Resource, results *[]*resource.Resource) error {
-	resourceId := api.Attrs.GetString("root_resource_id")
-	if resourceId == nil || *resourceId == "" {
+func (m *AwsAPIGatewayResourceExpander) handleResource(api *resource.Resource, results *[]*resource.Resource) error {
+	resourceID := api.Attrs.GetString("root_resource_id")
+	if resourceID == nil || *resourceID == "" {
 		return nil
 	}
 
-	newResource := m.resourceFactory.CreateAbstractResource(aws.AwsApiGatewayResourceResourceType, *resourceId, map[string]interface{}{
+	newResource := m.resourceFactory.CreateAbstractResource(aws.AwsAPIGatewayResourceResourceType, *resourceID, map[string]interface{}{
 		"rest_api_id": api.ResourceId(),
 		"path":        "/",
 	})

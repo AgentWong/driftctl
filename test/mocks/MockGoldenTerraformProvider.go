@@ -15,15 +15,17 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
+// MockedGoldenTFProvider is a TerraformProvider implementation that reads from and writes to golden files.
 type MockedGoldenTFProvider struct {
 	name            string
 	providerName    string
 	providerVersion string
-	realProvider    terraform2.TerraformProvider
+	realProvider    terraform2.Provider
 	update          bool
 }
 
-func NewMockedGoldenTFProvider(name, providerName, providerVersion string, realProvider terraform2.TerraformProvider, update bool) *MockedGoldenTFProvider {
+// NewMockedGoldenTFProvider creates a MockedGoldenTFProvider that records/replays provider calls via golden files.
+func NewMockedGoldenTFProvider(name, providerName, providerVersion string, realProvider terraform2.Provider, update bool) *MockedGoldenTFProvider {
 	return &MockedGoldenTFProvider{
 		name:            name,
 		providerName:    providerName,
@@ -32,6 +34,7 @@ func NewMockedGoldenTFProvider(name, providerName, providerVersion string, realP
 		update:          update}
 }
 
+// Schema returns the provider schema, reading from or writing to the golden file depending on update mode.
 func (m *MockedGoldenTFProvider) Schema() map[string]providers.Schema {
 	if m.update {
 		schema := m.realProvider.Schema()
@@ -41,6 +44,7 @@ func (m *MockedGoldenTFProvider) Schema() map[string]providers.Schema {
 	return m.readSchema()
 }
 
+// ReadResource reads or records a resource value, using the golden file in replay mode.
 func (m *MockedGoldenTFProvider) ReadResource(args terraform2.ReadResourceArgs) (*cty.Value, error) {
 	if m.update {
 		readResource, err := m.realProvider.ReadResource(args)
@@ -105,11 +109,13 @@ func (m *MockedGoldenTFProvider) readReadResource(args terraform2.ReadResourceAr
 	return readRes.Value, readRes.Err
 }
 
+// ReadResource holds the result of a provider ReadResource call for golden file serialisation.
 type ReadResource struct {
 	Value *cty.Value
 	Err   error
 }
 
+// UnmarshalJSON deserialises a ReadResource from JSON bytes.
 func (m *ReadResource) UnmarshalJSON(bytes []byte) error {
 	var unm struct {
 		Typ []byte
@@ -138,6 +144,7 @@ func (m *ReadResource) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+// MarshalJSON serialises a ReadResource to JSON bytes.
 func (m *ReadResource) MarshalJSON() ([]byte, error) {
 	var unm struct {
 		Typ []byte
@@ -182,12 +189,15 @@ func getFileNameSuffix(args terraform2.ReadResourceArgs) string {
 	return suffix
 }
 
-func (p MockedGoldenTFProvider) Cleanup() {}
+// Cleanup is a no-op for the mock provider.
+func (m MockedGoldenTFProvider) Cleanup() {}
 
-func (p *MockedGoldenTFProvider) Name() string {
-	return p.realProvider.Name()
+// Name returns the underlying provider's name.
+func (m *MockedGoldenTFProvider) Name() string {
+	return m.realProvider.Name()
 }
 
-func (p *MockedGoldenTFProvider) Version() string {
-	return p.realProvider.Version()
+// Version returns the underlying provider's version.
+func (m *MockedGoldenTFProvider) Version() string {
+	return m.realProvider.Version()
 }

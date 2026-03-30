@@ -28,7 +28,7 @@ func TestAcc_StateReader_WithMultipleStatesInDirectory(t *testing.T) {
 		},
 		Checks: []acceptance.AccCheck{
 			{
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -66,7 +66,7 @@ func TestAcc_StateReader_WithMultiplesStatesInS3(t *testing.T) {
 		},
 		Checks: []acceptance.AccCheck{
 			{
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

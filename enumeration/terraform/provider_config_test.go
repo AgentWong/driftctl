@@ -46,7 +46,7 @@ func TestProviderConfig_GetBinaryName(t *testing.T) {
 	}
 }
 
-func TestProviderConfig_GetDownloadUrl(t *testing.T) {
+func TestProviderConfig_GetDownloadURL(t *testing.T) {
 	type fields struct {
 		Key     string
 		Version string
@@ -76,8 +76,8 @@ func TestProviderConfig_GetDownloadUrl(t *testing.T) {
 				Key:     tt.fields.Key,
 				Version: tt.fields.Version,
 			}
-			if got := c.GetDownloadUrl(); got != tt.want {
-				t.Errorf("GetDownloadUrl() = %v, want %v", got, tt.want)
+			if got := c.GetDownloadURL(); got != tt.want {
+				t.Errorf("GetDownloadURL() = %v, want %v", got, tt.want)
 			}
 		})
 	}

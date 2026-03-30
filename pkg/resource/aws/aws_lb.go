@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsLoadBalancerResourceType is the Terraform resource type for aws_lb.
 const AwsLoadBalancerResourceType = "aws_lb"
 
 func initAwsLoadBalancerMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

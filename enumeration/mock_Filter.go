@@ -27,11 +27,11 @@ func (_m *MockFilter) IsResourceIgnored(res *resource.Resource) bool {
 }
 
 // IsTypeIgnored provides a mock function with given fields: ty
-func (_m *MockFilter) IsTypeIgnored(ty resource.ResourceType) bool {
+func (_m *MockFilter) IsTypeIgnored(ty resource.Type) bool {
 	ret := _m.Called(ty)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(resource.ResourceType) bool); ok {
+	if rf, ok := ret.Get(0).(func(resource.Type) bool); ok {
 		r0 = rf(ty)
 	} else {
 		r0 = ret.Get(0).(bool)

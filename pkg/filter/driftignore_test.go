@@ -485,7 +485,7 @@ func TestDriftIgnore_IsTypeIgnored(t *testing.T) {
 			r := NewDriftIgnore(tt.path, tt.ignores...)
 			got := make([]bool, 0, len(tt.want))
 			for _, res := range tt.resources {
-				got = append(got, r.IsTypeIgnored(resource.ResourceType(res.ResourceType())))
+				got = append(got, r.IsTypeIgnored(resource.Type(res.ResourceType())))
 			}
 			assert.Equal(t, tt.want, got)
 		})

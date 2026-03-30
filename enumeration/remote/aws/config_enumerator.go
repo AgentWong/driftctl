@@ -1,3 +1,4 @@
+// Package aws implements the AWS remote provider for resource enumeration.
 package aws
 
 import (
@@ -7,13 +8,15 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// ConfigEnumerator enumerates AWS Config resources via the Config API.
 type ConfigEnumerator struct {
 	repo    repository.ConfigRepository
 	mapping map[string]string
-	factory resource.ResourceFactory
+	factory resource.Factory
 }
 
-func NewConfigEnumerator(repo repository.ConfigRepository, factory resource.ResourceFactory) *ConfigEnumerator {
+// NewConfigEnumerator creates a ConfigEnumerator backed by the given repository.
+func NewConfigEnumerator(repo repository.ConfigRepository, factory resource.Factory) *ConfigEnumerator {
 	return &ConfigEnumerator{
 		repo:    repo,
 		mapping: ConfigToTerraformMapping,
@@ -21,19 +24,21 @@ func NewConfigEnumerator(repo repository.ConfigRepository, factory resource.Reso
 	}
 }
 
-func (e *ConfigEnumerator) SupportedTypes() []resource.ResourceType {
+// SupportedTypes returns the Terraform resource types this enumerator can discover.
+func (e *ConfigEnumerator) SupportedTypes() []resource.Type {
 	seen := make(map[string]struct{}, len(e.mapping))
-	types := make([]resource.ResourceType, 0, len(e.mapping))
+	types := make([]resource.Type, 0, len(e.mapping))
 	for _, tfType := range e.mapping {
 		if _, dup := seen[tfType]; dup {
 			continue
 		}
 		seen[tfType] = struct{}{}
-		types = append(types, resource.ResourceType(tfType))
+		types = append(types, resource.Type(tfType))
 	}
 	return types
 }
 
+// Enumerate discovers resources from AWS Config and converts them to Terraform resources.
 func (e *ConfigEnumerator) Enumerate(filter common.EnumerationFilter) ([]*resource.Resource, error) {
 	// pass Config type keys so the repo queries those directly instead of
 	// relying on GetDiscoveredResourceCounts (which lags on new recorders)
@@ -53,7 +58,7 @@ func (e *ConfigEnumerator) Enumerate(filter common.EnumerationFilter) ([]*resour
 			continue
 		}
 
-		if filter != nil && filter.IsTypeIgnored(resource.ResourceType(tfType)) {
+		if filter != nil && filter.IsTypeIgnored(resource.Type(tfType)) {
 			continue
 		}
 

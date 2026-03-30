@@ -14,6 +14,7 @@ type Runner struct {
 	execPath   string
 }
 
+// NewRunner creates a new Runner for the given Terraform working directory and binary path.
 func NewRunner(workingDir string, execPath string) *Runner {
 	return &Runner{workingDir: workingDir, execPath: execPath}
 }

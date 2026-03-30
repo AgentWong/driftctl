@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsS3BucketResourceType is the Terraform resource type for S3 buckets.
 const AwsS3BucketResourceType = "aws_s3_bucket"
 
 func initAwsS3BucketMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
@@ -15,7 +16,7 @@ func initAwsS3BucketMetaData(resourceSchemaRepository dctlresource.SchemaReposit
 	})
 	resourceSchemaRepository.UpdateSchema(AwsS3BucketResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 }

@@ -27,8 +27,8 @@ type awsProviderConfig struct {
 	AssumeRoleSessionName string
 	AssumeRolePolicy      string
 
-	AllowedAccountIds   []string
-	ForbiddenAccountIds []string
+	AllowedAccountIDs   []string
+	ForbiddenAccountIDs []string
 
 	Endpoints        map[string]string
 	IgnoreTagsConfig map[string]string
@@ -37,24 +37,26 @@ type awsProviderConfig struct {
 	SkipCredsValidation     bool `cty:"skip_credentials_validation"`
 	SkipGetEC2Platforms     bool
 	SkipRegionValidation    bool
-	SkipRequestingAccountId bool `cty:"skip_requesting_account_id"`
-	SkipMetadataApiCheck    bool
+	SkipRequestingAccountID bool `cty:"skip_requesting_account_id"`
+	SkipMetadataAPICheck    bool
 	S3ForcePathStyle        bool
 }
 
-type AWSTerraformProvider struct {
-	*terraform.TerraformProvider
+// TerraformProvider is the AWS-specific Terraform provider implementation.
+type TerraformProvider struct {
+	*terraform.Provider
 	AwsCfg    aws.Config
 	name      string
 	version   string
-	accountId string
+	accountID string
 }
 
-func NewAWSTerraformProvider(version string, progress enumeration.ProgressCounter, configDir string) (*AWSTerraformProvider, error) {
+// NewTerraformProvider creates and configures a new AWS Terraform provider.
+func NewTerraformProvider(version string, progress enumeration.ProgressCounter, configDir string) (*TerraformProvider, error) {
 	if version == "" {
 		version = "6.38.0"
 	}
-	p := &AWSTerraformProvider{
+	p := &TerraformProvider{
 		version: version,
 		name:    "aws",
 	}
@@ -72,7 +74,7 @@ func NewAWSTerraformProvider(version string, progress enumeration.ProgressCounte
 		return nil, err
 	}
 
-	tfProvider, err := terraform.NewTerraformProvider(installer, terraform.TerraformProviderConfig{
+	tfProvider, err := terraform.NewProvider(installer, terraform.ProviderConfig{
 		Name:         p.name,
 		DefaultAlias: p.AwsCfg.Region,
 		GetProviderConfig: func(alias string) interface{} {
@@ -81,41 +83,44 @@ func NewAWSTerraformProvider(version string, progress enumeration.ProgressCounte
 				// Those two parameters are used to make sure that the credentials are not validated when calling
 				// Configure(). Credentials validation is now handled directly in driftctl
 				SkipCredsValidation:     true,
-				SkipRequestingAccountId: true,
-
-				MaxRetries: 10, // TODO make this configurable
+				SkipRequestingAccountID: true,
+				MaxRetries:              10, // TODO make this configurable
 			}
 		},
 	}, progress)
 	if err != nil {
 		return nil, err
 	}
-	p.TerraformProvider = tfProvider
+	p.Provider = tfProvider
 	return p, err
 }
 
-func (a *AWSTerraformProvider) Name() string {
+// Name returns the provider name.
+func (a *TerraformProvider) Name() string {
 	return a.name
 }
 
-func (p *AWSTerraformProvider) Version() string {
-	return p.version
+// Version returns the provider version.
+func (a *TerraformProvider) Version() string {
+	return a.version
 }
 
-var AWSCredentialsNotFoundError = errors.New("Could not find a way to authenticate on AWS!\n" +
+// ErrAWSCredentialsNotFound is returned when no valid AWS credentials are found.
+var ErrAWSCredentialsNotFound = errors.New("Could not find a way to authenticate on AWS!\n" +
 	"Please refer to AWS documentation: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html")
 
-func (p *AWSTerraformProvider) CheckCredentialsExist() error {
-	creds, err := p.AwsCfg.Credentials.Retrieve(context.Background())
+// CheckCredentialsExist verifies that valid AWS credentials are available.
+func (a *TerraformProvider) CheckCredentialsExist() error {
+	creds, err := a.AwsCfg.Credentials.Retrieve(context.Background())
 	if err != nil {
-		return AWSCredentialsNotFoundError
+		return ErrAWSCredentialsNotFound
 	}
 	if !creds.HasKeys() {
-		return AWSCredentialsNotFoundError
+		return ErrAWSCredentialsNotFound
 	}
 	// This call is to make sure that the credentials are valid
 	// A more complex logic exist in terraform provider, but it's probably not worth to implement it
-	stsClient := sts.NewFromConfig(p.AwsCfg)
+	stsClient := sts.NewFromConfig(a.AwsCfg)
 	identity, err := stsClient.GetCallerIdentity(context.Background(), &sts.GetCallerIdentityInput{})
 	if err != nil {
 		logrus.Debug(err)
@@ -123,6 +128,6 @@ func (p *AWSTerraformProvider) CheckCredentialsExist() error {
 			"Please refer to the AWS documentation: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html\n")
 	}
 
-	p.accountId = aws.ToString(identity.Account)
+	a.accountID = aws.ToString(identity.Account)
 	return nil
 }

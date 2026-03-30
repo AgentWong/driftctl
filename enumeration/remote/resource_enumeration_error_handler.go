@@ -14,7 +14,8 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-func HandleResourceEnumerationError(err error, alerter alerter.AlerterInterface) error {
+// HandleResourceEnumerationError inspects a resource enumeration error and raises an alert if appropriate.
+func HandleResourceEnumerationError(err error, alerter alerter.Interface) error {
 	listError, ok := err.(*remoteerror.ResourceScanningError)
 	if !ok {
 		return err
@@ -47,7 +48,7 @@ func HandleResourceEnumerationError(err error, alerter alerter.AlerterInterface)
 	return err
 }
 
-func handleAWSError(alerter alerter.AlerterInterface, listError *remoteerror.ResourceScanningError, respErr *smithyhttp.ResponseError) error {
+func handleAWSError(alerter alerter.Interface, listError *remoteerror.ResourceScanningError, respErr *smithyhttp.ResponseError) error {
 	statusCode := respErr.HTTPStatusCode()
 	var apiErr smithy.APIError
 	if errors.As(respErr, &apiErr) {

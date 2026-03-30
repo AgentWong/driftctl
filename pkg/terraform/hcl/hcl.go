@@ -10,19 +10,23 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 )
 
+// DefaultStateName is the default Terraform workspace name.
 const DefaultStateName = "default"
 
+// MainBodyBlock is the top-level HCL body containing terraform configuration.
 type MainBodyBlock struct {
 	Terraform TerraformBlock `hcl:"terraform,block"`
 	Remain    hcl.Body       `hcl:",remain"`
 }
 
+// TerraformBlock holds the terraform block with optional backend and cloud sub-blocks.
 type TerraformBlock struct {
 	Backend *BackendBlock `hcl:"backend,block"`
 	Cloud   *CloudBlock   `hcl:"cloud,block"`
 	Remain  hcl.Body      `hcl:",remain"`
 }
 
+// ParseTerraformFromHCL parses a Terraform HCL file and returns the terraform block.
 func ParseTerraformFromHCL(filename string) (*TerraformBlock, error) {
 	var body MainBodyBlock
 
@@ -40,6 +44,7 @@ func ParseTerraformFromHCL(filename string) (*TerraformBlock, error) {
 	return &body.Terraform, nil
 }
 
+// GetCurrentWorkspaceName reads the active Terraform workspace from the .terraform/environment file.
 func GetCurrentWorkspaceName(cwd string) string {
 	name := DefaultStateName // See https://github.com/hashicorp/terraform/blob/main/internal/backend/backend.go#L33
 

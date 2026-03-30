@@ -1,3 +1,4 @@
 package aws
 
-const AwsApiGatewayModelResourceType = "aws_api_gateway_model"
+// AwsAPIGatewayModelResourceType is the Terraform resource type for aws_api_gateway_model.
+const AwsAPIGatewayModelResourceType = "aws_api_gateway_model"

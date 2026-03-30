@@ -1,3 +1,4 @@
+// Package resource_test provides test helpers for creating fake schema repositories.
 package resource_test
 
 import (
@@ -7,6 +8,7 @@ import (
 	testschemas "github.com/snyk/driftctl/test/schemas"
 )
 
+// InitFakeSchemaRepository creates a SchemaRepository loaded with test schemas for the given provider.
 func InitFakeSchemaRepository(provider, version string) resource.SchemaRepositoryInterface {
 	repo := schemas.NewSchemaRepository()
 	schema := make(map[string]providers.Schema)

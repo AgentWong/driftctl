@@ -74,7 +74,7 @@ func Test_parseOutputFlag(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []output.OutputConfig
+		want []output.Config
 		err  error
 	}{
 		{
@@ -82,7 +82,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{""},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  fmt.Errorf("Unable to parse output flag '': \nAccepted formats are: console://,html://PATH/TO/FILE.html,json://PATH/TO/FILE.json,plan://PATH/TO/FILE.json"),
 		},
 		{
@@ -90,7 +90,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  nil,
 		},
 		{
@@ -98,7 +98,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"sdgjsdgjsdg"},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  fmt.Errorf("Unable to parse output flag 'sdgjsdgjsdg': \nAccepted formats are: console://,html://PATH/TO/FILE.html,json://PATH/TO/FILE.json,plan://PATH/TO/FILE.json"),
 		},
 		{
@@ -106,7 +106,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"://"},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  fmt.Errorf("Unable to parse output flag '://': \nAccepted formats are: console://,html://PATH/TO/FILE.html,json://PATH/TO/FILE.json,plan://PATH/TO/FILE.json"),
 		},
 		{
@@ -114,7 +114,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"foobar://"},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  fmt.Errorf("Unsupported output 'foobar': \nValid formats are: console://,html://PATH/TO/FILE.html,json://PATH/TO/FILE.json,plan://PATH/TO/FILE.json"),
 		},
 		{
@@ -122,7 +122,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"json://"},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  fmt.Errorf("Invalid json output 'json://': \nMust be of kind: json://PATH/TO/FILE.json"),
 		},
 		{
@@ -130,7 +130,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"console://"},
 			},
-			want: []output.OutputConfig{
+			want: []output.Config{
 				{
 					Key: "console",
 				},
@@ -142,7 +142,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"json:///tmp/foobar.json"},
 			},
-			want: []output.OutputConfig{
+			want: []output.Config{
 				{
 					Key:  "json",
 					Path: "/tmp/foobar.json",
@@ -155,7 +155,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"plan://"},
 			},
-			want: []output.OutputConfig{},
+			want: []output.Config{},
 			err:  fmt.Errorf("Invalid plan output 'plan://': \nMust be of kind: plan://PATH/TO/FILE.json"),
 		},
 		{
@@ -163,7 +163,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"plan:///tmp/foobar.json"},
 			},
-			want: []output.OutputConfig{
+			want: []output.Config{
 				{
 					Key:  "plan",
 					Path: "/tmp/foobar.json",
@@ -176,7 +176,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"console:///dev/stdout", "json://result.json"},
 			},
-			want: []output.OutputConfig{
+			want: []output.Config{
 				{
 					Key: "console",
 				},
@@ -192,7 +192,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"console:///dev/stdout", "invalid://result.json"},
 			},
-			want: []output.OutputConfig{
+			want: []output.Config{
 				{
 					Key: "console",
 				},
@@ -204,7 +204,7 @@ func Test_parseOutputFlag(t *testing.T) {
 			args: args{
 				out: []string{"json://result1.json", "json://result2.json", "json://result3.json"},
 			},
-			want: []output.OutputConfig{
+			want: []output.Config{
 				{
 					Key:  "json",
 					Path: "result1.json",

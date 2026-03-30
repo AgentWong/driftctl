@@ -14,7 +14,10 @@ import (
 	"github.com/snyk/driftctl/pkg/analyser"
 )
 
+// HTMLOutputType is the key identifying the HTML output format.
 const HTMLOutputType = "html"
+
+// HTMLOutputExample is the example URI for the HTML output format.
 const HTMLOutputExample = "html://PATH/TO/FILE.html"
 
 // assets holds our static web content.
@@ -22,10 +25,12 @@ const HTMLOutputExample = "html://PATH/TO/FILE.html"
 //go:embed assets/*
 var assets embed.FS
 
+// HTML writes an analysis report as a self-contained HTML file.
 type HTML struct {
 	path string
 }
 
+// HTMLTemplateParams holds the data passed to the HTML report template.
 type HTMLTemplateParams struct {
 	IsSync                bool
 	ScanDate              string
@@ -47,6 +52,7 @@ type HTMLTemplateParams struct {
 	FaviconBase64         string
 }
 
+// NewHTML creates an HTML output writer for the given path.
 func NewHTML(path string) *HTML {
 	return &HTML{path}
 }
@@ -58,7 +64,7 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		file = f
 	}
 

@@ -32,13 +32,15 @@ import (
 //   - We still have the public block as unmanaged, this is NOT expected since all values are back to default
 //
 // This simple middleware is handling that edge case by removing resource that have every attribute set to false from remote.
-// We do not remove it when a resource is found in IaC
+// AwsS3BucketPublicAccessBlockReconciler we do not remove it when a resource is found in IaC
 type AwsS3BucketPublicAccessBlockReconciler struct{}
 
+// NewAwsS3BucketPublicAccessBlockReconciler creates a AwsS3BucketPublicAccessBlockReconciler.
 func NewAwsS3BucketPublicAccessBlockReconciler() *AwsS3BucketPublicAccessBlockReconciler {
 	return &AwsS3BucketPublicAccessBlockReconciler{}
 }
 
+// Execute applies the AwsS3BucketPublicAccessBlockReconciler middleware.
 func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	newRemoteResources := make([]*resource.Resource, 0)

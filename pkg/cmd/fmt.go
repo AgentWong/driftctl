@@ -15,13 +15,14 @@ import (
 	"github.com/snyk/driftctl/pkg/cmd/scan/output"
 )
 
+// NewFmtCmd creates the fmt command.
 func NewFmtCmd(opts *pkg.FmtOptions) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:    "fmt",
 		Long:   "Take an analysis results in JSON on stdin and return it in another format",
 		Hidden: true,
 		Args:   cobra.NoArgs,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			outputFlag, _ := cmd.Flags().GetStringSlice("output")
 			if len(outputFlag) > 1 {
 				return errors.New("Only one output format can be set")
@@ -33,7 +34,7 @@ func NewFmtCmd(opts *pkg.FmtOptions) *cobra.Command {
 			opts.Output = out[0]
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			return runFmt(opts, os.Stdin)
 		},
 	}

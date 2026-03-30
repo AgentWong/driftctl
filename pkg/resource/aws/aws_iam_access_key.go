@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsIamAccessKeyResourceType is the Terraform resource type for IAM access keys.
 const AwsIamAccessKeyResourceType = "aws_iam_access_key"
 
 func initAwsIAMAccessKeyMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

@@ -213,14 +213,14 @@ func TestTerraformStateReader_AWS_Resources(t *testing.T) {
 
 			shouldUpdate := tt.dirName == *goldenfile.Update
 
-			var realProvider *aws.AWSTerraformProvider
+			var realProvider *aws.TerraformProvider
 			if tt.providerVersion == "" {
 				tt.providerVersion = "3.19.0"
 			}
 
 			if shouldUpdate {
 				var err error
-				realProvider, err = aws.NewAWSTerraformProvider(tt.providerVersion, progress, os.TempDir())
+				realProvider, err = aws.NewTerraformProvider(tt.providerVersion, progress, os.TempDir())
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -313,7 +313,7 @@ func TestTerraformStateReader_VersionSupported(t *testing.T) {
 		{
 			name:      "should return invalid version error",
 			statePath: "testdata/v4/invalid_version.tfstate",
-			err:       errors.New("Invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."),
+			err:       errors.New("invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."),
 		},
 	}
 
@@ -342,7 +342,7 @@ func TestTerraformStateReader_WithIgnoredResource(t *testing.T) {
 	library.AddProvider(terraform.AWS, provider)
 
 	filter := &filter.MockFilter{}
-	filter.On("IsTypeIgnored", resource.ResourceType("aws_s3_bucket")).Return(true)
+	filter.On("IsTypeIgnored", resource.Type("aws_s3_bucket")).Return(true)
 
 	r := &TerraformStateReader{
 		config: config.SupplierConfig{

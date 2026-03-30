@@ -55,7 +55,7 @@ func TestChainMiddlewareErrorShouldStopExecution(t *testing.T) {
 
 	fakeMiddleware1 := FakeMiddleware{
 		Name: "1",
-		Err:  errors.New("Test error"),
+		Err:  errors.New("test error"),
 	}
 	fakeMiddleware2 := FakeMiddleware{
 		Name: "2",

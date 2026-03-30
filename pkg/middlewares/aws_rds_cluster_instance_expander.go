@@ -7,17 +7,19 @@ import (
 )
 
 // AwsRDSClusterInstanceExpander search for cluster instances from state to import corresponding remote db instances.
-// RDS cluster instance does not represent an actual AWS resource, so shouldn't be used for comparison.
+// AwsRDSClusterInstanceExpander rDS cluster instance does not represent an actual AWS resource, so shouldn't be used for comparison.
 type AwsRDSClusterInstanceExpander struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewRDSClusterInstanceExpander(resourceFactory resource.ResourceFactory) AwsRDSClusterInstanceExpander {
+// NewRDSClusterInstanceExpander creates a RDSClusterInstanceExpander.
+func NewRDSClusterInstanceExpander(resourceFactory resource.Factory) AwsRDSClusterInstanceExpander {
 	return AwsRDSClusterInstanceExpander{
 		resourceFactory: resourceFactory,
 	}
 }
 
+// Execute applies the AwsRDSClusterInstanceExpander middleware.
 func (m AwsRDSClusterInstanceExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newResourcesFromState := make([]*resource.Resource, 0)
 

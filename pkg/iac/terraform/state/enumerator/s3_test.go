@@ -66,7 +66,7 @@ func TestS3Enumerator_NewS3Enumerator(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for key, value := range tt.setEnv {
-				os.Setenv(key, value)
+				_ = os.Setenv(key, value)
 			}
 			// Verify NewS3Enumerator doesn't panic with valid config
 			enumerator := NewS3Enumerator(tt.config)

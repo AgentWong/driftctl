@@ -23,14 +23,14 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayDeploymentResourceType,
+					Type: aws.AwsAPIGatewayDeploymentResourceType,
 					Attrs: &resource.Attributes{
 						"rest_api_id": "api",
 					},
 				},
 				{
 					Id:   "bar",
-					Type: aws.AwsApiGatewayDeploymentResourceType,
+					Type: aws.AwsAPIGatewayDeploymentResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name":  "",
 						"rest_api_id": "api",
@@ -38,7 +38,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 				},
 				{
 					Id:   "ags-api-baz",
-					Type: aws.AwsApiGatewayStageResourceType,
+					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
 					},
@@ -47,7 +47,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{
 					Id:   "ags-api-baz",
-					Type: aws.AwsApiGatewayStageResourceType,
+					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
 					},
@@ -59,18 +59,18 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			mocks: func(factory *dctlresource.MockResourceFactory) {
 				factory.On(
 					"CreateAbstractResource",
-					aws.AwsApiGatewayStageResourceType,
+					aws.AwsAPIGatewayStageResourceType,
 					"ags-api-foo",
 					map[string]interface{}{},
 				).Once().Return(&resource.Resource{
 					Id:   "ags-api-foo",
-					Type: aws.AwsApiGatewayStageResourceType,
+					Type: aws.AwsAPIGatewayStageResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayDeploymentResourceType,
+					Type: aws.AwsAPIGatewayDeploymentResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name":  "foo",
 						"rest_api_id": "api",
@@ -78,7 +78,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 				},
 				{
 					Id:   "ags-api-baz",
-					Type: aws.AwsApiGatewayStageResourceType,
+					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
 					},
@@ -87,14 +87,14 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{
 					Id:   "ags-api-baz",
-					Type: aws.AwsApiGatewayStageResourceType,
+					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
 					},
 				},
 				{
 					Id:   "ags-api-foo",
-					Type: aws.AwsApiGatewayStageResourceType,
+					Type: aws.AwsAPIGatewayStageResourceType,
 				},
 			},
 		},
@@ -106,7 +106,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 				tt.mocks(factory)
 			}
 
-			m := NewAwsApiGatewayDeploymentExpander(factory)
+			m := NewAwsAPIGatewayDeploymentExpander(factory)
 			err := m.Execute(&[]*resource.Resource{}, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)

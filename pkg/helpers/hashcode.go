@@ -1,3 +1,4 @@
+// Package helpers provides generic utility functions used across the codebase.
 package helpers
 
 import (

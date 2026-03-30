@@ -42,6 +42,7 @@ import (
 	globaloutput "github.com/snyk/driftctl/pkg/output"
 )
 
+// NewScanCmd creates a new command instance.
 func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 	opts.BackendOptions = &backend.Options{}
 
@@ -142,7 +143,7 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			return scanRun(opts)
 		},
 	}
@@ -310,7 +311,7 @@ func scanRun(opts *pkg.ScanOptions) error {
 
 	err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
 	if err != nil {
-		if err == aws.AWSCredentialsNotFoundError {
+		if err == aws.ErrAWSCredentialsNotFound {
 			return err
 		}
 		return err

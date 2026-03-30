@@ -20,7 +20,7 @@ func TestFilterEngine_Run(t *testing.T) {
 		{
 			name:       "invalid expression (fail during expr compilation)",
 			expr:       "???",
-			compileErr: errors.New("SyntaxError: Unknown char: '?'"),
+			compileErr: errors.New("syntaxError: Unknown char: '?'"),
 		},
 		{
 			name: "filter on type",
@@ -63,7 +63,7 @@ func TestFilterEngine_Run(t *testing.T) {
 		},
 		{
 			name: "filter on id",
-			expr: "Id=='foobar'",
+			expr: "ID=='foobar'",
 			resources: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
@@ -83,7 +83,7 @@ func TestFilterEngine_Run(t *testing.T) {
 		},
 		{
 			name: "filter on id and type",
-			expr: "Id=='foobar' && Type=='filtered_resource'",
+			expr: "ID=='foobar' && Type=='filtered_resource'",
 			resources: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},

@@ -1,3 +1,4 @@
+// Package cache provides an LRU cache for remote API responses.
 package cache
 
 import (
@@ -5,6 +6,7 @@ import (
 	"sync"
 )
 
+// Cache provides a thread-safe key-value store with eviction.
 type Cache interface {
 	Put(string, interface{}) bool
 	Get(string) interface{}
@@ -13,6 +15,7 @@ type Cache interface {
 	Len() int
 }
 
+// LRUCache is a least-recently-used cache.
 type LRUCache struct {
 	cap     int
 	mu      *sync.Mutex
@@ -26,6 +29,7 @@ type pair struct {
 	value interface{}
 }
 
+// New creates an LRU cache with the given capacity.
 func New(capacity int) Cache {
 	return &LRUCache{
 		cap:     capacity,
@@ -36,6 +40,7 @@ func New(capacity int) Cache {
 	}
 }
 
+// Get retrieves a value by key, or nil if absent.
 func (c *LRUCache) Get(key string) interface{} {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -49,6 +54,7 @@ func (c *LRUCache) Get(key string) interface{} {
 	return nil
 }
 
+// Put inserts or updates a key-value pair, evicting the oldest entry if at capacity.
 func (c *LRUCache) Put(key string, value interface{}) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -84,16 +90,19 @@ func (c *LRUCache) Put(key string, value interface{}) bool {
 	return false
 }
 
+// Len returns the number of entries in the cache.
 func (c *LRUCache) Len() int {
 	return c.l.Len()
 }
 
+// GetAndLock retrieves a value while holding a per-key mutex.
 func (c *LRUCache) GetAndLock(s string) interface{} {
 	lock, _ := c.lockMap.LoadOrStore(s, &sync.Mutex{})
 	lock.(*sync.Mutex).Lock()
 	return c.Get(s)
 }
 
+// Unlock releases the per-key mutex.
 func (c *LRUCache) Unlock(s string) {
 	lock, exist := c.lockMap.Load(s)
 	if exist {

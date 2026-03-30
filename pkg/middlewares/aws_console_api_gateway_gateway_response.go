@@ -6,21 +6,23 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Each API Gateway rest API has by design all the gateway responses available to edit in the console
+// AwsConsoleAPIGatewayGatewayResponse Each API Gateway rest API has by design all the gateway responses available to edit in the console
 // which result in useless noises (e.g. lots of unmanaged resources) by driftctl.
-// This middleware ignores all console responses if not managed by IAC.
-type AwsConsoleApiGatewayGatewayResponse struct{}
+// AwsConsoleAPIGatewayGatewayResponse this middleware ignores all console responses if not managed by IAC.
+type AwsConsoleAPIGatewayGatewayResponse struct{}
 
-func NewAwsConsoleApiGatewayGatewayResponse() AwsConsoleApiGatewayGatewayResponse {
-	return AwsConsoleApiGatewayGatewayResponse{}
+// NewAwsConsoleAPIGatewayGatewayResponse creates a AwsConsoleAPIGatewayGatewayResponse.
+func NewAwsConsoleAPIGatewayGatewayResponse() AwsConsoleAPIGatewayGatewayResponse {
+	return AwsConsoleAPIGatewayGatewayResponse{}
 }
 
-func (m AwsConsoleApiGatewayGatewayResponse) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsConsoleAPIGatewayGatewayResponse middleware.
+func (m AwsConsoleAPIGatewayGatewayResponse) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
 		// Ignore all resources other than gateway responses
-		if remoteResource.ResourceType() != aws.AwsApiGatewayGatewayResponseResourceType {
+		if remoteResource.ResourceType() != aws.AwsAPIGatewayGatewayResponseResourceType {
 			newRemoteResources = append(newRemoteResources, remoteResource)
 			continue
 		}

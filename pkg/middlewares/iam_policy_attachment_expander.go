@@ -7,17 +7,19 @@ import (
 	resourceaws "github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Split Policy attachment when there is multiple user and groups and generate a repeatable id
+// IamPolicyAttachmentExpander split Policy attachment when there is multiple user and groups and generate a repeatable id
 type IamPolicyAttachmentExpander struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewIamPolicyAttachmentExpander(resourceFactory resource.ResourceFactory) IamPolicyAttachmentExpander {
+// NewIamPolicyAttachmentExpander creates a IamPolicyAttachmentExpander.
+func NewIamPolicyAttachmentExpander(resourceFactory resource.Factory) IamPolicyAttachmentExpander {
 	return IamPolicyAttachmentExpander{
 		resourceFactory,
 	}
 }
 
+// Execute applies the IamPolicyAttachmentExpander middleware.
 func (m IamPolicyAttachmentExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	var newStateResources = make([]*resource.Resource, 0)
 

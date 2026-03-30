@@ -1,3 +1,4 @@
+// Package acceptance provides helpers for running driftctl acceptance tests against real AWS infrastructure.
 package acceptance
 
 import (
@@ -32,8 +33,10 @@ import (
 	"github.com/snyk/driftctl/test"
 )
 
+// ShouldRetryFunc decides whether a scan should be retried.
 type ShouldRetryFunc func(result *test.ScanResult, retryDuration time.Duration, retryCount uint8) bool
 
+// AccCheck defines a single check step in an acceptance test.
 type AccCheck struct {
 	PreExec     func()
 	PostExec    func()
@@ -43,6 +46,7 @@ type AccCheck struct {
 	Check       func(result *test.ScanResult, stdout string, err error)
 }
 
+// AccTestCase defines a full acceptance test scenario.
 type AccTestCase struct {
 	DoNotRunTerraform          bool
 	TerraformVersion           string
@@ -113,7 +117,7 @@ func (c *AccTestCase) createResultFile(t *testing.T) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 	c.tmpResultFilePath = file.Name()
 	return nil
 }
@@ -124,7 +128,7 @@ func (c *AccTestCase) validate() error {
 	}
 
 	if len(c.Paths) < 1 && !c.DoNotRunTerraform {
-		return fmt.Errorf("Paths attribute must be defined")
+		return fmt.Errorf("paths attribute must be defined")
 	}
 
 	for _, arg := range c.Args {
@@ -282,7 +286,7 @@ func runDriftCtlCmd(driftctlCmd *cmd.DriftctlCmd) (*cobra.Command, string, error
 	}()
 
 	// back to normal state
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old // restoring the real stdout
 	out := <-outC
 	return cmd, out, cmdErr
@@ -311,10 +315,11 @@ func (c *AccTestCase) setEnv(env []string) {
 	os.Clearenv()
 	for _, e := range env {
 		envKeyValue := strings.SplitN(e, "=", 2)
-		os.Setenv(envKeyValue[0], envKeyValue[1])
+		_ = os.Setenv(envKeyValue[0], envKeyValue[1])
 	}
 }
 
+// Run executes an acceptance test case.
 func Run(t *testing.T, c AccTestCase) {
 
 	logger.Init()
@@ -343,7 +348,7 @@ func Run(t *testing.T, c AccTestCase) {
 	// Disable terraform version checks
 	// @link https://www.terraform.io/docs/commands/index.html#upgrade-and-security-bulletin-checks
 	checkpoint := os.Getenv("CHECKPOINT_DISABLE")
-	os.Setenv("CHECKPOINT_DISABLE", "true")
+	_ = os.Setenv("CHECKPOINT_DISABLE", "true")
 
 	// Retry after 2s, 4s, 8s, 16s, 32s, 64s, 2m, 2m, 2m, 2m
 	// Try tweaking the backoff interval limit and/or the retry count limit in
@@ -360,7 +365,7 @@ func Run(t *testing.T, c AccTestCase) {
 		defer func() {
 			c.restoreEnv()
 			err := limitedExponentialBackoff.Run(c.terraformDestroy)
-			os.Setenv("CHECKPOINT_DISABLE", checkpoint)
+			_ = os.Setenv("CHECKPOINT_DISABLE", checkpoint)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -414,7 +419,7 @@ func Run(t *testing.T, c AccTestCase) {
 		}
 		if len(check.Env) > 0 {
 			for key, value := range check.Env {
-				os.Setenv(key, value)
+				_ = os.Setenv(key, value)
 			}
 		}
 		if check.PreExec != nil {
@@ -442,12 +447,9 @@ func Run(t *testing.T, c AccTestCase) {
 		driftctlCmd := cmd.NewDriftctlCmd(test.Build{})
 		_, out, cmdErr := runDriftCtlCmd(driftctlCmd)
 		result := c.getResult(t)
-		var retryCount uint8 = 0
+		var retryCount uint8
 		timeBeforeRetry := time.Now()
-		for {
-			if check.ShouldRetry == nil || !check.ShouldRetry(result, time.Since(timeBeforeRetry), retryCount) {
-				break
-			}
+		for check.ShouldRetry != nil && check.ShouldRetry(result, time.Since(timeBeforeRetry), retryCount) {
 			logrus.
 				WithField("count", fmt.Sprintf("%d", retryCount)).
 				WithField("retry_duration", time.Since(timeBeforeRetry).Round(time.Second)).

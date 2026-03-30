@@ -1,3 +1,4 @@
 package aws
 
-const AwsApiGatewayV2IntegrationResponseResourceType = "aws_apigatewayv2_integration_response"
+// AwsAPIGatewayV2IntegrationResponseResourceType is the Terraform resource type for aws_apigatewayv2_integration_response.
+const AwsAPIGatewayV2IntegrationResponseResourceType = "aws_apigatewayv2_integration_response"

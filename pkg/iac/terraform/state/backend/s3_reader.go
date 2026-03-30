@@ -13,6 +13,7 @@ import (
 	"github.com/snyk/driftctl/pkg/envproxy"
 )
 
+// BackendKeyS3 is the backend key for S3 state.
 const BackendKeyS3 = "s3"
 
 // S3GetObjectAPI abstracts the S3 GetObject operation for testability.
@@ -20,6 +21,7 @@ type S3GetObjectAPI interface {
 	GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error)
 }
 
+// S3Backend reads Terraform state from an S3 bucket.
 type S3Backend struct {
 	bucket   string
 	key      string
@@ -27,6 +29,7 @@ type S3Backend struct {
 	S3Client S3GetObjectAPI
 }
 
+// NewS3Reader creates an S3Backend that reads state from the given bucket/key path.
 func NewS3Reader(path string) (*S3Backend, error) {
 
 	backend := S3Backend{}
@@ -71,6 +74,7 @@ func (s *S3Backend) Read(p []byte) (n int, err error) {
 	return s.reader.Read(p)
 }
 
+// Close releases the underlying S3 response body.
 func (s *S3Backend) Close() error {
 	if s.reader != nil {
 		return s.reader.Close()

@@ -19,15 +19,18 @@ type containerToken struct {
 	Token string
 }
 
-type tfCloudConfigReader struct {
+// TFCloudConfigReader reads Terraform Cloud credentials.
+type TFCloudConfigReader struct {
 	reader io.ReadCloser
 }
 
-func NewTFCloudConfigReader(reader io.ReadCloser) *tfCloudConfigReader {
-	return &tfCloudConfigReader{reader}
+// NewTFCloudConfigReader returns a reader for Terraform Cloud credential files.
+func NewTFCloudConfigReader(reader io.ReadCloser) *TFCloudConfigReader {
+	return &TFCloudConfigReader{reader}
 }
 
-func (r *tfCloudConfigReader) GetToken(host string) (string, error) {
+// GetToken retrieves a token for the given host.
+func (r *TFCloudConfigReader) GetToken(host string) (string, error) {
 	b, err := io.ReadAll(r.reader)
 	if err != nil {
 		return "", errors.New("unable to read file")

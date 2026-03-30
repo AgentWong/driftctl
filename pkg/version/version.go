@@ -1,3 +1,4 @@
+// Package version provides build version information and update checking.
 package version
 
 import (
@@ -12,11 +13,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Current software version
-// Could be injected on build with -ldflags
-var version string = "dev"
+// version is the current software version, injected at build time.
+var version = "dev"
 
-// Return the current version as string
+// Current returns the current version string, with a "-dev" suffix for non-release builds.
 func Current() string {
 	currentVersion := version
 	build := build.Build{}
@@ -26,10 +26,7 @@ func Current() string {
 	return currentVersion
 }
 
-/**
- * Return "" if current version is the last version,
- * else return the latest version string
- **/
+// CheckLatest returns the latest version string if a newer version is available, or "" if current is up to date.
 func CheckLatest() string {
 
 	client := &http.Client{}

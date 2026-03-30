@@ -6,17 +6,18 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsSnsTopicSubscriptionResourceType is the Terraform resource type for aws_sns_topic_subscription.
 const AwsSnsTopicSubscriptionResourceType = "aws_sns_topic_subscription"
 
 func initSnsTopicSubscriptionMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
 	resourceSchemaRepository.SetNormalizeFunc(AwsSnsTopicSubscriptionResourceType, func(res *resource.Resource) {
 		val := res.Attrs
-		jsonString, err := helpers.NormalizeJsonString((*val)["delivery_policy"])
+		jsonString, err := helpers.NormalizeJSONString((*val)["delivery_policy"])
 		if err == nil {
 			_ = val.SafeSet([]string{"delivery_policy"}, jsonString)
 		}
 
-		jsonString, err = helpers.NormalizeJsonString((*val)["filter_policy"])
+		jsonString, err = helpers.NormalizeJSONString((*val)["filter_policy"])
 		if err == nil {
 			_ = val.SafeSet([]string{"filter_policy"}, jsonString)
 		}
@@ -30,10 +31,10 @@ func initSnsTopicSubscriptionMetaData(resourceSchemaRepository dctlresource.Sche
 	})
 	resourceSchemaRepository.UpdateSchema(AwsSnsTopicSubscriptionResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"delivery_policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 		"filter_policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 }

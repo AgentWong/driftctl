@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform/plugin/discovery"
 )
 
+// ClientConfig returns the plugin client configuration for launching a Terraform provider process.
 func ClientConfig(m discovery.PluginMeta) *plugin.ClientConfig {
 	logger := logger.NewTerraformPluginLogger()
 	return &plugin.ClientConfig{

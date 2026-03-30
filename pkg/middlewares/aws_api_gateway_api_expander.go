@@ -14,33 +14,37 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Explodes the body attribute of api gateway apis v1|v2 to dedicated resources as per Terraform documentations
+// AwsAPIGatewayAPIExpander Explodes the body attribute of api gateway apis v1|v2 to dedicated resources as per Terraform documentations
 // (https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_rest_api)
-// (https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api)
-type AwsApiGatewayApiExpander struct {
-	resourceFactory resource.ResourceFactory
+// AwsAPIGatewayAPIExpander (https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api)
+type AwsAPIGatewayAPIExpander struct {
+	resourceFactory resource.Factory
 }
 
+// OpenAPIAwsExtensions is a middleware.
 type OpenAPIAwsExtensions struct {
 	GatewayResponses map[string]interface{} `json:"x-amazon-apigateway-gateway-responses"`
 }
 
+// OpenAPIAwsMethodExtensions is a middleware.
 type OpenAPIAwsMethodExtensions struct {
 	Integration map[string]interface{} `json:"x-amazon-apigateway-integration"`
 }
 
-func NewAwsApiGatewayApiExpander(resourceFactory resource.ResourceFactory) AwsApiGatewayApiExpander {
-	return AwsApiGatewayApiExpander{
+// NewAwsAPIGatewayAPIExpander creates a AwsAPIGatewayAPIExpander.
+func NewAwsAPIGatewayAPIExpander(resourceFactory resource.Factory) AwsAPIGatewayAPIExpander {
+	return AwsAPIGatewayAPIExpander{
 		resourceFactory: resourceFactory,
 	}
 }
 
-func (m AwsApiGatewayApiExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsAPIGatewayAPIExpander middleware.
+func (m AwsAPIGatewayAPIExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newStateResources := make([]*resource.Resource, 0)
 	for _, res := range *resourcesFromState {
 		// Ignore all resources other than aws_api_gateway_rest_api && aws_apigatewayv2_api
-		if res.ResourceType() != aws.AwsApiGatewayRestApiResourceType &&
-			res.ResourceType() != aws.AwsApiGatewayV2ApiResourceType {
+		if res.ResourceType() != aws.AwsAPIGatewayRestAPIResourceType &&
+			res.ResourceType() != aws.AwsAPIGatewayV2ApiResourceType {
 			newStateResources = append(newStateResources, res)
 			continue
 		}
@@ -56,7 +60,7 @@ func (m AwsApiGatewayApiExpander) Execute(remoteResources, resourcesFromState *[
 	return nil
 }
 
-func (m *AwsApiGatewayApiExpander) handleBody(api *resource.Resource, results, remoteResources *[]*resource.Resource) error {
+func (m *AwsAPIGatewayAPIExpander) handleBody(api *resource.Resource, results, remoteResources *[]*resource.Resource) error {
 	body := api.Attrs.GetString("body")
 	if body == nil || *body == "" {
 		return nil
@@ -93,40 +97,40 @@ func (m *AwsApiGatewayApiExpander) handleBody(api *resource.Resource, results, r
 	return nil
 }
 
-func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv3(api *resource.Resource, doc *openapi3.T, results, remoteResources *[]*resource.Resource) error {
-	if api.ResourceType() == aws.AwsApiGatewayV2ApiResourceType {
+func (m *AwsAPIGatewayAPIExpander) handleBodyOpenAPIv3(api *resource.Resource, doc *openapi3.T, results, remoteResources *[]*resource.Resource) error {
+	if api.ResourceType() == aws.AwsAPIGatewayV2ApiResourceType {
 		return m.handleBodyOpenAPIv3GatewayV2(api, doc, results, remoteResources)
 	}
 
-	apiId := api.ResourceId()
+	apiID := api.ResourceId()
 	for path, pathItem := range doc.Paths {
-		if res := m.createApiGatewayResource(apiId, path, results, remoteResources); res != nil {
+		if res := m.createAPIGatewayResource(apiID, path, results, remoteResources); res != nil {
 			ops := pathItem.Operations()
 			for httpMethod, method := range ops {
-				m.createApiGatewayMethod(apiId, res.ResourceId(), httpMethod, results)
+				m.createAPIGatewayMethod(apiID, res.ResourceId(), httpMethod, results)
 				for statusCode := range method.Responses {
-					m.createApiGatewayMethodResponse(apiId, res.ResourceId(), httpMethod, statusCode, results)
+					m.createAPIGatewayMethodResponse(apiID, res.ResourceId(), httpMethod, statusCode, results)
 				}
-				m.createApiGatewayIntegration(apiId, res.ResourceId(), httpMethod, results)
-				if err := m.createMethodExtensionsResources(apiId, res.ResourceId(), httpMethod, method.Extensions, results); err != nil {
+				m.createAPIGatewayIntegration(apiID, res.ResourceId(), httpMethod, results)
+				if err := m.createMethodExtensionsResources(apiID, res.ResourceId(), httpMethod, method.Extensions, results); err != nil {
 					return nil
 				}
 			}
 		}
 	}
-	if err := m.createExtensionsResources(apiId, doc.Extensions, results); err != nil {
+	if err := m.createExtensionsResources(apiID, doc.Extensions, results); err != nil {
 		return nil
 	}
 	return nil
 }
 
-func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv3GatewayV2(api *resource.Resource, doc *openapi3.T, results, remoteResources *[]*resource.Resource) error {
+func (m *AwsAPIGatewayAPIExpander) handleBodyOpenAPIv3GatewayV2(api *resource.Resource, doc *openapi3.T, results, remoteResources *[]*resource.Resource) error {
 	for path, pathValue := range doc.Paths {
 		for method := range doc.Paths[path].Operations() {
 			openAPIDerivedRoute := findMatchingOpenAPIDerivedRoute(api.ResourceId(), path, method, remoteResources)
 			if openAPIDerivedRoute != nil {
 				dummy := m.resourceFactory.CreateAbstractResource(
-					aws.AwsApiGatewayV2RouteResourceType,
+					aws.AwsAPIGatewayV2RouteResourceType,
 					openAPIDerivedRoute.ResourceId(),
 					map[string]interface{}{},
 				)
@@ -144,7 +148,7 @@ func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv3GatewayV2(api *resource.Re
 					remoteResources)
 				if openAPIDerivedIntegration != nil {
 					dummy := m.resourceFactory.CreateAbstractResource(
-						aws.AwsApiGatewayV2IntegrationResourceType,
+						aws.AwsAPIGatewayV2IntegrationResourceType,
 						openAPIDerivedIntegration.ResourceId(),
 						map[string]interface{}{},
 					)
@@ -158,14 +162,14 @@ func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv3GatewayV2(api *resource.Re
 
 // The types are similar structurally between the openapi2 and openapi3
 // libraries, but without generics we can't really de-dup this witout code
-// generation, which isn't worth it for this short function.
-func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv2GatewayV2(api *resource.Resource, doc *openapi2.T, results, remoteResources *[]*resource.Resource) error {
+// handleBodyOpenAPIv2GatewayV2 generation, which isn't worth it for this short function.
+func (m *AwsAPIGatewayAPIExpander) handleBodyOpenAPIv2GatewayV2(api *resource.Resource, doc *openapi2.T, results, remoteResources *[]*resource.Resource) error {
 	for path, pathValue := range doc.Paths {
 		for method := range doc.Paths[path].Operations() {
 			openAPIDerivedRoute := findMatchingOpenAPIDerivedRoute(api.ResourceId(), path, method, remoteResources)
 			if openAPIDerivedRoute != nil {
 				dummy := m.resourceFactory.CreateAbstractResource(
-					aws.AwsApiGatewayV2RouteResourceType,
+					aws.AwsAPIGatewayV2RouteResourceType,
 					openAPIDerivedRoute.ResourceId(),
 					map[string]interface{}{},
 				)
@@ -183,7 +187,7 @@ func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv2GatewayV2(api *resource.Re
 					remoteResources)
 				if openAPIDerivedIntegration != nil {
 					dummy := m.resourceFactory.CreateAbstractResource(
-						aws.AwsApiGatewayV2IntegrationResourceType,
+						aws.AwsAPIGatewayV2IntegrationResourceType,
 						openAPIDerivedIntegration.ResourceId(),
 						map[string]interface{}{},
 					)
@@ -195,22 +199,22 @@ func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv2GatewayV2(api *resource.Re
 	return nil
 }
 
-func findMatchingOpenAPIDerivedRoute(desiredApiID, desiredPath, desiredMethod string, remoteResources *[]*resource.Resource) *resource.Resource {
+func findMatchingOpenAPIDerivedRoute(desiredAPIID, desiredPath, desiredMethod string, remoteResources *[]*resource.Resource) *resource.Resource {
 	desiredRouteKey := fmt.Sprintf("%s %s", desiredMethod, desiredPath)
 	for _, remoteResource := range *remoteResources {
-		if remoteResource.ResourceType() != aws.AwsApiGatewayV2RouteResourceType {
+		if remoteResource.ResourceType() != aws.AwsAPIGatewayV2RouteResourceType {
 			continue
 		}
 		routeKey := *remoteResource.Attributes().GetString("route_key")
 		apiID := *remoteResource.Attributes().GetString("api_id")
-		if desiredApiID == apiID && routeKey == desiredRouteKey {
+		if desiredAPIID == apiID && routeKey == desiredRouteKey {
 			return remoteResource
 		}
 	}
 	return nil
 }
 
-func findMatchingOpenAPIDerivedIntegration(desiredApiID string, desiredIntegration *OpenAPIAwsMethodExtensions, remoteResources *[]*resource.Resource) *resource.Resource {
+func findMatchingOpenAPIDerivedIntegration(desiredAPIID string, desiredIntegration *OpenAPIAwsMethodExtensions, remoteResources *[]*resource.Resource) *resource.Resource {
 	desiredType := desiredIntegration.Integration["type"]
 	desiredMethod := desiredIntegration.Integration["httpMethod"]
 
@@ -219,7 +223,7 @@ func findMatchingOpenAPIDerivedIntegration(desiredApiID string, desiredIntegrati
 	}
 
 	for _, remoteResource := range *remoteResources {
-		if remoteResource.ResourceType() != aws.AwsApiGatewayV2IntegrationResourceType {
+		if remoteResource.ResourceType() != aws.AwsAPIGatewayV2IntegrationResourceType {
 			continue
 		}
 		apiID := *remoteResource.Attributes().GetString("api_id")
@@ -229,63 +233,63 @@ func findMatchingOpenAPIDerivedIntegration(desiredApiID string, desiredIntegrati
 			continue
 		}
 		integrationMethod := *remoteResource.Attributes().GetString("integration_method")
-		if desiredApiID == apiID && integrationType == desiredType && integrationMethod == desiredMethod {
+		if desiredAPIID == apiID && integrationType == desiredType && integrationMethod == desiredMethod {
 			return remoteResource
 		}
 	}
 	return nil
 }
 
-func (m *AwsApiGatewayApiExpander) handleBodyOpenAPIv2(api *resource.Resource, doc *openapi2.T, results, remoteResources *[]*resource.Resource) error {
-	if api.ResourceType() == aws.AwsApiGatewayV2ApiResourceType {
+func (m *AwsAPIGatewayAPIExpander) handleBodyOpenAPIv2(api *resource.Resource, doc *openapi2.T, results, remoteResources *[]*resource.Resource) error {
+	if api.ResourceType() == aws.AwsAPIGatewayV2ApiResourceType {
 		return m.handleBodyOpenAPIv2GatewayV2(api, doc, results, remoteResources)
 	}
 
-	apiId := api.ResourceId()
+	apiID := api.ResourceId()
 	for path, pathItem := range doc.Paths {
-		if res := m.createApiGatewayResource(apiId, path, results, remoteResources); res != nil {
+		if res := m.createAPIGatewayResource(apiID, path, results, remoteResources); res != nil {
 			ops := pathItem.Operations()
 			for httpMethod, method := range ops {
-				m.createApiGatewayMethod(apiId, res.ResourceId(), httpMethod, results)
+				m.createAPIGatewayMethod(apiID, res.ResourceId(), httpMethod, results)
 				for statusCode := range method.Responses {
-					m.createApiGatewayMethodResponse(apiId, res.ResourceId(), httpMethod, statusCode, results)
+					m.createAPIGatewayMethodResponse(apiID, res.ResourceId(), httpMethod, statusCode, results)
 				}
-				m.createApiGatewayIntegration(apiId, res.ResourceId(), httpMethod, results)
-				if err := m.createMethodExtensionsResources(apiId, res.ResourceId(), httpMethod, method.Extensions, results); err != nil {
+				m.createAPIGatewayIntegration(apiID, res.ResourceId(), httpMethod, results)
+				if err := m.createMethodExtensionsResources(apiID, res.ResourceId(), httpMethod, method.Extensions, results); err != nil {
 					return nil
 				}
 			}
 		}
 	}
-	if err := m.createExtensionsResources(apiId, doc.Extensions, results); err != nil {
+	if err := m.createExtensionsResources(apiID, doc.Extensions, results); err != nil {
 		return nil
 	}
 	return nil
 }
 
-// Create resources based on our OpenAPIAwsExtensions struct
-func (m *AwsApiGatewayApiExpander) createExtensionsResources(apiId string, extensions map[string]interface{}, results *[]*resource.Resource) error {
+// createExtensionsResources create resources based on our OpenAPIAwsExtensions struct
+func (m *AwsAPIGatewayAPIExpander) createExtensionsResources(apiID string, extensions map[string]interface{}, results *[]*resource.Resource) error {
 	ext, err := decodeExtensions(extensions)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"id":   apiId,
-			"type": aws.AwsApiGatewayRestApiResourceType,
+			"id":   apiID,
+			"type": aws.AwsAPIGatewayRestAPIResourceType,
 		}).Debug("Failed to decode extensions from the OpenAPI body attribute")
 		return err
 	}
 	for gtwResponse := range ext.GatewayResponses {
-		m.createApiGatewayGatewayResponse(apiId, gtwResponse, results)
+		m.createAPIGatewayGatewayResponse(apiID, gtwResponse, results)
 	}
 	return nil
 }
 
-// Create resources based on our OpenAPIAwsMethodExtensions struct
-func (m *AwsApiGatewayApiExpander) createMethodExtensionsResources(apiId, resourceId, httpMethod string, extensions map[string]interface{}, results *[]*resource.Resource) error {
+// createMethodExtensionsResources create resources based on our OpenAPIAwsMethodExtensions struct
+func (m *AwsAPIGatewayAPIExpander) createMethodExtensionsResources(apiID, resourceID, httpMethod string, extensions map[string]interface{}, results *[]*resource.Resource) error {
 	ext, err := decodeMethodExtensions(extensions)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"id":   apiId,
-			"type": aws.AwsApiGatewayRestApiResourceType,
+			"id":   apiID,
+			"type": aws.AwsAPIGatewayRestAPIResourceType,
 		}).Debug("Failed to decode method extensions from the OpenAPI body attribute")
 		return err
 	}
@@ -295,17 +299,17 @@ func (m *AwsApiGatewayApiExpander) createMethodExtensionsResources(apiId, resour
 				if s, isFloat64 := statusCode.(float64); isFloat64 {
 					statusCode = strconv.FormatFloat(s, 'f', -1, 64)
 				}
-				m.createApiGatewayIntegrationResponse(apiId, resourceId, httpMethod, statusCode.(string), results)
+				m.createAPIGatewayIntegrationResponse(apiID, resourceID, httpMethod, statusCode.(string), results)
 			}
 		}
 	}
 	return nil
 }
 
-// Create aws_api_gateway_resource resource
-func (m *AwsApiGatewayApiExpander) createApiGatewayResource(apiId, path string, results, remoteResources *[]*resource.Resource) *resource.Resource {
-	if res := foundMatchingResource(apiId, path, remoteResources); res != nil {
-		newResource := m.resourceFactory.CreateAbstractResource(aws.AwsApiGatewayResourceResourceType, res.ResourceId(), map[string]interface{}{
+// createAPIGatewayResource create aws_api_gateway_resource resource
+func (m *AwsAPIGatewayAPIExpander) createAPIGatewayResource(apiID, path string, results, remoteResources *[]*resource.Resource) *resource.Resource {
+	if res := foundMatchingResource(apiID, path, remoteResources); res != nil {
+		newResource := m.resourceFactory.CreateAbstractResource(aws.AwsAPIGatewayResourceResourceType, res.ResourceId(), map[string]interface{}{
 			"rest_api_id": *res.Attributes().GetString("rest_api_id"),
 			"path":        path,
 		})
@@ -315,23 +319,23 @@ func (m *AwsApiGatewayApiExpander) createApiGatewayResource(apiId, path string, 
 	return nil
 }
 
-// Create aws_api_gateway_gateway_response resource
-func (m *AwsApiGatewayApiExpander) createApiGatewayGatewayResponse(apiId, gtwResponse string, results *[]*resource.Resource) {
+// createAPIGatewayGatewayResponse create aws_api_gateway_gateway_response resource
+func (m *AwsAPIGatewayAPIExpander) createAPIGatewayGatewayResponse(apiID, gtwResponse string, results *[]*resource.Resource) {
 	newResource := m.resourceFactory.CreateAbstractResource(
-		aws.AwsApiGatewayGatewayResponseResourceType,
-		strings.Join([]string{"aggr", apiId, gtwResponse}, "-"),
+		aws.AwsAPIGatewayGatewayResponseResourceType,
+		strings.Join([]string{"aggr", apiID, gtwResponse}, "-"),
 		map[string]interface{}{},
 	)
 	*results = append(*results, newResource)
 }
 
-// Returns the aws_api_gateway_resource resource that matches the path attribute
-func foundMatchingResource(apiId, path string, remoteResources *[]*resource.Resource) *resource.Resource {
+// foundMatchingResource returns the aws_api_gateway_resource resource that matches the path attribute
+func foundMatchingResource(apiID, path string, remoteResources *[]*resource.Resource) *resource.Resource {
 	for _, res := range *remoteResources {
-		if res.ResourceType() == aws.AwsApiGatewayResourceResourceType {
+		if res.ResourceType() == aws.AwsAPIGatewayResourceResourceType {
 			p := res.Attributes().GetString("path")
 			i := res.Attributes().GetString("rest_api_id")
-			if p != nil && i != nil && *p == path && *i == apiId {
+			if p != nil && i != nil && *p == path && *i == apiID {
 				return res
 			}
 		}
@@ -339,28 +343,28 @@ func foundMatchingResource(apiId, path string, remoteResources *[]*resource.Reso
 	return nil
 }
 
-// Create aws_api_gateway_method resource
-func (m *AwsApiGatewayApiExpander) createApiGatewayMethod(apiId, resourceId, httpMethod string, results *[]*resource.Resource) {
+// createAPIGatewayMethod create aws_api_gateway_method resource
+func (m *AwsAPIGatewayAPIExpander) createAPIGatewayMethod(apiID, resourceID, httpMethod string, results *[]*resource.Resource) {
 	newResource := m.resourceFactory.CreateAbstractResource(
-		aws.AwsApiGatewayMethodResourceType,
-		strings.Join([]string{"agm", apiId, resourceId, httpMethod}, "-"),
+		aws.AwsAPIGatewayMethodResourceType,
+		strings.Join([]string{"agm", apiID, resourceID, httpMethod}, "-"),
 		map[string]interface{}{},
 	)
 	*results = append(*results, newResource)
 }
 
-// Create aws_api_gateway_method_response resource
-func (m *AwsApiGatewayApiExpander) createApiGatewayMethodResponse(apiId, resourceId, httpMethod, statusCode string, results *[]*resource.Resource) {
+// createAPIGatewayMethodResponse create aws_api_gateway_method_response resource
+func (m *AwsAPIGatewayAPIExpander) createAPIGatewayMethodResponse(apiID, resourceID, httpMethod, statusCode string, results *[]*resource.Resource) {
 	newResource := m.resourceFactory.CreateAbstractResource(
-		aws.AwsApiGatewayMethodResponseResourceType,
-		strings.Join([]string{"agmr", apiId, resourceId, httpMethod, statusCode}, "-"),
+		aws.AwsAPIGatewayMethodResponseResourceType,
+		strings.Join([]string{"agmr", apiID, resourceID, httpMethod, statusCode}, "-"),
 		map[string]interface{}{},
 	)
 	*results = append(*results, newResource)
 }
 
 // Decode openapi.Extensions into our custom OpenAPIAwsExtensions struct that follows AWS
-// OpenAPI addons.
+// decodeExtensions openAPI addons.
 func decodeExtensions(extensions map[string]interface{}) (*OpenAPIAwsExtensions, error) {
 	rawExtensions, err := json.Marshal(extensions)
 	if err != nil {
@@ -374,28 +378,28 @@ func decodeExtensions(extensions map[string]interface{}) (*OpenAPIAwsExtensions,
 	return decodedExtensions, nil
 }
 
-// Create aws_api_gateway_integration resource
-func (m *AwsApiGatewayApiExpander) createApiGatewayIntegration(apiId, resourceId, httpMethod string, results *[]*resource.Resource) {
+// createAPIGatewayIntegration create aws_api_gateway_integration resource
+func (m *AwsAPIGatewayAPIExpander) createAPIGatewayIntegration(apiID, resourceID, httpMethod string, results *[]*resource.Resource) {
 	newResource := m.resourceFactory.CreateAbstractResource(
-		aws.AwsApiGatewayIntegrationResourceType,
-		strings.Join([]string{"agi", apiId, resourceId, httpMethod}, "-"),
+		aws.AwsAPIGatewayIntegrationResourceType,
+		strings.Join([]string{"agi", apiID, resourceID, httpMethod}, "-"),
 		map[string]interface{}{},
 	)
 	*results = append(*results, newResource)
 }
 
-// Create aws_api_gateway_integration resource
-func (m *AwsApiGatewayApiExpander) createApiGatewayIntegrationResponse(apiId, resourceId, httpMethod, statusCode string, results *[]*resource.Resource) {
+// createAPIGatewayIntegrationResponse create aws_api_gateway_integration resource
+func (m *AwsAPIGatewayAPIExpander) createAPIGatewayIntegrationResponse(apiID, resourceID, httpMethod, statusCode string, results *[]*resource.Resource) {
 	newResource := m.resourceFactory.CreateAbstractResource(
-		aws.AwsApiGatewayIntegrationResponseResourceType,
-		strings.Join([]string{"agir", apiId, resourceId, httpMethod, statusCode}, "-"),
+		aws.AwsAPIGatewayIntegrationResponseResourceType,
+		strings.Join([]string{"agir", apiID, resourceID, httpMethod, statusCode}, "-"),
 		map[string]interface{}{},
 	)
 	*results = append(*results, newResource)
 }
 
 // Decode openapi.Method.Extensions into our custom OpenAPIAwsMethodExtensions struct that follows AWS
-// OpenAPI addons.
+// decodeMethodExtensions openAPI addons.
 func decodeMethodExtensions(extensions map[string]interface{}) (*OpenAPIAwsMethodExtensions, error) {
 	rawExtensions, err := json.Marshal(extensions)
 	if err != nil {

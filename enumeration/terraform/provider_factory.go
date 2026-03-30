@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform/plugin/discovery"
 )
 
+// NewGRPCProvider creates a gRPC-backed Terraform provider from the given plugin metadata.
 func NewGRPCProvider(meta discovery.PluginMeta) (*plugin.GRPCProvider, error) {
 	client := Client(meta)
 	// Request the RPC terraformProvider so we can get the provider

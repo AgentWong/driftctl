@@ -7,17 +7,19 @@ import (
 	resourceaws "github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Split security group rule if it needs to given its attributes
+// VPCSecurityGroupRuleSanitizer split security group rule if it needs to given its attributes
 type VPCSecurityGroupRuleSanitizer struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewVPCSecurityGroupRuleSanitizer(resourceFactory resource.ResourceFactory) VPCSecurityGroupRuleSanitizer {
+// NewVPCSecurityGroupRuleSanitizer creates a VPCSecurityGroupRuleSanitizer.
+func NewVPCSecurityGroupRuleSanitizer(resourceFactory resource.Factory) VPCSecurityGroupRuleSanitizer {
 	return VPCSecurityGroupRuleSanitizer{
 		resourceFactory,
 	}
 }
 
+// Execute applies the VPCSecurityGroupRuleSanitizer middleware.
 func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newStateResources := make([]*resource.Resource, 0)
 
@@ -71,11 +73,11 @@ func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromSta
 		}
 
 		if stateResource.Attrs.GetSlice("prefix_list_ids") != nil && len(stateResource.Attrs.GetSlice("prefix_list_ids")) > 0 {
-			for _, listId := range stateResource.Attrs.GetSlice("prefix_list_ids") {
+			for _, listID := range stateResource.Attrs.GetSlice("prefix_list_ids") {
 				attrs := stateResource.Attrs.Copy()
 				_ = attrs.SafeSet([]string{"cidr_blocks"}, []interface{}{})
 				_ = attrs.SafeSet([]string{"ipv6_cidr_blocks"}, []interface{}{})
-				_ = attrs.SafeSet([]string{"prefix_list_ids"}, []interface{}{listId})
+				_ = attrs.SafeSet([]string{"prefix_list_ids"}, []interface{}{listID})
 				res := m.createRule(attrs)
 				logrus.WithFields(logrus.Fields{
 					"formerRuleId": stateResource.ResourceId(),
@@ -115,7 +117,7 @@ func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromSta
 }
 
 func (m *VPCSecurityGroupRuleSanitizer) createRule(res *resource.Attributes) *resource.Resource {
-	id := resourceaws.CreateSecurityGroupRuleIdHash(res)
+	id := resourceaws.CreateSecurityGroupRuleIDHash(res)
 	data := map[string]interface{}{
 		"id":                       id,
 		"cidr_blocks":              (*res)["cidr_blocks"],
@@ -150,7 +152,7 @@ func shouldBeSplit(r *resource.Resource) bool {
 
 	if r.Attrs.GetBool("self") != nil && *r.Attrs.GetBool("self") ||
 		(r.Attrs.GetString("source_security_group_id") != nil && *r.Attrs.GetString("source_security_group_id") != "") {
-		i += 1
+		i++
 	}
 	return i > 1
 }

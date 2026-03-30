@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsAppAutoscalingPolicyResourceType is the Terraform resource type for AWS Application Auto Scaling policies.
 const AwsAppAutoscalingPolicyResourceType = "aws_appautoscaling_policy"
 
 func initAwsAppAutoscalingPolicyMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

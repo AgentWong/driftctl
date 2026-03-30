@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsIamUserResourceType is the Terraform resource type for IAM users.
 const AwsIamUserResourceType = "aws_iam_user"
 
 func initAwsIAMUserMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

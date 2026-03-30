@@ -14,7 +14,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 		name               string
 		remoteResources    []*resource.Resource
 		resourcesFromState []*resource.Resource
-		assert             func(t *testing.T, remoteResources, resourcesFromState []*resource.Resource)
+		assert             func(t *testing.T, remoteResources, _ []*resource.Resource)
 	}{
 		{
 			"ignore default iam roles when they're not managed by IaC",
@@ -66,7 +66,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 					},
 				},
 			},
-			func(t *testing.T, remoteResources, resourcesFromState []*resource.Resource) {
+			func(t *testing.T, remoteResources, _ []*resource.Resource) {
 				assert.Len(t, remoteResources, 3)
 				for _, remoteResource := range remoteResources {
 					if remoteResource.ResourceId() == "AWSServiceRoleForSSO" {
@@ -183,7 +183,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 					},
 				},
 			},
-			func(t *testing.T, remoteResources, resourcesFromState []*resource.Resource) {
+			func(t *testing.T, remoteResources, _ []*resource.Resource) {
 				assert.Len(t, remoteResources, 3)
 				for _, remoteResource := range remoteResources {
 					if remoteResource.ResourceId() == "AWSServiceRoleForSSO" &&
@@ -240,7 +240,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 					},
 				},
 			},
-			func(t *testing.T, remoteResources, resourcesFromState []*resource.Resource) {
+			func(t *testing.T, remoteResources, _ []*resource.Resource) {
 				assert.Len(t, remoteResources, 2)
 				for _, remoteResource := range remoteResources {
 					if remoteResource.ResourceId() == "OrganizationAccountAccessRole" &&

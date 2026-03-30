@@ -12,6 +12,7 @@ type PlanAnalyzer struct {
 	configResources []*resource.Resource
 }
 
+// NewPlanAnalyzer creates a PlanAnalyzer from plan results and config resources.
 func NewPlanAnalyzer(planResults []plan.DriftResult, configResources []*resource.Resource) *PlanAnalyzer {
 	return &PlanAnalyzer{
 		planResults:     planResults,
@@ -19,6 +20,7 @@ func NewPlanAnalyzer(planResults []plan.DriftResult, configResources []*resource
 	}
 }
 
+// Analyze produces an Analysis from the plan results and config resources.
 func (a *PlanAnalyzer) Analyze() (*Analysis, error) {
 	analysis := NewAnalysis()
 

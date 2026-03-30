@@ -1,3 +1,4 @@
+// Package resource provides resource factories, schemas, deserialization, and type metadata.
 package resource
 
 import (
@@ -8,14 +9,17 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
+// Deserializer converts cty values into resource instances.
 type Deserializer struct {
-	factory resource.ResourceFactory
+	factory resource.Factory
 }
 
-func NewDeserializer(factory resource.ResourceFactory) *Deserializer {
+// NewDeserializer creates a Deserializer backed by the given factory.
+func NewDeserializer(factory resource.Factory) *Deserializer {
 	return &Deserializer{factory}
 }
 
+// Deserialize converts a list of cty values into resource instances of the given type.
 func (s *Deserializer) Deserialize(ty string, rawList []cty.Value) ([]*resource.Resource, error) {
 	resources := make([]*resource.Resource, 0)
 	for _, rawRes := range rawList {
@@ -29,6 +33,7 @@ func (s *Deserializer) Deserialize(ty string, rawList []cty.Value) ([]*resource.
 	return resources, nil
 }
 
+// DeserializeOne converts a single cty value into a resource.
 func (s *Deserializer) DeserializeOne(ty string, value cty.Value) (*resource.Resource, error) {
 	if value.IsNull() {
 		return nil, nil

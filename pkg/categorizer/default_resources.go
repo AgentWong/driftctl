@@ -11,10 +11,12 @@ import (
 // roles, default KMS aliases, etc.).
 type DefaultResourceCategorizer struct{}
 
+// NewDefaultResourceCategorizer creates a new DefaultResourceCategorizer.
 func NewDefaultResourceCategorizer() *DefaultResourceCategorizer {
 	return &DefaultResourceCategorizer{}
 }
 
+// Categorize returns CategoryDefaultResource if the resource is an AWS-managed default resource.
 func (c *DefaultResourceCategorizer) Categorize(r *resource.Resource) (Category, bool) {
 	resType := r.ResourceType()
 	resID := r.ResourceId()

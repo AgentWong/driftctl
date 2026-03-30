@@ -12,9 +12,10 @@ const defaultIamRolePathPrefix = "/aws-service-role/"
 
 // AwsDefaults represents service-linked AWS resources
 // When scanning a AWS account, some users may see irrelevant results about default AWS roles or role policies.
-// We ignore these resources by default when strict mode is disabled.
+// AwsDefaults we ignore these resources by default when strict mode is disabled.
 type AwsDefaults struct{}
 
+// NewAwsDefaults creates a AwsDefaults.
 func NewAwsDefaults() AwsDefaults {
 	return AwsDefaults{}
 }
@@ -72,6 +73,7 @@ func (m AwsDefaults) awsIamRolePolicyDefaults(remoteResources []*resource.Resour
 	return resourcesToIgnore
 }
 
+// Execute applies the AwsDefaults middleware.
 func (m AwsDefaults) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 	newResourcesFromState := make([]*resource.Resource, 0)

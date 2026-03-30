@@ -9,10 +9,10 @@ import "encoding/json"
 // https://www.terraform.io/docs/extend/guides/v1-upgrade-guide.html
 // https://github.com/hashicorp/terraform-website/blob/master/content/source/docs/extend/best-practices/depending-on-providers.html.md#using-the-rpc-protocol
 
-// Takes a value containing JSON string and passes it through
+// NormalizeJSONString takes a value containing JSON string and passes it through
 // the JSON parser to normalize it, returns either a parsing
 // error or normalized JSON string.
-func NormalizeJsonString(jsonString interface{}) (string, error) {
+func NormalizeJSONString(jsonString interface{}) (string, error) {
 	var j interface{}
 
 	if jsonString == nil || jsonString.(string) == "" {
@@ -27,5 +27,5 @@ func NormalizeJsonString(jsonString interface{}) (string, error) {
 	}
 
 	bytes, _ := json.Marshal(j)
-	return string(bytes[:]), nil
+	return string(bytes), nil
 }

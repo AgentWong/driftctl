@@ -1,3 +1,4 @@
+// Package repository provides AWS service repository implementations for resource enumeration.
 package repository
 
 import (
@@ -11,6 +12,7 @@ import (
 	"github.com/snyk/driftctl/enumeration/remote/cache"
 )
 
+// ConfigDiscoveredResource represents a single resource discovered via AWS Config advanced queries.
 type ConfigDiscoveredResource struct {
 	Type string
 	ID   string
@@ -19,6 +21,7 @@ type ConfigDiscoveredResource struct {
 	Tags map[string]string
 }
 
+// ConfigRepository defines the interface for querying resources discovered by AWS Config.
 type ConfigRepository interface {
 	ListAllDiscoveredResources(resourceTypes []string) ([]*ConfigDiscoveredResource, error)
 }
@@ -28,7 +31,8 @@ type configRepository struct {
 	cache  cache.Cache
 }
 
-func NewConfigRepository(cfg aws.Config, c cache.Cache) *configRepository {
+// NewConfigRepository creates a new ConfigRepository backed by an AWS Config service client.
+func NewConfigRepository(cfg aws.Config, c cache.Cache) ConfigRepository {
 	return &configRepository{
 		configservice.NewFromConfig(cfg),
 		c,

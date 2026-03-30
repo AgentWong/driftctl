@@ -1,3 +1,4 @@
+// Package main is the entry point for the driftctl CLI.
 package main
 
 import (
@@ -66,7 +67,7 @@ func run() int {
 				gosentry.CurrentHub().Recover(err)
 				flushSentry()
 				logrus.Fatalf("Captured panic: %s", err)
-				os.Exit(scan.EXIT_ERROR)
+				os.Exit(scan.ExitError)
 			}
 			flushSentry()
 		}
@@ -74,13 +75,13 @@ func run() int {
 
 	if _, err := driftctlCmd.ExecuteC(); err != nil {
 		if _, isNotInSync := err.(cmderrors.InfrastructureNotInSync); isNotInSync {
-			return scan.EXIT_NOT_IN_SYNC
+			return scan.ExitNotInSync
 		}
 		if cmd.IsReportingEnabled(&driftctlCmd.Command) {
 			sentry.CaptureException(err)
 		}
 		_, _ = fmt.Fprintln(os.Stderr, color.RedString("%s", err))
-		return scan.EXIT_ERROR
+		return scan.ExitError
 	}
 
 	if checkVersion {
@@ -91,7 +92,7 @@ func run() int {
 		}
 	}
 
-	return scan.EXIT_IN_SYNC
+	return scan.ExitInSync
 }
 
 func flushSentry() {

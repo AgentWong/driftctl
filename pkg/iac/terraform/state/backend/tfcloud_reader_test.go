@@ -13,7 +13,7 @@ import (
 
 func TestTFCloudBackend_Read(t *testing.T) {
 	type args struct {
-		workspaceId string
+		workspaceID string
 		options     *Options
 	}
 	tests := []struct {
@@ -26,7 +26,7 @@ func TestTFCloudBackend_Read(t *testing.T) {
 		{
 			name: "Should fetch URL with auth header",
 			args: args{
-				workspaceId: "ws-ABCDEFG12345678",
+				workspaceID: "ws-ABCDEFG12345678",
 				options: &Options{
 					TFCloudToken:    "TOKEN",
 					TFCloudEndpoint: "https://app.terraform.io/api/v2",
@@ -34,16 +34,16 @@ func TestTFCloudBackend_Read(t *testing.T) {
 			},
 			wantErr:  nil,
 			expected: "{}",
-			mock: func(Workspaces *mocks.Workspaces, StateVersions *mocks.StateVersions) {
-				retDownloadUrl := "https://archivist.terraform.io/v1/object/test"
-				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadUrl}, nil)
-				StateVersions.On("Download", mock.Anything, retDownloadUrl).Return([]byte(`{}`), nil)
+			mock: func(_ *mocks.Workspaces, StateVersions *mocks.StateVersions) {
+				retDownloadURL := "https://archivist.terraform.io/v1/object/test"
+				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadURL}, nil)
+				StateVersions.On("Download", mock.Anything, retDownloadURL).Return([]byte(`{}`), nil)
 			},
 		},
 		{
 			name: "Should resolve path and return state",
 			args: args{
-				workspaceId: "some-org/some-workspace",
+				workspaceID: "some-org/some-workspace",
 				options: &Options{
 					TFCloudToken:    "TOKEN",
 					TFCloudEndpoint: "https://app.terraform.io/api/v2",
@@ -53,67 +53,67 @@ func TestTFCloudBackend_Read(t *testing.T) {
 			expected: "{}",
 			mock: func(Workspaces *mocks.Workspaces, StateVersions *mocks.StateVersions) {
 				Workspaces.On("Read", mock.Anything, "some-org", "some-workspace").Return(&tfe.Workspace{ID: "ws-ABCDEFG12345678"}, nil)
-				retDownloadUrl := "https://archivist.terraform.io/v1/object/test"
-				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadUrl}, nil)
-				StateVersions.On("Download", mock.Anything, retDownloadUrl).Return([]byte(`{}`), nil)
+				retDownloadURL := "https://archivist.terraform.io/v1/object/test"
+				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadURL}, nil)
+				StateVersions.On("Download", mock.Anything, retDownloadURL).Return([]byte(`{}`), nil)
 			},
 		},
 		{
 			name: "Should fail with wrong workspaceId",
 			args: args{
-				workspaceId: "ws-ABCDEFG12345678",
+				workspaceID: "ws-ABCDEFG12345678",
 				options: &Options{
 					TFCloudToken:    "TOKEN",
 					TFCloudEndpoint: "https://app.terraform.io/api/v2",
 				},
 			},
-			mock: func(Workspaces *mocks.Workspaces, StateVersions *mocks.StateVersions) {
-				retDownloadUrl := "https://archivist.terraform.io/v1/object/test"
-				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadUrl}, errors.New("resource not found"))
+			mock: func(_ *mocks.Workspaces, StateVersions *mocks.StateVersions) {
+				retDownloadURL := "https://archivist.terraform.io/v1/object/test"
+				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadURL}, errors.New("resource not found"))
 			},
 			wantErr: errors.New("unable to read current state version: resource not found"),
 		},
 		{
 			name: "Should fail with download error",
 			args: args{
-				workspaceId: "ws-ABCDEFG12345678",
+				workspaceID: "ws-ABCDEFG12345678",
 				options: &Options{
 					TFCloudToken:    "TOKEN",
 					TFCloudEndpoint: "https://app.terraform.io/api/v2",
 				},
 			},
-			mock: func(Workspaces *mocks.Workspaces, StateVersions *mocks.StateVersions) {
-				retDownloadUrl := "https://archivist.terraform.io/v1/object/test"
-				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadUrl}, nil)
-				StateVersions.On("Download", mock.Anything, retDownloadUrl).Return([]byte(`{}`), errors.New("connection terminated"))
+			mock: func(_ *mocks.Workspaces, StateVersions *mocks.StateVersions) {
+				retDownloadURL := "https://archivist.terraform.io/v1/object/test"
+				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadURL}, nil)
+				StateVersions.On("Download", mock.Anything, retDownloadURL).Return([]byte(`{}`), errors.New("connection terminated"))
 			},
 			wantErr: errors.New("unable to download current state content: connection terminated"),
 		},
 		{
 			name: "Should fail with bad authentication token - workspace id",
 			args: args{
-				workspaceId: "ws-ABCDEFG12345678",
+				workspaceID: "ws-ABCDEFG12345678",
 				options: &Options{
 					TFCloudToken:    "TOKEN",
 					TFCloudEndpoint: "https://app.terraform.io/api/v2",
 				},
 			},
-			mock: func(Workspaces *mocks.Workspaces, StateVersions *mocks.StateVersions) {
-				retDownloadUrl := "https://archivist.terraform.io/v1/object/test"
-				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadUrl}, errors.New("unauthorized"))
+			mock: func(_ *mocks.Workspaces, StateVersions *mocks.StateVersions) {
+				retDownloadURL := "https://archivist.terraform.io/v1/object/test"
+				StateVersions.On("Current", mock.Anything, "ws-ABCDEFG12345678").Return(&tfe.StateVersion{DownloadURL: retDownloadURL}, errors.New("unauthorized"))
 			},
 			wantErr: errors.New("unable to read current state version: unauthorized"),
 		},
 		{
 			name: "Should fail with bad authentication token - full path",
 			args: args{
-				workspaceId: "some-org/some-workspace",
+				workspaceID: "some-org/some-workspace",
 				options: &Options{
 					TFCloudToken:    "TOKEN",
 					TFCloudEndpoint: "https://app.terraform.io/api/v2",
 				},
 			},
-			mock: func(Workspaces *mocks.Workspaces, StateVersions *mocks.StateVersions) {
+			mock: func(Workspaces *mocks.Workspaces, _ *mocks.StateVersions) {
 				Workspaces.On("Read", mock.Anything, "some-org", "some-workspace").Return(&tfe.Workspace{ID: "ws-ABCDEFG12345678"}, errors.New("unauthorized"))
 			},
 			wantErr: errors.New("unable to read terraform workspace id: unauthorized"),
@@ -121,7 +121,7 @@ func TestTFCloudBackend_Read(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			reader := NewTFCloudReader(tt.args.workspaceId, tt.args.options)
+			reader := NewTFCloudReader(tt.args.workspaceID, tt.args.options)
 
 			fakeWorkspaces := &mocks.Workspaces{}
 			fakeStateVersions := &mocks.StateVersions{}
@@ -137,9 +137,8 @@ func TestTFCloudBackend_Read(t *testing.T) {
 			if tt.wantErr != nil {
 				assert.EqualError(t, err, tt.wantErr.Error())
 				return
-			} else {
-				assert.NoError(t, err)
 			}
+			assert.NoError(t, err)
 
 			fakeWorkspaces.AssertExpectations(t)
 			fakeStateVersions.AssertExpectations(t)

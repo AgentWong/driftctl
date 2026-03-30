@@ -34,7 +34,7 @@ func TestAcc_Aws_Instance(t *testing.T) {
 }
 
 func TestAcc_Aws_Instance_WithBlockDevices(t *testing.T) {
-	var mutatedInstanceId string
+	var mutatedInstanceID string
 	acceptance.Run(t, acceptance.AccTestCase{
 		TerraformVersion: "0.15.5",
 		Paths:            []string{"./testdata/acc/aws_instance"},
@@ -44,7 +44,7 @@ func TestAcc_Aws_Instance_WithBlockDevices(t *testing.T) {
 				Env: map[string]string{
 					"AWS_REGION": "us-east-1",
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(_ *test.ScanResult, stdout string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -78,9 +78,9 @@ func TestAcc_Aws_Instance_WithBlockDevices(t *testing.T) {
 					if len(response.Reservations) != 1 || len(response.Reservations[0].Instances) != 1 {
 						t.Fatal("Error, unexpected number of instances found, manual check required")
 					}
-					mutatedInstanceId = *response.Reservations[0].Instances[0].InstanceId
+					mutatedInstanceID = *response.Reservations[0].Instances[0].InstanceId
 					_, err = client.CreateTags(&ec2.CreateTagsInput{
-						Resources: []*string{&mutatedInstanceId},
+						Resources: []*string{&mutatedInstanceID},
 						Tags: []*ec2.Tag{
 							{
 								Key:   aws.String("Env"),

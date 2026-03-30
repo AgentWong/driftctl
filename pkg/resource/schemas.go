@@ -2,6 +2,7 @@ package resource
 
 import "github.com/snyk/driftctl/enumeration/resource"
 
+// SchemaRepositoryInterface defines operations for managing resource schemas.
 type SchemaRepositoryInterface interface {
 	GetSchema(resourceType string) (*resource.Schema, bool)
 	SetFlags(typ string, flags ...resource.Flags)

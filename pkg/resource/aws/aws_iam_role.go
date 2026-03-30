@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsIamRoleResourceType is the Terraform resource type for aws_iam_role.
 const AwsIamRoleResourceType = "aws_iam_role"
 
 func initAwsIAMRoleMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
@@ -14,7 +15,7 @@ func initAwsIAMRoleMetaData(resourceSchemaRepository dctlresource.SchemaReposito
 	})
 	resourceSchemaRepository.UpdateSchema(AwsIamRoleResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"assume_role_policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 }

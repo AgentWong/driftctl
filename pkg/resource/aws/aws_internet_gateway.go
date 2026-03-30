@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsInternetGatewayResourceType is the Terraform resource type for aws_internet_gateway.
 const AwsInternetGatewayResourceType = "aws_internet_gateway"
 
 func initAwsInternetGatewayMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

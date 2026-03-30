@@ -1,3 +1,4 @@
+// Package filter provides resource filtering via driftignore patterns and JMESPath expressions.
 package filter
 
 import (
@@ -13,12 +14,14 @@ import (
 
 const separator = "_-_"
 
+// DriftIgnore filters resources based on gitignore-style patterns from a driftignore file.
 type DriftIgnore struct {
 	driftignorePath string
 	ignorePatterns  []string
 	matcher         gitignore.Matcher
 }
 
+// NewDriftIgnore creates a DriftIgnore from the given file path and optional inline patterns.
 func NewDriftIgnore(path string, ignorePatterns ...string) *DriftIgnore {
 	d := DriftIgnore{
 		driftignorePath: path,
@@ -43,7 +46,7 @@ func (r *DriftIgnore) readIgnoreFile() error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	var lines []gitignore.Pattern
 	scanner := bufio.NewScanner(file)
@@ -71,7 +74,7 @@ func (r *DriftIgnore) parseIgnorePatterns() error {
 }
 
 func (r *DriftIgnore) parseIgnorePattern(line string, patterns *[]gitignore.Pattern) {
-	if len(strings.ReplaceAll(line, " ", "")) <= 0 {
+	if len(strings.ReplaceAll(line, " ", "")) == 0 {
 		return // empty
 	}
 
@@ -87,7 +90,7 @@ func (r *DriftIgnore) parseIgnorePattern(line string, patterns *[]gitignore.Patt
 	}
 }
 
-func (r *DriftIgnore) isAnyOfChildrenTypesNotIgnored(ty resource.ResourceType) bool {
+func (r *DriftIgnore) isAnyOfChildrenTypesNotIgnored(ty resource.Type) bool {
 	childrenTypes := resource.GetMeta(ty).GetChildrenTypes()
 	for _, childrenType := range childrenTypes {
 		if !r.shouldIgnoreType(childrenType) {
@@ -100,7 +103,8 @@ func (r *DriftIgnore) isAnyOfChildrenTypesNotIgnored(ty resource.ResourceType) b
 	return false
 }
 
-func (r *DriftIgnore) IsTypeIgnored(ty resource.ResourceType) bool {
+// IsTypeIgnored reports whether the given resource type should be ignored.
+func (r *DriftIgnore) IsTypeIgnored(ty resource.Type) bool {
 	// Iterate over children types, and do not ignore parent resource
 	// if at least one of children type is not ignored.
 	if r.isAnyOfChildrenTypesNotIgnored(ty) {
@@ -110,7 +114,7 @@ func (r *DriftIgnore) IsTypeIgnored(ty resource.ResourceType) bool {
 	return r.shouldIgnoreType(ty)
 }
 
-func (r *DriftIgnore) shouldIgnoreType(ty resource.ResourceType) bool {
+func (r *DriftIgnore) shouldIgnoreType(ty resource.Type) bool {
 	for _, pattern := range r.ignorePatterns {
 		// If a line start with a `!` and if the type match, we should not ignore it
 		if strings.HasPrefix(pattern, fmt.Sprintf("!%s.", ty)) {
@@ -121,6 +125,7 @@ func (r *DriftIgnore) shouldIgnoreType(ty resource.ResourceType) bool {
 	return r.match(fmt.Sprintf("%s.*", ty))
 }
 
+// IsResourceIgnored reports whether the given resource should be ignored.
 func (r *DriftIgnore) IsResourceIgnored(res *resource.Resource) bool {
 	return r.match(fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId()))
 }

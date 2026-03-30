@@ -1,3 +1,4 @@
+// Package pkg provides the core driftctl scan and formatting logic.
 package pkg
 
 import (
@@ -21,16 +22,18 @@ import (
 	"github.com/snyk/driftctl/pkg/terraform/plan"
 )
 
+// FmtOptions holds options for the fmt command.
 type FmtOptions struct {
-	Output output.OutputConfig
+	Output output.Config
 }
 
+// ScanOptions holds options for the scan command.
 type ScanOptions struct {
 	Coverage          bool
 	Detect            bool
 	From              []config.SupplierConfig
 	To                string
-	Output            []output.OutputConfig
+	Output            []output.Config
 	Filter            *jmespath.JMESPath
 	Quiet             bool
 	BackendOptions    *backend.Options
@@ -45,12 +48,13 @@ type ScanOptions struct {
 	TerraformDir      string // path to terraform root module (required for plan mode)
 }
 
+// DriftCTL orchestrates a scan run.
 type DriftCTL struct {
 	remoteSupplier           resource.Supplier
 	iacSupplier              dctlresource.IaCSupplier
-	alerter                  alerter.AlerterInterface
+	alerter                  alerter.Interface
 	analyzer                 *analyser.Analyzer
-	resourceFactory          resource.ResourceFactory
+	resourceFactory          resource.Factory
 	scanProgress             globaloutput.Progress
 	iacProgress              globaloutput.Progress
 	resourceSchemaRepository dctlresource.SchemaRepositoryInterface
@@ -58,11 +62,12 @@ type DriftCTL struct {
 	store                    memstore.Store
 }
 
+// NewDriftCTL creates an initialized DriftCTL.
 func NewDriftCTL(remoteSupplier resource.Supplier,
 	iacSupplier dctlresource.IaCSupplier,
 	alerter *alerter.Alerter,
 	analyzer *analyser.Analyzer,
-	resFactory resource.ResourceFactory,
+	resFactory resource.Factory,
 	opts *ScanOptions,
 	scanProgress globaloutput.Progress,
 	iacProgress globaloutput.Progress,
@@ -82,6 +87,7 @@ func NewDriftCTL(remoteSupplier resource.Supplier,
 	}
 }
 
+// Run executes the scan or inventory and returns an Analysis.
 func (d DriftCTL) Run() (*analyser.Analysis, error) {
 	start := time.Now()
 
@@ -97,7 +103,7 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 	middleware := middlewares.NewChain(
 		middlewares.NewRoute53RecordIDReconcilier(),
 		middlewares.NewRoute53DefaultZoneRecordSanitizer(),
-		middlewares.NewS3BucketAcl(),
+		middlewares.NewS3BucketACL(),
 		middlewares.NewAwsIamIDReconciler(),
 		middlewares.NewAwsInstanceBlockDeviceResourceMapper(d.resourceFactory),
 		middlewares.NewAwsDefaultSecurityGroupRule(),
@@ -125,13 +131,13 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 		middlewares.NewEipAssociationExpander(d.resourceFactory),
 		middlewares.NewAwsNatGatewayEipAssoc(),
 		middlewares.NewRDSClusterInstanceExpander(d.resourceFactory),
-		middlewares.NewAwsApiGatewayDeploymentExpander(d.resourceFactory),
-		middlewares.NewAwsApiGatewayResourceExpander(d.resourceFactory),
-		middlewares.NewAwsApiGatewayApiExpander(d.resourceFactory),
-		middlewares.NewAwsApiGatewayRestApiPolicyExpander(d.resourceFactory),
-		middlewares.NewAwsConsoleApiGatewayGatewayResponse(),
-		middlewares.NewAwsApiGatewayDomainNamesReconciler(),
-		middlewares.NewAwsApiGatewayBasePathMappingReconciler(),
+		middlewares.NewAwsAPIGatewayDeploymentExpander(d.resourceFactory),
+		middlewares.NewAwsAPIGatewayResourceExpander(d.resourceFactory),
+		middlewares.NewAwsAPIGatewayAPIExpander(d.resourceFactory),
+		middlewares.NewAwsAPIGatewayRestAPIPolicyExpander(d.resourceFactory),
+		middlewares.NewAwsConsoleAPIGatewayGatewayResponse(),
+		middlewares.NewAwsAPIGatewayDomainNamesReconciler(),
+		middlewares.NewAwsAPIGatewayBasePathMappingReconciler(),
 		middlewares.NewAwsEbsEncryptionByDefaultReconciler(d.resourceFactory),
 		middlewares.NewAwsALBTransformer(d.resourceFactory),
 		middlewares.NewAwsALBListenerTransformer(d.resourceFactory),
@@ -141,7 +147,7 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 	if !d.opts.StrictMode {
 		middleware = append(middleware,
 			middlewares.NewAwsDefaults(),
-			middlewares.NewAwsDefaultApiGatewayAccount(),
+			middlewares.NewAwsDefaultAPIGatewayAccount(),
 		)
 	}
 
@@ -218,6 +224,7 @@ func (d DriftCTL) runPlanMode(start time.Time) (*analyser.Analysis, error) {
 	return analysis, nil
 }
 
+// Stop signals stoppable suppliers to stop.
 func (d DriftCTL) Stop() {
 	stoppableSupplier, ok := d.remoteSupplier.(resource.StoppableSupplier)
 	if ok {

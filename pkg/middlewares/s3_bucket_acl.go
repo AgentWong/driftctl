@@ -7,14 +7,16 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Remove grant field on remote resources when acl field != private in state
-type S3BucketAcl struct{}
+// S3BucketACL remove grant field on remote resources when acl field != private in state
+type S3BucketACL struct{}
 
-func NewS3BucketAcl() S3BucketAcl {
-	return S3BucketAcl{}
+// NewS3BucketACL creates a S3BucketACL.
+func NewS3BucketACL() S3BucketACL {
+	return S3BucketACL{}
 }
 
-func (m S3BucketAcl) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the S3BucketACL middleware.
+func (m S3BucketACL) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	for _, iacResource := range *resourcesFromState {
 		// Ignore all resources other than s3 buckets

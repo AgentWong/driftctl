@@ -6,12 +6,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Config holds logger configuration including log level, formatter, and caller reporting.
 type Config struct {
 	Level        logrus.Level
 	Formatter    logrus.Formatter
 	ReportCaller bool
 }
 
+// Init initialises the global logrus logger using the application config.
 func Init() {
 	config := getConfig()
 	logrus.SetLevel(config.Level)

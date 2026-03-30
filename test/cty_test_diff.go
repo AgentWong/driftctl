@@ -18,7 +18,7 @@ import (
 	"github.com/zclconf/go-cty/cty/gocty"
 )
 
-func doTestDiff(got []*resource.Resource, dirName string, provider terraform.TerraformProvider, deserializer *resource.Deserializer, shouldUpdate bool) (diff.Changelog, error) {
+func doTestDiff(got []*resource.Resource, dirName string, provider terraform.Provider, deserializer *resource.Deserializer, shouldUpdate bool) (diff.Changelog, error) {
 	resources := make(map[string][]resource.Attributes)
 
 	for _, r := range got {
@@ -51,11 +51,11 @@ func doTestDiff(got []*resource.Resource, dirName string, provider terraform.Ter
 			goldenfile.WriteFile(dirName, unm, resGoldenName)
 		}
 		file := goldenfile.ReadFile(dirName, resGoldenName)
-		decodedJson, err := json.Unmarshal(file, ctyType)
+		decodedJSON, err := json.Unmarshal(file, ctyType)
 		if err != nil {
 			panic(err)
 		}
-		decodedResources, err := deserializer.Deserialize(ty, decodedJson.AsValueSlice())
+		decodedResources, err := deserializer.Deserialize(ty, decodedJSON.AsValueSlice())
 		if err != nil {
 			panic(err)
 		}
@@ -74,7 +74,7 @@ func doTestDiff(got []*resource.Resource, dirName string, provider terraform.Ter
 }
 
 // CtyTestDiff Deprecated
-func CtyTestDiff(got []*resource.Resource, dirName string, provider terraform.TerraformProvider, deserializer *resource.Deserializer, shouldUpdate bool, t *testing.T) {
+func CtyTestDiff(got []*resource.Resource, dirName string, provider terraform.Provider, deserializer *resource.Deserializer, shouldUpdate bool, t *testing.T) {
 	changelog, err := doTestDiff(got, dirName, provider, deserializer, shouldUpdate)
 	if err != nil {
 		panic(err)

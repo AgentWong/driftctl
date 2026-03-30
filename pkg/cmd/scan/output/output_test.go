@@ -274,7 +274,7 @@ func TestGetPrinter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetPrinter(OutputConfig{
+			if got := GetPrinter(Config{
 				Key:  tt.key,
 				Path: tt.path,
 			}, tt.quiet); !reflect.DeepEqual(got, tt.want) {
@@ -287,13 +287,13 @@ func TestGetPrinter(t *testing.T) {
 func TestShouldPrint(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs []OutputConfig
+		outputs []Config
 		quiet   bool
 		want    bool
 	}{
 		{
 			name: "test stdout should not prevents printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "stdout",
 					Key:  JSONOutputType,
@@ -303,7 +303,7 @@ func TestShouldPrint(t *testing.T) {
 		},
 		{
 			name: "test output to file doesn't prevent printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "result.json",
 					Key:  JSONOutputType,
@@ -313,7 +313,7 @@ func TestShouldPrint(t *testing.T) {
 		},
 		{
 			name: "test quiet should prevents printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "result.json",
 					Key:  JSONOutputType,
@@ -324,7 +324,7 @@ func TestShouldPrint(t *testing.T) {
 		},
 		{
 			name: "test stdout should not prevents printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "result.json",
 					Key:  JSONOutputType,

@@ -26,6 +26,7 @@ import (
 	resdriftctl "github.com/snyk/driftctl/pkg/resource"
 )
 
+// TerraformStateReaderSupplier is the supplier key for Terraform state reading.
 const TerraformStateReaderSupplier = "tfstate"
 
 type decodedRes struct {
@@ -33,6 +34,7 @@ type decodedRes struct {
 	val    cty.Value
 }
 
+// TerraformStateReader represents a TerraformStateReader.
 type TerraformStateReader struct {
 	library        *terraform.ProviderLibrary
 	config         config.SupplierConfig
@@ -55,6 +57,7 @@ func (r *TerraformStateReader) initReader() error {
 	return nil
 }
 
+// NewReader creates a new instance.
 func NewReader(config config.SupplierConfig, library *terraform.ProviderLibrary, backendOpts *backend.Options, progress output.Progress, alerter *alerter.Alerter, deserializer *resource.Deserializer, filter filter.Filter) (*TerraformStateReader, error) {
 	reader := TerraformStateReader{
 		library:        library,
@@ -81,7 +84,7 @@ func (r *TerraformStateReader) retrieve() (map[string][]decodedRes, error) {
 	r.backend = b
 
 	state, err := read(r.config.Path, r.backend)
-	defer r.backend.Close()
+	defer func() { _ = r.backend.Close() }()
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +107,7 @@ func (r *TerraformStateReader) retrieve() (map[string][]decodedRes, error) {
 				continue
 			}
 
-			if r.filter != nil && r.filter.IsTypeIgnored(resource.ResourceType(resType)) {
+			if r.filter != nil && r.filter.IsTypeIgnored(resource.Type(resType)) {
 				logrus.WithFields(logrus.Fields{
 					"name": resName,
 					"type": resType,
@@ -301,6 +304,7 @@ func (r *TerraformStateReader) decode(valFromState map[string][]decodedRes) ([]*
 	return results, nil
 }
 
+// Resources implements the TerraformStateReader interface.
 func (r *TerraformStateReader) Resources() ([]*resource.Resource, error) {
 	if r.enumerator == nil {
 		return r.retrieveForState(r.config.Path)
@@ -309,13 +313,14 @@ func (r *TerraformStateReader) Resources() ([]*resource.Resource, error) {
 	return r.retrieveMultiplesStates()
 }
 
+// SourceCount implements the TerraformStateReader interface.
 func (r *TerraformStateReader) SourceCount() uint {
 	return r.sourceCount
 }
 
 func (r *TerraformStateReader) retrieveForState(path string) ([]*resource.Resource, error) {
 	r.config.Path = path
-	r.sourceCount += 1
+	r.sourceCount++
 	logrus.WithFields(logrus.Fields{
 		"path":    r.config.Path,
 		"backend": r.config.Backend,
@@ -332,7 +337,7 @@ func (r *TerraformStateReader) retrieveForState(path string) ([]*resource.Resour
 func (r *TerraformStateReader) retrieveMultiplesStates() ([]*resource.Resource, error) {
 	keys, err := r.enumerator.Enumerate()
 	if err != nil {
-		r.alerter.SendAlert("", NewStateReadingAlert(r.enumerator.Origin(), err))
+		r.alerter.SendAlert("", NewReadingAlert(r.enumerator.Origin(), err))
 		return nil, errors.Wrap(err, r.config.String())
 	}
 
@@ -348,7 +353,7 @@ func (r *TerraformStateReader) retrieveMultiplesStates() ([]*resource.Resource, 
 		resources, err := r.retrieveForState(key)
 		if err != nil {
 			readingError.Add(err)
-			r.alerter.SendAlert("", NewStateReadingAlert(key, err))
+			r.alerter.SendAlert("", NewReadingAlert(key, err))
 			continue
 		}
 		isSuccess = true

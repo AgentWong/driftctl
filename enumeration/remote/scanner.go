@@ -9,13 +9,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Scanner discovers remote resources using the registered enumerators.
 type Scanner struct {
 	remoteLibrary *common.RemoteLibrary
-	alerter       alerter.AlerterInterface
+	alerter       alerter.Interface
 	filter        enumeration.Filter
 }
 
-func NewScanner(remoteLibrary *common.RemoteLibrary, alerter alerter.AlerterInterface, filter enumeration.Filter) *Scanner {
+// NewScanner creates a Scanner.
+func NewScanner(remoteLibrary *common.RemoteLibrary, alerter alerter.Interface, filter enumeration.Filter) *Scanner {
 	return &Scanner{
 		remoteLibrary: remoteLibrary,
 		alerter:       alerter,
@@ -23,6 +25,7 @@ func NewScanner(remoteLibrary *common.RemoteLibrary, alerter alerter.AlerterInte
 	}
 }
 
+// Resources returns all remote resources discovered by the registered enumerators.
 func (s *Scanner) Resources() ([]*resource.Resource, error) {
 	var allResources []*resource.Resource
 

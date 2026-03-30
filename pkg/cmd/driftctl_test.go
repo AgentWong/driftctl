@@ -122,7 +122,7 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			if len(c.env) > 0 {
 				for key, val := range c.env {
 					_ = os.Setenv(key, val)
-					defer os.Unsetenv(key)
+					defer func() { _ = os.Unsetenv(key) }()
 				}
 			}
 			cmd := NewDriftctlCmd(mocks.MockBuild{})
@@ -259,7 +259,7 @@ func TestDriftctlCmd_ShouldCheckVersion(t *testing.T) {
 
 			os.Clearenv()
 			for key, val := range c.env {
-				os.Setenv(key, val)
+				_ = os.Setenv(key, val)
 			}
 
 			cmd := NewDriftctlCmd(mocks.MockBuild{Release: c.IsRelease, UsageReporting: c.UsageReport})

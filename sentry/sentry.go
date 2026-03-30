@@ -1,3 +1,4 @@
+// Package sentry provides error reporting via Sentry.
 package sentry
 
 import (
@@ -15,6 +16,7 @@ var excludedErrorTypes = []error{
 	cmderrors.UsageError{},
 }
 
+// Initialize sets up the Sentry SDK with the driftctl DSN and release version.
 func Initialize() error {
 	logrus.Debug("Enabled error reporting")
 	return gosentry.Init(gosentry.ClientOptions{
@@ -42,6 +44,7 @@ func shouldCaptureException(err error) bool {
 	return true
 }
 
+// CaptureException reports the given error to Sentry if it should be captured.
 func CaptureException(err error) {
 	if shouldCaptureException(err) {
 		gosentry.CaptureException(err)

@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsLaunchTemplateResourceType is the Terraform resource type for AWS EC2 launch templates.
 const AwsLaunchTemplateResourceType = "aws_launch_template"
 
 func initAwsLaunchTemplateMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

@@ -12,15 +12,19 @@ var (
 	UnsupportedVersionConstraints = []string{"<0.11.0"}
 )
 
+// UnsupportedVersionError represents a UnsupportedVersionError.
+// UnsupportedVersionError indicates an unsupported state version.
 type UnsupportedVersionError struct {
 	StateFile string
 	Version   *version.Version
 }
 
+// Error implements the UnsupportedVersionError interface.
 func (u *UnsupportedVersionError) Error() string {
 	return fmt.Sprintf("%s was generated using Terraform %s which is currently not supported by driftctl. Please read documentation at https://docs.driftctl.com/limitations", u.StateFile, u.Version)
 }
 
+// IsVersionSupported checks if the Terraform state version is supported.
 func IsVersionSupported(rawVersion string) (bool, error) {
 	v, err := version.NewVersion(rawVersion)
 	if err != nil {

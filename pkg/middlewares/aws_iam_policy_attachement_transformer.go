@@ -11,16 +11,19 @@ import (
   We decided to transform all attachments to policy_attachment so we can find which attachments are managed.
 */
 
+// IamPolicyAttachmentTransformer is a middleware.
 type IamPolicyAttachmentTransformer struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewIamPolicyAttachmentTransformer(resourceFactory resource.ResourceFactory) IamPolicyAttachmentTransformer {
+// NewIamPolicyAttachmentTransformer creates a IamPolicyAttachmentTransformer.
+func NewIamPolicyAttachmentTransformer(resourceFactory resource.Factory) IamPolicyAttachmentTransformer {
 	return IamPolicyAttachmentTransformer{
 		resourceFactory,
 	}
 }
 
+// Execute applies the IamPolicyAttachmentTransformer middleware.
 func (m IamPolicyAttachmentTransformer) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	*remoteResources = m.transform(remoteResources)
 	*resourcesFromState = m.transform(resourcesFromState)

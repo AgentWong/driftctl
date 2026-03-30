@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsSecurityGroupResourceType is the Terraform resource type for aws_security_group.
 const AwsSecurityGroupResourceType = "aws_security_group"
 
 func initAwsSecurityGroupMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

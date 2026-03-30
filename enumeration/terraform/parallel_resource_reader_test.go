@@ -55,7 +55,7 @@ func TestParallelResourceReader_Wait(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewParallelResourceReader(parallel.NewParallelRunner(context.TODO(), 10))
+			p := NewParallelResourceReader(parallel.NewRunner(context.TODO(), 10))
 
 			for _, fun := range tt.execs {
 				p.Run(fun)

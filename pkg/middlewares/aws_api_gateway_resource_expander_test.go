@@ -23,7 +23,7 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			mocks: func(factory *dctlresource.MockResourceFactory) {
 				factory.On(
 					"CreateAbstractResource",
-					aws.AwsApiGatewayResourceResourceType,
+					aws.AwsAPIGatewayResourceResourceType,
 					"bar",
 					map[string]interface{}{
 						"rest_api_id": "foo",
@@ -31,13 +31,13 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 					},
 				).Once().Return(&resource.Resource{
 					Id:   "bar",
-					Type: aws.AwsApiGatewayResourceResourceType,
+					Type: aws.AwsAPIGatewayResourceResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "bar",
 					},
@@ -46,14 +46,14 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "bar",
 					},
 				},
 				{
 					Id:   "bar",
-					Type: aws.AwsApiGatewayResourceResourceType,
+					Type: aws.AwsAPIGatewayResourceResourceType,
 				},
 			},
 		},
@@ -62,28 +62,28 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "",
 					},
 				},
 				{
 					Id:    "bar",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "",
 					},
 				},
 				{
 					Id:    "bar",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -96,7 +96,7 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 				tt.mocks(factory)
 			}
 
-			m := NewAwsApiGatewayResourceExpander(factory)
+			m := NewAwsAPIGatewayResourceExpander(factory)
 			err := m.Execute(&[]*resource.Resource{}, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)

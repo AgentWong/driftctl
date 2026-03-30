@@ -31,7 +31,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 		{
 			name:      "TestBadResponse(404)",
 			responder: httpmock.NewBytesResponder(http.StatusNotFound, []byte{}),
-			assert: func(assert *assert.Assertions, tmpDir string, err error) {
+			assert: func(assert *assert.Assertions, _ string, err error) {
 				assert.Equal(
 					fmt.Sprintf("unsuccessful request to %s: 404", url),
 					err.Error(),
@@ -41,7 +41,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 		{
 			name:      "TestProviderNotFound(403)",
 			responder: httpmock.NewBytesResponder(http.StatusForbidden, []byte{}),
-			assert: func(assert *assert.Assertions, tmpDir string, err error) {
+			assert: func(assert *assert.Assertions, _ string, err error) {
 				assert.IsType(
 					terraformError.ProviderNotFoundError{},
 					err,
@@ -51,7 +51,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 		{
 			name:      "TestHttpError",
 			responder: httpmock.NewErrorResponder(fmt.Errorf("test error")),
-			assert: func(assert *assert.Assertions, tmpDir string, err error) {
+			assert: func(assert *assert.Assertions, _ string, err error) {
 				assert.Contains(err.Error(), "test error")
 			},
 		},
@@ -91,14 +91,12 @@ func TestProviderDownloader_Download(t *testing.T) {
 
 			if c.responder != nil {
 				httpmock.RegisterResponder("GET", url, c.responder)
-			} else {
-				if c.testFile != nil {
-					body, err := os.ReadFile("./testdata/" + *c.testFile)
-					if err != nil {
-						tt.Error(err)
-					}
-					httpmock.RegisterResponder("GET", url, httpmock.NewBytesResponder(*c.httpStatus, body))
+			} else if c.testFile != nil {
+				body, err := os.ReadFile("./testdata/" + *c.testFile)
+				if err != nil {
+					tt.Error(err)
 				}
+				httpmock.RegisterResponder("GET", url, httpmock.NewBytesResponder(*c.httpStatus, body))
 			}
 
 			err := downloader.Download(url, tmpDir)

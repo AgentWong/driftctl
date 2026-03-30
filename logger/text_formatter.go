@@ -24,6 +24,7 @@ type TextFormatter struct {
 	levelTextMaxLength int
 }
 
+// NewTextFormatter creates a TextFormatter with the given maximum level-text width.
 func NewTextFormatter(levelTextMaxLength int) *TextFormatter {
 	if levelTextMaxLength <= 0 {
 		for _, level := range logrus.AllLevels {
@@ -37,6 +38,7 @@ func NewTextFormatter(levelTextMaxLength int) *TextFormatter {
 	return &TextFormatter{levelTextMaxLength: levelTextMaxLength}
 }
 
+// Format renders a logrus entry into a human-readable byte slice.
 func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	var b *bytes.Buffer
 	if entry.Buffer != nil {
@@ -75,11 +77,12 @@ func (f *TextFormatter) writeCaller(entry *logrus.Entry, b *bytes.Buffer) error 
 		funcVal := fmt.Sprintf("%s()", entry.Caller.Function)
 		fileVal := fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
 
-		if fileVal == "" {
-			caller = caller + funcVal
-		} else if funcVal == "" {
+		switch {
+		case fileVal == "":
+			caller += funcVal
+		case funcVal == "":
 			caller = fileVal
-		} else {
+		default:
 			caller = fileVal + " " + funcVal
 		}
 

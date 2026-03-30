@@ -50,6 +50,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **S3 backend testability** — `s3_reader.go` `S3Client` field changed from `*s3.Client` to `S3GetObjectAPI` interface; `s3.go` (enumerator) `client` field changed from `*s3.Client` to `s3.ListObjectsV2APIClient` interface
 - **Provider download — native arm64 support** — removed outdated `darwin/arm64 → amd64` architecture override in `provider_config.go`; modern provider versions ship native arm64 binaries
 - **AWS SDK v1 import cleanup** — migrated ~35 test files from v1 `aws-sdk-go/aws` pointer helpers and `awsutil.Prettify` to v2 equivalents (`aws-sdk-go-v2/aws` and `fmt.Sprintf`)
+- **Linting — golangci-lint v2 enabled with `staticcheck`, `gocritic`, and `revive`** — `.golangci.yml` updated to version 2 format with three additional linters:
+  - `staticcheck`: `WriteString(Sprintf(...))` → `fmt.Fprintf`, removed deprecated `cobra.ExactValidArgs`, removed unnecessary `.Analysis.` embedded field selectors, lowercased error strings, lifted loop conditions
+  - `gocritic`: `else { if }` → `else if`, if-else chains → `switch`, `+= ` assignment operators, `<= 0` → `== 0`, removed redundant unslice `[:]`, dereferenced pointer receivers simplified
+  - `revive`: added doc comments to all exported constants, types, and functions across `enumeration/resource/aws/`, `pkg/`, and `test/` packages; renamed `EXIT_IN_SYNC/EXIT_NOT_IN_SYNC/EXIT_ERROR` → `ExitInSync/ExitNotInSync/ExitError`; renamed `NormalizeJsonString` → `NormalizeJSONString`; added package comments
+  - `errcheck`: all unchecked `Close()`, `os.Remove()`, `os.Setenv()`, and `fmt.Fprintf()` return values explicitly discarded with `_ =` or wrapped in `defer func() { _ = ... }()`
+
+### Refactored — `revive` lint compliance (bulk)
+- **Stuttering type renames** — renamed types whose package-qualified names stuttered:
+  - `build.BuildInterface` → `build.Interface`
+  - `parallel.ParallelRunner` → `parallel.Runner` (and `NewParallelRunner` → `NewRunner`)
+  - `terraform.TerraformProvider` → `terraform.Provider` (in `enumeration/terraform/`)
+  - `filter.FilterEngine` → `filter.Engine`
+  - `output.OutputConfig` → `output.Config`
+  - `remote/terraform.TerraformProvider` → `remote/terraform.Provider` and `TerraformProviderConfig` → `Config`
+- **`var-naming` const renames** — renamed API Gateway constants to use idiomatic Go initialisms:
+  - `AwsApiGateway*` → `AwsAPIGateway*` (Account, BasePathMapping, Deployment, RequestValidator, RestApi→RestAPI, VpcLink, V2RouteResponse, and others)
+  - `AwsApiGatewayV2*` func/init names updated to match (`initAwsApiGatewayV2*` → `initAwsAPIGatewayV2*`)
+- **`var-naming` field/param renames** — `Id` → `ID`, `tableId` → `tableID`, `PrefixListId` → `PrefixListID`, `networkAclId` → `networkACLID`, `CidrBlock` → `cidrBlock` (unexported params), `GetDownloadUrl` → `GetDownloadURL`, `NormalizeJsonString` → `NormalizeJSONString`, `CreateSecurityGroupRuleIdHash` → `CreateSecurityGroupRuleIDHash`
+- **`exported` doc comments** — added doc comments to all exported types, functions, methods, and constants across:
+  - `build/`, `enumeration/alerter/`, `enumeration/diagnostic/`, `enumeration/parallel/`, `enumeration/terraform/`, `enumeration/remote/`
+  - `pkg/analyser/`, `pkg/categorizer/`, `pkg/cmd/`, `pkg/filter/`, `pkg/helpers/`, `pkg/output/`, `pkg/resource/`, `pkg/version/`
+  - `sentry/`, `test/remote/`, `test/tfe/`
+  - ~70 `pkg/resource/aws/` resource type constant files
+  - ~50 `enumeration/resource/aws/` resource type constant files
+- **`package-comments`** — added package-level doc comments to `filter`, `helpers`, `diagnostic`, `sentry`, `terraform` (enumeration), `remote` (test), `lock`, `output`, `version`, `hcl`, `backend`, and `aws` (pkg/resource)
+- **`unused-parameter`** — replaced unused parameters with `_` in test callbacks (`provider_downloader_test.go`, `driftctl_test.go`, `provider_installer.go`, `aws/init.go`)
+- **`receiver-naming`** — standardized receiver names for `AWSTerraformProvider` (all use `a`)
+- **`unexported-return`** — changed `NewProgress` return type from `*progress` to `Progress` interface; changed `NewTFCloudConfigReader` to return exported `TFCloudConfigReader` type
+- **`empty-block`** — added `runtime.Gosched()` to busy-wait loop in `progress_test.go`
+- **`indent-error-flow`** — removed unnecessary `else` after early-return `if` blocks in middleware files
 
 ## [1.0.0] - 2026-03-28
 

@@ -1,9 +1,11 @@
+// Package memstore provides an in-memory key-value store with named buckets.
 package memstore
 
 import (
 	"sync"
 )
 
+// Bucket is a thread-safe key-value store partition.
 type Bucket interface {
 	Set(string, interface{})
 	Get(string) interface{}

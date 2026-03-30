@@ -1,3 +1,4 @@
+// Package iac provides IaC (Infrastructure as Code) state reading and supplier logic.
 package iac
 
 import (
@@ -5,14 +6,17 @@ import (
 	"strings"
 )
 
+// StateReadingError aggregates multiple errors encountered while reading state files.
 type StateReadingError struct {
 	errors []error
 }
 
+// NewStateReadingError returns an empty StateReadingError.
 func NewStateReadingError() *StateReadingError {
 	return &StateReadingError{}
 }
 
+// Add appends an error to the StateReadingError collection.
 func (s *StateReadingError) Add(err error) {
 	s.errors = append(s.errors, err)
 }

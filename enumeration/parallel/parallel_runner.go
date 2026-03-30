@@ -1,3 +1,4 @@
+// Package parallel provides a concurrency-limited parallel task runner.
 package parallel
 
 import (
@@ -13,7 +14,8 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-type ParallelRunner struct {
+// Runner executes tasks concurrently up to a configurable limit using a semaphore.
+type Runner struct {
 	sem     *semaphore.Weighted
 	wg      *sync.WaitGroup
 	ctx     context.Context
@@ -24,9 +26,10 @@ type ParallelRunner struct {
 	waiting *atomic.Bool
 }
 
-func NewParallelRunner(ctx context.Context, maxRun int64) *ParallelRunner {
+// NewRunner creates a new Runner that allows at most maxRun concurrent tasks.
+func NewRunner(ctx context.Context, maxRun int64) *Runner {
 	ctx, cancelFunc := context.WithCancel(ctx)
-	return &ParallelRunner{
+	return &Runner{
 		sem:     semaphore.NewWeighted(maxRun),
 		wg:      &sync.WaitGroup{},
 		ctx:     ctx,
@@ -38,9 +41,10 @@ func NewParallelRunner(ctx context.Context, maxRun int64) *ParallelRunner {
 	}
 }
 
-func (p *ParallelRunner) SubRunner() *ParallelRunner {
+// SubRunner creates a child Runner that shares the parent's semaphore.
+func (p *Runner) SubRunner() *Runner {
 	ctx, cancelFunc := context.WithCancel(p.ctx)
-	return &ParallelRunner{
+	return &Runner{
 		sem:     p.sem,
 		wg:      &sync.WaitGroup{},
 		ctx:     ctx,
@@ -52,20 +56,22 @@ func (p *ParallelRunner) SubRunner() *ParallelRunner {
 	}
 }
 
-func (p *ParallelRunner) Read() chan interface{} {
+func (p *Runner) Read() chan interface{} {
 	p.wait()
 	return p.resChan
 }
 
-func (p *ParallelRunner) DoneChan() <-chan struct{} {
+// DoneChan returns a channel that is closed when the runner's context is cancelled.
+func (p *Runner) DoneChan() <-chan struct{} {
 	return p.ctx.Done()
 }
 
-func (p *ParallelRunner) Err() error {
+// Err returns the first error encountered by a running task, or nil.
+func (p *Runner) Err() error {
 	return p.err
 }
 
-func (p *ParallelRunner) wait() {
+func (p *Runner) wait() {
 	if !p.waiting.Swap(true) {
 		go func() {
 			p.wg.Wait()
@@ -74,7 +80,8 @@ func (p *ParallelRunner) wait() {
 	}
 }
 
-func (p *ParallelRunner) Run(runnable func() (interface{}, error)) {
+// Run submits a runnable task to the runner to be executed concurrently.
+func (p *Runner) Run(runnable func() (interface{}, error)) {
 	p.wg.Add(1)
 	go func() {
 		if err := p.sem.Acquire(p.ctx, 1); err == nil {
@@ -102,9 +109,10 @@ func (p *ParallelRunner) Run(runnable func() (interface{}, error)) {
 	}()
 }
 
-func (p *ParallelRunner) Stop(err error) {
+// Stop cancels the runner's context with the given error, preventing new tasks from running.
+func (p *Runner) Stop(err error) {
 	if !p.hasErr.Swap(true) {
-		logrus.Debug("Stopping ParallelRunner")
+		logrus.Debug("Stopping Runner")
 		p.err = err
 		p.cancel()
 	}

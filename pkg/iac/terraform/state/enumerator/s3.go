@@ -15,11 +15,13 @@ import (
 	"github.com/snyk/driftctl/pkg/iac/config"
 )
 
+// S3Enumerator discovers Terraform state files in an S3 bucket.
 type S3Enumerator struct {
 	config config.SupplierConfig
 	client s3.ListObjectsV2APIClient
 }
 
+// NewS3Enumerator creates an S3Enumerator for the given config.
 func NewS3Enumerator(config config.SupplierConfig) *S3Enumerator {
 	envProxy := envproxy.NewEnvProxy("DCTL_S3_", "AWS_")
 	envProxy.Apply()
@@ -35,10 +37,12 @@ func NewS3Enumerator(config config.SupplierConfig) *S3Enumerator {
 	}
 }
 
+// Origin returns the source path of this enumerator.
 func (s *S3Enumerator) Origin() string {
 	return s.config.String()
 }
 
+// Enumerate lists matching state files in the configured S3 bucket.
 func (s *S3Enumerator) Enumerate() ([]string, error) {
 	bucketPath := strings.Split(s.config.Path, "/")
 	if len(bucketPath) < 2 {

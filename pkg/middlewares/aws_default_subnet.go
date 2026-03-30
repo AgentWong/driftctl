@@ -6,14 +6,16 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Default subnet should not be shown as unmanaged as they are present by default
-// This middleware ignores default subnet from unmanaged resources if they are not managed by IaC
+// AwsDefaultSubnet Default subnet should not be shown as unmanaged as they are present by default
+// AwsDefaultSubnet this middleware ignores default subnet from unmanaged resources if they are not managed by IaC
 type AwsDefaultSubnet struct{}
 
+// NewAwsDefaultSubnet creates a AwsDefaultSubnet.
 func NewAwsDefaultSubnet() AwsDefaultSubnet {
 	return AwsDefaultSubnet{}
 }
 
+// Execute applies the AwsDefaultSubnet middleware.
 func (m AwsDefaultSubnet) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	newRemoteResources := make([]*resource.Resource, 0)

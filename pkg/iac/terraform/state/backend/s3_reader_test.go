@@ -23,7 +23,7 @@ type mockS3GetObjectAPI struct {
 	mock.Mock
 }
 
-func (m *mockS3GetObjectAPI) GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
+func (m *mockS3GetObjectAPI) GetObject(ctx context.Context, params *s3.GetObjectInput, _ ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
 	args := m.Called(ctx, params)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -99,7 +99,7 @@ func TestS3Backend_Read(t *testing.T) {
 	assert := assert.New(t)
 	fakeS3 := &mockS3GetObjectAPI{}
 	fakeResponse, _ := os.Open("testdata/valid.tfstate")
-	defer fakeResponse.Close()
+	defer func() { _ = fakeResponse.Close() }()
 	fakeS3.On("GetObject", mock.Anything, &s3.GetObjectInput{
 		Bucket: aws.String("foobar"),
 		Key:    aws.String("path/to/state"),

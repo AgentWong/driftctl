@@ -1,3 +1,4 @@
+// Package hcl parses Terraform HCL configuration for backend and cloud block discovery.
 package hcl
 
 import (
@@ -9,6 +10,7 @@ import (
 	"github.com/snyk/driftctl/pkg/iac/terraform/state/backend"
 )
 
+// BackendBlock represents a Terraform backend configuration block.
 type BackendBlock struct {
 	Name               string   `hcl:"name,label"`
 	Path               string   `hcl:"path,optional"`
@@ -22,6 +24,7 @@ type BackendBlock struct {
 	Remain             hcl.Body `hcl:",remain"`
 }
 
+// SupplierConfig converts the backend block to a supplier config.
 func (b BackendBlock) SupplierConfig(workspace string) *config.SupplierConfig {
 	switch b.Name {
 	case "local":
@@ -62,4 +65,3 @@ func (b BackendBlock) parseS3Backend(ws string) *config.SupplierConfig {
 		Path:    path.Join(b.Bucket, keyPrefix, b.Key),
 	}
 }
-

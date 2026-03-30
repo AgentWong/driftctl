@@ -1,7 +1,7 @@
 package terraform
 
-// Representation of a TF Provider able to give it's schema and reade a resource
-type TerraformProvider interface {
+// Provider defines the interface for a Terraform provider that supplies schemas and reads resources.
+type Provider interface {
 	SchemaSupplier
 	ResourceReader
 	Cleanup()

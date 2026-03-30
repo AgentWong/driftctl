@@ -22,39 +22,39 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 		},
@@ -64,29 +64,29 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			remoteResources: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 		},
@@ -95,11 +95,11 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{},
@@ -110,62 +110,62 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
 					Id:   "domain4",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
 					Id:   "domain3",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain3",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
 					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
 					Id:   "domain3",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewAwsApiGatewayDomainNamesReconciler()
+			m := NewAwsAPIGatewayDomainNamesReconciler()
 			err := m.Execute(&tt.remoteResources, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)

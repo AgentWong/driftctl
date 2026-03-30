@@ -9,10 +9,12 @@ import (
 
 type Chain []Middleware
 
+// NewChain creates a Chain.
 func NewChain(middlewares ...Middleware) Chain {
 	return middlewares
 }
 
+// Execute applies the Chain middleware.
 func (c Chain) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	for _, middleware := range c {
 		logrus.WithFields(logrus.Fields{

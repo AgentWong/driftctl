@@ -13,13 +13,18 @@ import (
 	"github.com/snyk/driftctl/pkg/analyser"
 )
 
+// ConsoleOutputType is the key identifying the console output format.
 const ConsoleOutputType = "console"
+
+// ConsoleOutputExample is the example URI for the console output format.
 const ConsoleOutputExample = "console://"
 
+// Console writes scan analysis results to standard output in human-readable form.
 type Console struct {
 	summary string
 }
 
+// NewConsole creates a new Console output with the default summary template.
 func NewConsole() *Console {
 	return &Console{
 		`Total coverage is {{ analysis.Coverage }}`,
@@ -195,7 +200,7 @@ func formatResourceAttributes(res *resource.Resource) string {
 		return ""
 	}
 	attributes := res.Schema().HumanReadableAttributesFunc(res)
-	if len(attributes) <= 0 {
+	if len(attributes) == 0 {
 		return ""
 	}
 	// sort attributes

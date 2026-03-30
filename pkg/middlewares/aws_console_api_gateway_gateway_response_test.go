@@ -22,31 +22,31 @@ func TestAwsConsoleApiGatewayGatewayResponse_Execute(t *testing.T) {
 			remoteResources: []*resource.Resource{
 				{
 					Id:   "rest-api",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
 					Id:   "gtw-response",
-					Type: aws.AwsApiGatewayGatewayResponseResourceType,
+					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "rest-api",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
 					Id:   "gtw-response",
-					Type: aws.AwsApiGatewayGatewayResponseResourceType,
+					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:   "rest-api",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
 					Id:   "gtw-response",
-					Type: aws.AwsApiGatewayGatewayResponseResourceType,
+					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 		},
@@ -55,30 +55,30 @@ func TestAwsConsoleApiGatewayGatewayResponse_Execute(t *testing.T) {
 			remoteResources: []*resource.Resource{
 				{
 					Id:   "rest-api",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
 					Id:   "gtw-response",
-					Type: aws.AwsApiGatewayGatewayResponseResourceType,
+					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 			resourcesFromState: []*resource.Resource{
 				{
 					Id:   "rest-api",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
 					Id:   "rest-api",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewAwsConsoleApiGatewayGatewayResponse()
+			m := NewAwsConsoleAPIGatewayGatewayResponse()
 			err := m.Execute(&tt.remoteResources, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)

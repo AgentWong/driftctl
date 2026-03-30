@@ -59,8 +59,8 @@ func TestGenDriftIgnoreCmd_Input(t *testing.T) {
 			f, err := os.CreateTemp("", "TestGenDriftIgnoreCmd_Input")
 			require.Nil(t, err)
 			defer func() {
-				f.Close()
-				os.Remove(f.Name())
+				_ = f.Close()
+				_ = os.Remove(f.Name())
 			}()
 
 			args := append([]string{"gen-driftignore", "-o", f.Name()}, c.args...)
@@ -69,9 +69,8 @@ func TestGenDriftIgnoreCmd_Input(t *testing.T) {
 			if c.err != nil {
 				assert.EqualError(t, err, c.err.Error())
 				return
-			} else {
-				assert.Equal(t, c.err, err)
 			}
+			assert.Equal(t, c.err, err)
 
 			output, err := os.ReadFile(f.Name())
 			require.Nil(t, err)
@@ -88,7 +87,7 @@ func TestGenDriftIgnoreCmd_Input(t *testing.T) {
 func TestGenDriftIgnoreCmd_ValidFlags(t *testing.T) {
 	rootCmd := &cobra.Command{Use: "root"}
 	genDriftIgnoreCmd := NewGenDriftIgnoreCmd()
-	genDriftIgnoreCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+	genDriftIgnoreCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 	rootCmd.AddCommand(genDriftIgnoreCmd)
 
 	cases := []struct {
@@ -116,7 +115,7 @@ func TestGenDriftIgnoreCmd_ValidFlags(t *testing.T) {
 func TestGenDriftIgnoreCmd_InvalidFlags(t *testing.T) {
 	rootCmd := &cobra.Command{Use: "root"}
 	genDriftIgnoreCmd := NewGenDriftIgnoreCmd()
-	genDriftIgnoreCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+	genDriftIgnoreCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 	rootCmd.AddCommand(genDriftIgnoreCmd)
 
 	cases := []struct {

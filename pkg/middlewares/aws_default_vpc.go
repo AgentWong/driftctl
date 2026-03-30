@@ -6,14 +6,16 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Default VPC should not be shown as unmanaged as they are present by default
-// This middleware ignores default VPC from unmanaged resources if they are not managed by IaC
+// AwsDefaultVPC Default VPC should not be shown as unmanaged as they are present by default
+// AwsDefaultVPC this middleware ignores default VPC from unmanaged resources if they are not managed by IaC
 type AwsDefaultVPC struct{}
 
+// NewAwsDefaultVPC creates a AwsDefaultVPC.
 func NewAwsDefaultVPC() AwsDefaultVPC {
 	return AwsDefaultVPC{}
 }
 
+// Execute applies the AwsDefaultVPC middleware.
 func (m AwsDefaultVPC) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	newRemoteResources := make([]*resource.Resource, 0)

@@ -6,12 +6,13 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsSqsQueuePolicyResourceType is the Terraform resource type for aws_sqs_queue_policy.
 const AwsSqsQueuePolicyResourceType = "aws_sqs_queue_policy"
 
 func initAwsSQSQueuePolicyMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
 	resourceSchemaRepository.SetNormalizeFunc(AwsSqsQueuePolicyResourceType, func(res *resource.Resource) {
 		val := res.Attrs
-		jsonString, err := helpers.NormalizeJsonString((*val)["policy"])
+		jsonString, err := helpers.NormalizeJSONString((*val)["policy"])
 		if err != nil {
 			return
 		}
@@ -19,7 +20,7 @@ func initAwsSQSQueuePolicyMetaData(resourceSchemaRepository dctlresource.SchemaR
 	})
 	resourceSchemaRepository.UpdateSchema(AwsSqsQueuePolicyResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 }

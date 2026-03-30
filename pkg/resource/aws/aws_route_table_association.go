@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsRouteTableAssociationResourceType is the Terraform resource type for route table associations.
 const AwsRouteTableAssociationResourceType = "aws_route_table_association"
 
 func initAwsRouteTableAssociationMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

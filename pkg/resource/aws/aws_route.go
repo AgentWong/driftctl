@@ -9,6 +9,7 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// AwsRouteResourceType is the Terraform resource type for VPC routes.
 const AwsRouteResourceType = "aws_route"
 
 func initAwsRouteMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
@@ -50,17 +51,18 @@ func initAwsRouteMetaData(resourceSchemaRepository dctlresource.SchemaRepository
 	})
 }
 
-func CalculateRouteID(tableId, CidrBlock, Ipv6CidrBlock, PrefixListId *string) string {
-	if CidrBlock != nil && *CidrBlock != "" {
-		return fmt.Sprintf("r-%s%d", *tableId, helpers.HashcodeString(*CidrBlock))
+// CalculateRouteID computes the synthetic route ID used by Terraform.
+func CalculateRouteID(tableID, cidrBlock, ipv6CidrBlock, prefixListID *string) string {
+	if cidrBlock != nil && *cidrBlock != "" {
+		return fmt.Sprintf("r-%s%d", *tableID, helpers.HashcodeString(*cidrBlock))
 	}
 
-	if Ipv6CidrBlock != nil && *Ipv6CidrBlock != "" {
-		return fmt.Sprintf("r-%s%d", *tableId, helpers.HashcodeString(*Ipv6CidrBlock))
+	if ipv6CidrBlock != nil && *ipv6CidrBlock != "" {
+		return fmt.Sprintf("r-%s%d", *tableID, helpers.HashcodeString(*ipv6CidrBlock))
 	}
 
-	if PrefixListId != nil && *PrefixListId != "" {
-		return fmt.Sprintf("r-%s%d", *tableId, helpers.HashcodeString(*PrefixListId))
+	if prefixListID != nil && *prefixListID != "" {
+		return fmt.Sprintf("r-%s%d", *tableID, helpers.HashcodeString(*prefixListID))
 	}
 
 	return ""

@@ -1,3 +1,4 @@
 package aws
 
-const AwsApiGatewayStageResourceType = "aws_api_gateway_stage"
+// AwsAPIGatewayStageResourceType is the resource type for AWS API Gateway Stages.
+const AwsAPIGatewayStageResourceType = "aws_api_gateway_stage"

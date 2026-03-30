@@ -7,17 +7,19 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Remove root_block_device from aws_instance resources and create dedicated aws_ebs_volume resources
+// AwsInstanceBlockDeviceResourceMapper remove root_block_device from aws_instance resources and create dedicated aws_ebs_volume resources
 type AwsInstanceBlockDeviceResourceMapper struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewAwsInstanceBlockDeviceResourceMapper(resourceFactory resource.ResourceFactory) AwsInstanceBlockDeviceResourceMapper {
+// NewAwsInstanceBlockDeviceResourceMapper creates a AwsInstanceBlockDeviceResourceMapper.
+func NewAwsInstanceBlockDeviceResourceMapper(resourceFactory resource.Factory) AwsInstanceBlockDeviceResourceMapper {
 	return AwsInstanceBlockDeviceResourceMapper{
 		resourceFactory: resourceFactory,
 	}
 }
 
+// Execute applies the AwsInstanceBlockDeviceResourceMapper middleware.
 func (a AwsInstanceBlockDeviceResourceMapper) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	newStateResources := make([]*resource.Resource, 0)

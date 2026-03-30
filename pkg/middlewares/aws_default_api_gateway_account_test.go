@@ -26,19 +26,19 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 				},
 				{
 					Id:    "a-dummy-account",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			[]*resource.Resource{
 				{
 					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -48,7 +48,7 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 				},
 				{
 					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -61,12 +61,12 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 				},
 				{
 					Id:    "a-dummy-account",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -80,7 +80,7 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewAwsDefaultApiGatewayAccount()
+			m := NewAwsDefaultAPIGatewayAccount()
 			err := m.Execute(&tt.remoteResources, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)

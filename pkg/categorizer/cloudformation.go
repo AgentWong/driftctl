@@ -24,10 +24,12 @@ var uuidPattern = regexp.MustCompile(`(?i)^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[
 // matching the CloudFormation physical-ID naming convention.
 type CloudFormationCategorizer struct{}
 
+// NewCloudFormationCategorizer creates a new CloudFormationCategorizer.
 func NewCloudFormationCategorizer() *CloudFormationCategorizer {
 	return &CloudFormationCategorizer{}
 }
 
+// Categorize returns CategoryCloudFormationManaged if the resource appears to be managed by CloudFormation.
 func (c *CloudFormationCategorizer) Categorize(r *resource.Resource) (Category, bool) {
 	if matchesCfnTag(r) {
 		return CategoryCloudFormationManaged, true

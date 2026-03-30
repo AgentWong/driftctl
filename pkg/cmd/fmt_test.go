@@ -16,7 +16,7 @@ import (
 
 func Test_runFmt_InvalidInput(t *testing.T) {
 	opts := &pkg.FmtOptions{
-		Output: output.OutputConfig{
+		Output: output.Config{
 			Key: output.ConsoleOutputType,
 		},
 	}
@@ -25,7 +25,7 @@ func Test_runFmt_InvalidInput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer input.Close()
+	defer func() { _ = input.Close() }()
 
 	err = runFmt(opts, input)
 	require.NotNil(t, err)
@@ -34,7 +34,7 @@ func Test_runFmt_InvalidInput(t *testing.T) {
 
 func Test_runFmt(t *testing.T) {
 	opts := &pkg.FmtOptions{
-		Output: output.OutputConfig{
+		Output: output.Config{
 			Key: output.ConsoleOutputType,
 		},
 	}
@@ -43,7 +43,7 @@ func Test_runFmt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer input.Close()
+	defer func() { _ = input.Close() }()
 
 	stdout := os.Stdout // keep backup of the real stdout
 	stderr := os.Stderr // keep backup of the real stderr

@@ -1,3 +1,4 @@
+// Package analyser provides drift analysis and reporting.
 package analyser
 
 import (
@@ -11,17 +12,20 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// AttributeChange records a single attribute difference between IaC and remote.
 type AttributeChange struct {
 	Path   string      `json:"path"`
 	Before interface{} `json:"before"`
 	After  interface{} `json:"after"`
 }
 
+// DriftedResource pairs a resource with its detected attribute changes.
 type DriftedResource struct {
 	Res              *resource.Resource
 	AttributeChanges []AttributeChange
 }
 
+// Summary holds aggregate counts from a drift analysis.
 type Summary struct {
 	TotalResources             int  `json:"total_resources"`
 	TotalUnmanaged             int  `json:"total_unmanaged"`
@@ -34,6 +38,7 @@ type Summary struct {
 	TotalIaCSourceCount        uint `json:"total_iac_source_count"`
 }
 
+// Analysis holds the full result of a drift scan.
 type Analysis struct {
 	unmanaged           []*resource.Resource
 	managed             []*resource.Resource
@@ -69,6 +74,7 @@ type serializableAnalysis struct {
 	Date            time.Time                              `json:"date"`
 }
 
+// GenDriftIgnoreOptions configures the generation of driftignore patterns.
 type GenDriftIgnoreOptions struct {
 	ExcludeUnmanaged bool
 	ExcludeDeleted   bool
@@ -77,10 +83,12 @@ type GenDriftIgnoreOptions struct {
 	OutputPath       string
 }
 
+// NewAnalysis creates an empty Analysis.
 func NewAnalysis() *Analysis {
 	return &Analysis{}
 }
 
+// MarshalJSON serializes the analysis to JSON.
 func (a Analysis) MarshalJSON() ([]byte, error) {
 	bla := serializableAnalysis{}
 	for _, m := range a.managed {
@@ -126,6 +134,7 @@ func (a Analysis) MarshalJSON() ([]byte, error) {
 	return json.Marshal(bla)
 }
 
+// UnmarshalJSON deserializes an analysis from JSON.
 func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 	bla := serializableAnalysis{}
 	if err := json.Unmarshal(bytes, &bla); err != nil {
@@ -187,36 +196,43 @@ func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+// IsSync reports whether infrastructure is in sync (no drift).
 func (a *Analysis) IsSync() bool {
 	return a.summary.TotalUnmanaged == 0 && a.summary.TotalDeleted == 0 && a.summary.TotalDrifted == 0
 }
 
+// AddDeleted records resources found in IaC but missing from the cloud.
 func (a *Analysis) AddDeleted(resources ...*resource.Resource) {
 	a.deleted = append(a.deleted, resources...)
 	a.summary.TotalResources += len(resources)
 	a.summary.TotalDeleted += len(resources)
 }
 
+// AddUnmanaged records resources found in the cloud but not in IaC.
 func (a *Analysis) AddUnmanaged(resources ...*resource.Resource) {
 	a.unmanaged = append(a.unmanaged, resources...)
 	a.summary.TotalResources += len(resources)
 	a.summary.TotalUnmanaged += len(resources)
 }
 
+// AddManaged records resources present in both IaC and the cloud.
 func (a *Analysis) AddManaged(resources ...*resource.Resource) {
 	a.managed = append(a.managed, resources...)
 	a.summary.TotalResources += len(resources)
 	a.summary.TotalManaged += len(resources)
 }
 
+// SetAlerts sets the alerts for this analysis.
 func (a *Analysis) SetAlerts(alerts alerter.Alerts) {
 	a.alerts = alerts
 }
 
+// SetIaCSourceCount records the number of IaC source files.
 func (a *Analysis) SetIaCSourceCount(i uint) {
 	a.summary.TotalIaCSourceCount = i
 }
 
+// Coverage returns the percentage of managed resources.
 func (a *Analysis) Coverage() int {
 	if a.summary.TotalResources > 0 {
 		return int((float32(a.summary.TotalManaged) / float32(a.summary.TotalResources)) * 100.0)
@@ -224,44 +240,54 @@ func (a *Analysis) Coverage() int {
 	return 0
 }
 
+// Managed returns the managed resources.
 func (a *Analysis) Managed() []*resource.Resource {
 	return a.managed
 }
 
+// Unmanaged returns the unmanaged resources.
 func (a *Analysis) Unmanaged() []*resource.Resource {
 	return a.unmanaged
 }
 
+// Deleted returns the deleted resources.
 func (a *Analysis) Deleted() []*resource.Resource {
 	return a.deleted
 }
 
+// Unsupported returns the unsupported resources.
 func (a *Analysis) Unsupported() []*resource.Resource {
 	return a.unsupported
 }
 
+// Drifted returns the drifted resources.
 func (a *Analysis) Drifted() []*DriftedResource {
 	return a.drifted
 }
 
+// AddDrifted records a resource with detected drift.
 func (a *Analysis) AddDrifted(d *DriftedResource) {
 	a.drifted = append(a.drifted, d)
 	a.summary.TotalResources++
 	a.summary.TotalDrifted++
 }
 
+// Summary returns the aggregate analysis summary.
 func (a *Analysis) Summary() Summary {
 	return a.summary
 }
 
+// Alerts returns the alerts for this analysis.
 func (a *Analysis) Alerts() alerter.Alerts {
 	return a.alerts
 }
 
+// HasCategories reports whether unmanaged resource categories are set.
 func (a *Analysis) HasCategories() bool {
 	return a.unmanagedCategories != nil
 }
 
+// UnmanagedCategory returns the category label for an unmanaged resource.
 func (a *Analysis) UnmanagedCategory(r *resource.Resource) string {
 	if a.unmanagedCategories == nil {
 		return ""
@@ -269,6 +295,7 @@ func (a *Analysis) UnmanagedCategory(r *resource.Resource) string {
 	return a.unmanagedCategories[r.ResourceType()+"."+r.ResourceId()]
 }
 
+// SetUnmanagedCategories sets the category labels for unmanaged resources.
 func (a *Analysis) SetUnmanagedCategories(cats map[string]string) {
 	a.unmanagedCategories = cats
 }
@@ -306,6 +333,7 @@ func (a *Analysis) AdjustSummaryForDefaultResources(count int) {
 	a.summary.TotalResources -= count
 }
 
+// FilterUnmanagedByCategory removes unmanaged resources whose category is in the exclude set.
 func (a *Analysis) FilterUnmanagedByCategory(excludeCategories map[string]bool) {
 	if a.unmanagedCategories == nil {
 		return
@@ -326,11 +354,13 @@ func (a *Analysis) FilterUnmanagedByCategory(excludeCategories map[string]bool) 
 	a.summary.TotalResources -= removed
 }
 
+// SortResources sorts unmanaged and deleted resources.
 func (a *Analysis) SortResources() {
 	a.unmanaged = resource.Sort(a.unmanaged)
 	a.deleted = resource.Sort(a.deleted)
 }
 
+// DriftIgnoreList builds a .driftignore file from the analysis results.
 func (a *Analysis) DriftIgnoreList(opts GenDriftIgnoreOptions) (int, string) {
 	var list []string
 

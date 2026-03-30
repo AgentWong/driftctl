@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsCloudfrontDistributionResourceType is the Terraform resource type for CloudFront distributions.
 const AwsCloudfrontDistributionResourceType = "aws_cloudfront_distribution"
 
 func initAwsCloudfrontDistributionMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

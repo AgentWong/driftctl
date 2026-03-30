@@ -8,13 +8,13 @@ import (
 
 func TestAccTestCase_resolveTerraformEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("ACC_TEST_VAR", "foobar")
-	os.Setenv("TEST_VAR", "barfoo")
-	os.Setenv("TEST_VAR_2", "barfoo")
-	os.Setenv("ACC_TEST_VAR_3", "")
-	os.Setenv("TEST_VAR_3", "barfoo")
-	os.Setenv("TEST_VAR_4", "barfoo")
-	os.Setenv("ACC_TEST_VAR_4", "")
+	_ = os.Setenv("ACC_TEST_VAR", "foobar")
+	_ = os.Setenv("TEST_VAR", "barfoo")
+	_ = os.Setenv("TEST_VAR_2", "barfoo")
+	_ = os.Setenv("ACC_TEST_VAR_3", "")
+	_ = os.Setenv("TEST_VAR_3", "barfoo")
+	_ = os.Setenv("TEST_VAR_4", "barfoo")
+	_ = os.Setenv("ACC_TEST_VAR_4", "")
 
 	testCase := AccTestCase{}
 	env := testCase.resolveTerraformEnv()

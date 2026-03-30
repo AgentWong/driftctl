@@ -1,3 +1,4 @@
 package aws
 
+// AwsAppAutoscalingScheduledActionResourceType is the Terraform resource type for aws_appautoscaling_scheduled_action.
 const AwsAppAutoscalingScheduledActionResourceType = "aws_appautoscaling_scheduled_action"

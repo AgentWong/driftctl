@@ -1,3 +1,4 @@
+// Package supplier provides chained IaC resource supply.
 package supplier
 
 import (
@@ -11,17 +12,20 @@ import (
 	"github.com/snyk/driftctl/pkg/iac"
 )
 
+// IacChainSupplier aggregates multiple IaC suppliers into one.
 type IacChainSupplier struct {
 	suppliers []resource2.IaCSupplier
-	runner    *parallel.ParallelRunner
+	runner    *parallel.Runner
 }
 
+// NewIacChainSupplier creates an empty IacChainSupplier.
 func NewIacChainSupplier() *IacChainSupplier {
 	return &IacChainSupplier{
-		runner: parallel.NewParallelRunner(context.TODO(), int64(runtime.NumCPU())),
+		runner: parallel.NewRunner(context.TODO(), int64(runtime.NumCPU())),
 	}
 }
 
+// SourceCount returns the total number of IaC sources.
 func (r *IacChainSupplier) SourceCount() uint {
 	count := uint(0)
 	for _, supplier := range r.suppliers {
@@ -30,10 +34,12 @@ func (r *IacChainSupplier) SourceCount() uint {
 	return count
 }
 
+// AddSupplier registers an IaC supplier.
 func (r *IacChainSupplier) AddSupplier(supplier resource2.IaCSupplier) {
 	r.suppliers = append(r.suppliers, supplier)
 }
 
+// Resources returns all resources from all registered suppliers.
 func (r *IacChainSupplier) Resources() ([]*resource.Resource, error) {
 
 	for _, supplier := range r.suppliers {

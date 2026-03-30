@@ -8,51 +8,63 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// UnmanagedSecurityGroupRulesAlert warns about unmanaged security group rules that may be false positives.
 type UnmanagedSecurityGroupRulesAlert struct{}
 
 func newUnmanagedSecurityGroupRulesAlert() *UnmanagedSecurityGroupRulesAlert {
 	return &UnmanagedSecurityGroupRulesAlert{}
 }
 
+// Message returns the alert message.
 func (u *UnmanagedSecurityGroupRulesAlert) Message() string {
 	return "You have unmanaged security group rules that could be false positives, find out more at https://docs.driftctl.com/limitations"
 }
 
+// ShouldIgnoreResource reports whether this alert means the resource should be ignored.
 func (u *UnmanagedSecurityGroupRulesAlert) ShouldIgnoreResource() bool {
 	return false
 }
 
+// Resource returns the associated resource, or nil.
 func (u *UnmanagedSecurityGroupRulesAlert) Resource() *resource.Resource {
 	return nil
 }
 
+// ComputedDiffAlert warns about diffs on computed fields that may be false positives.
 type ComputedDiffAlert struct{}
 
+// NewComputedDiffAlert creates a ComputedDiffAlert.
 func NewComputedDiffAlert() *ComputedDiffAlert {
 	return &ComputedDiffAlert{}
 }
 
+// Message returns the alert message.
 func (c *ComputedDiffAlert) Message() string {
 	return "You have diffs on computed fields, check the documentation for potential false positive drifts: https://docs.driftctl.com/limitations"
 }
 
+// ShouldIgnoreResource reports whether this alert means the resource should be ignored.
 func (c *ComputedDiffAlert) ShouldIgnoreResource() bool {
 	return false
 }
 
+// Resource returns the associated resource, or nil.
 func (c *ComputedDiffAlert) Resource() *resource.Resource {
 	return nil
 }
 
+// Analyzer compares remote and IaC resources to detect drift.
 type Analyzer struct {
 	alerter *alerter.Alerter
 	filter  filter.Filter
 }
 
+// NewAnalyzer creates an Analyzer.
 func NewAnalyzer(alerter *alerter.Alerter, filter filter.Filter) *Analyzer {
 	return &Analyzer{alerter, filter}
 }
 
+// Analyze compares remote and state resources and returns an Analysis of the drift.
 func (a Analyzer) Analyze(remoteResources, resourcesFromState []*resource.Resource) (Analysis, error) {
 	analysis := Analysis{}
 

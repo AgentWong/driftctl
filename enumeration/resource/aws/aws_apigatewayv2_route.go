@@ -1,3 +1,4 @@
 package aws
 
-const AwsApiGatewayV2RouteResourceType = "aws_apigatewayv2_route"
+// AwsAPIGatewayV2RouteResourceType is the Terraform resource type for aws_apigatewayv2_route.
+const AwsAPIGatewayV2RouteResourceType = "aws_apigatewayv2_route"

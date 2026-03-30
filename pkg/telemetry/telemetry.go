@@ -1,3 +1,4 @@
+// Package telemetry collects and sends anonymous usage data.
 package telemetry
 
 import (
@@ -25,14 +26,17 @@ type telemetry struct {
 	Client         string `json:"client"`
 }
 
+// Telemetry sends anonymous usage data.
 type Telemetry struct {
-	build build.BuildInterface
+	build build.Interface
 }
 
-func NewTelemetry(build build.BuildInterface) *Telemetry {
+// NewTelemetry creates a Telemetry instance.
+func NewTelemetry(build build.Interface) *Telemetry {
 	return &Telemetry{build: build}
 }
 
+// SendTelemetry transmits the collected telemetry data.
 func (te Telemetry) SendTelemetry(store memstore.Bucket) {
 
 	if !te.build.IsUsageReportingEnabled() {

@@ -6,14 +6,16 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Default network acl rules should not be shown as unmanaged as they are present by default
-// This middleware ignores default network acl rules from unmanaged resources if they are not managed by IaC
+// AwsDefaultNetworkACLRule Default network acl rules should not be shown as unmanaged as they are present by default
+// AwsDefaultNetworkACLRule this middleware ignores default network acl rules from unmanaged resources if they are not managed by IaC
 type AwsDefaultNetworkACLRule struct{}
 
+// NewAwsDefaultNetworkACLRule creates a AwsDefaultNetworkACLRule.
 func NewAwsDefaultNetworkACLRule() AwsDefaultNetworkACLRule {
 	return AwsDefaultNetworkACLRule{}
 }
 
+// Execute applies the AwsDefaultNetworkACLRule middleware.
 func (m AwsDefaultNetworkACLRule) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 
 	newRemoteResources := make([]*resource.Resource, 0)

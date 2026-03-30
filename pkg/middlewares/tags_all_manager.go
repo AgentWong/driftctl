@@ -4,13 +4,15 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
-// Manage tags_all attribute on each compatible resources
+// TagsAllManager manage tags_all attribute on each compatible resources
 type TagsAllManager struct{}
 
+// NewTagsAllManager creates a TagsAllManager.
 func NewTagsAllManager() TagsAllManager {
 	return TagsAllManager{}
 }
 
+// Execute applies the TagsAllManager middleware.
 func (a TagsAllManager) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	for _, remoteRes := range *remoteResources {
 		if remoteRes.Attrs != nil {

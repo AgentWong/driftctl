@@ -27,7 +27,7 @@ func TestProviderInstallerInstallDoesNotExist(t *testing.T) {
 	}
 
 	mockDownloader := mocks.ProviderDownloaderInterface{}
-	mockDownloader.On("Download", config.GetDownloadUrl(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
+	mockDownloader.On("Download", config.GetDownloadURL(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
 
 	installer := ProviderInstaller{
 		downloader: &mockDownloader,
@@ -192,7 +192,7 @@ func TestProviderInstallerWithConfigDirectory(t *testing.T) {
 	}
 
 	mockDownloader := mocks.ProviderDownloaderInterface{}
-	mockDownloader.On("Download", config.GetDownloadUrl(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
+	mockDownloader.On("Download", config.GetDownloadURL(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
 
 	installer, _ := NewProviderInstaller(config)
 	installer.downloader = &mockDownloader

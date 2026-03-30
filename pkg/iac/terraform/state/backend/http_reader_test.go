@@ -31,7 +31,7 @@ func TestHTTPBackend_Read(t *testing.T) {
 					Headers: map[string]string{},
 				},
 			},
-			wantErr: errors.New("Get \"wrong_url\": unsupported protocol scheme \"\""),
+			wantErr: errors.New("get \"wrong_url\": unsupported protocol scheme \"\""),
 			httpClient: func() pkghttp.HTTPClient {
 				return &http.Client{}
 			}(),
@@ -104,9 +104,8 @@ func TestHTTPBackend_Read(t *testing.T) {
 			if tt.wantErr != nil {
 				assert.EqualError(t, err, tt.wantErr.Error())
 				return
-			} else {
-				assert.NoError(t, err)
 			}
+			assert.NoError(t, err)
 			assert.NotNil(t, got)
 			assert.Equal(t, tt.expected, string(got))
 		})

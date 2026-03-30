@@ -56,11 +56,11 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 				remoteRes := (*remoteResources)[0]
 				stateRes := (*resourcesFromState)[1]
 				_, exist := remoteRes.Attrs.Get("grant")
-				_, stateAclExist := stateRes.Attrs.Get("acl")
-				_, remoteAclExist := remoteRes.Attrs.Get("acl")
+				_, stateACLExist := stateRes.Attrs.Get("acl")
+				_, remoteACLExist := remoteRes.Attrs.Get("acl")
 				assert.False(exist)
-				assert.False(stateAclExist)
-				assert.False(remoteAclExist)
+				assert.False(stateACLExist)
+				assert.False(remoteACLExist)
 			},
 		},
 		{
@@ -206,7 +206,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 	for _, c := range tests {
 		t.Run(c.name, func(tt *testing.T) {
 			assert := assert.New(tt)
-			m := S3BucketAcl{}
+			m := S3BucketACL{}
 			if err := m.Execute(c.args.remoteResources, c.args.resourcesFromState); err != nil {
 				tt.Error(err)
 			}

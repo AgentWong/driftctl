@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/snyk/driftctl/pkg/helpers"
 	"github.com/snyk/driftctl/enumeration/resource"
+	"github.com/snyk/driftctl/pkg/helpers"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsNetworkACLRuleResourceType is the Terraform resource type for network ACL rules.
 const AwsNetworkACLRuleResourceType = "aws_network_acl_rule"
 
 var protocolsNumbers = map[string]int{
@@ -243,11 +244,12 @@ func initAwsNetworkACLRuleMetaData(resourceSchemaRepository dctlresource.SchemaR
 	})
 }
 
-func CreateNetworkACLRuleID(networkAclId string, ruleNumber int64, egress bool, protocol string) string {
+// CreateNetworkACLRuleID computes the synthetic network ACL rule ID.
+func CreateNetworkACLRuleID(networkACLID string, ruleNumber int64, egress bool, protocol string) string {
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%s-", networkAclId))
-	buf.WriteString(fmt.Sprintf("%d-", ruleNumber))
-	buf.WriteString(fmt.Sprintf("%t-", egress))
-	buf.WriteString(fmt.Sprintf("%s-", protocol))
+	fmt.Fprintf(&buf, "%s-", networkACLID)
+	fmt.Fprintf(&buf, "%d-", ruleNumber)
+	fmt.Fprintf(&buf, "%t-", egress)
+	fmt.Fprintf(&buf, "%s-", protocol)
 	return fmt.Sprintf("nacl-%d", helpers.HashcodeString(buf.String()))
 }

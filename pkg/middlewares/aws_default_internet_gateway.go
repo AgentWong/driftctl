@@ -6,14 +6,16 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Each default vpc has an internet gateway attached that should not be seen as unmanaged if not managed by IaC
-// This middleware ignores default internet gateway from unmanaged resources if not managed by IaC
+// AwsDefaultInternetGateway Each default vpc has an internet gateway attached that should not be seen as unmanaged if not managed by IaC
+// AwsDefaultInternetGateway this middleware ignores default internet gateway from unmanaged resources if not managed by IaC
 type AwsDefaultInternetGateway struct{}
 
+// NewAwsDefaultInternetGateway creates a AwsDefaultInternetGateway.
 func NewAwsDefaultInternetGateway() AwsDefaultInternetGateway {
 	return AwsDefaultInternetGateway{}
 }
 
+// Execute applies the AwsDefaultInternetGateway middleware.
 func (m AwsDefaultInternetGateway) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 
@@ -57,12 +59,12 @@ func (m AwsDefaultInternetGateway) Execute(remoteResources, resourcesFromState *
 	return nil
 }
 
-// Return true if the internet gateway is the default one (e.g. attached to the default vpc)
+// isDefaultInternetGateway return true if the internet gateway is the default one (e.g. attached to the default vpc)
 func isDefaultInternetGateway(internetGateway *resource.Resource, remoteResources *[]*resource.Resource) bool {
 	for _, remoteResource := range *remoteResources {
 		if remoteResource.ResourceType() == aws.AwsDefaultVpcResourceType {
-			vpcId, exist := internetGateway.Attrs.Get("vpc_id")
-			return exist && vpcId == remoteResource.ResourceId()
+			vpcID, exist := internetGateway.Attrs.Get("vpc_id")
+			return exist && vpcID == remoteResource.ResourceId()
 		}
 	}
 	return false

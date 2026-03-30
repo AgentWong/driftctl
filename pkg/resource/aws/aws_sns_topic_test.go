@@ -33,7 +33,7 @@ func TestAcc_Aws_SNSTopic(t *testing.T) {
 					result.AssertInfrastructureIsInSync()
 					result.AssertManagedCount(3)
 
-					for _, resource := range result.Analysis.Managed() {
+					for _, resource := range result.Managed() {
 						if strings.Contains(resource.ResourceId(), "user-updates-topic3") {
 							mutatedTopicArn = resource.ResourceId()
 						}

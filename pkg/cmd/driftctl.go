@@ -30,17 +30,19 @@ LEARN MORE:
 
 var versionTemplate = `{{ printf "%s\n" .Version }}`
 
+// DriftctlCmd wraps the root cobra command.
 type DriftctlCmd struct {
 	cobra.Command
-	build build.BuildInterface
+	build build.Interface
 }
 
-func NewDriftctlCmd(build build.BuildInterface) *DriftctlCmd {
+// NewDriftctlCmd creates a new command instance.
+func NewDriftctlCmd(build build.Interface) *DriftctlCmd {
 	cmd := &DriftctlCmd{
 		cobra.Command{
 			Use:   "driftctl <command> [flags]",
 			Short: "Driftctl CLI",
-			PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 				err := bindEnvToFlags(cmd)
 				if err != nil {
 					return err
@@ -84,6 +86,7 @@ func contains(args []string, cmd string) bool {
 	return false
 }
 
+// ShouldCheckVersion returns whether the version check should run.
 func (driftctlCmd DriftctlCmd) ShouldCheckVersion() bool {
 	_, noVersionCheckEnv := os.LookupEnv("DCTL_NO_VERSION_CHECK")
 	noVersionCheckVal := contains(os.Args[1:], "--no-version-check")
@@ -93,6 +96,7 @@ func (driftctlCmd DriftctlCmd) ShouldCheckVersion() bool {
 	return driftctlCmd.build.IsRelease() && driftctlCmd.build.IsUsageReportingEnabled() && !hasVersionCmd && !hasCompletionCmd && !noVersionCheckVal && !isHelp && !noVersionCheckEnv
 }
 
+// IsReportingEnabled returns whether error reporting is enabled.
 func IsReportingEnabled(cmd *cobra.Command) bool {
 	enableReporting, err := cmd.Flags().GetBool("send-crash-report")
 	if err != nil {
