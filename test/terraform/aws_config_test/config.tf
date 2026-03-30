@@ -16,6 +16,12 @@ resource "aws_config_configuration_recorder" "this" {
   }
 }
 
+resource "aws_config_retention_configuration" "this" {
+  retention_period_in_days = 30
+
+  depends_on = [aws_config_configuration_recorder.this]
+}
+
 resource "aws_config_delivery_channel" "this" {
   name           = "default"
   s3_bucket_name = aws_s3_bucket.config.id
