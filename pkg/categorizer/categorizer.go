@@ -5,11 +5,12 @@ import "github.com/snyk/driftctl/enumeration/resource"
 type Category string
 
 const (
-	CategoryManaged              Category = "managed"
-	CategoryUnmanaged            Category = "unmanaged"
+	CategoryManaged               Category = "managed"
+	CategoryUnmanaged             Category = "unmanaged"
 	CategoryCloudFormationManaged Category = "cloudformation_managed"
-	CategoryServiceLinked        Category = "service_linked"
-	CategoryUnsupported          Category = "unsupported"
+	CategoryServiceLinked         Category = "service_linked"
+	CategoryDefaultResource       Category = "default_resource"
+	CategoryUnsupported           Category = "unsupported"
 )
 
 // Categorizer classifies a resource into a category.

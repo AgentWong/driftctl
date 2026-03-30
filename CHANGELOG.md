@@ -14,12 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Managed Resources tab in HTML report** — new tab displays Terraform-managed resources with ID, Type, Name, and IaC Source columns
 - **CloudFormation Managed tab in HTML report** — unmanaged resources categorized as `cloudformation_managed` are now shown in a dedicated tab, separate from other unmanaged resources
 - **Name column in all HTML report tables** — all resource tables (Managed, Unmanaged, CloudFormation Managed, Missing, Drifted) now include a Name column for human-readable identification
+- **Default Resources category** — new categorizer detects AWS auto-created resources (default event buses, managed event rules like `AutoScalingManagedRule` and `IS-Tagging-default-*`, SSO reserved roles `AWSReservedSSO_*`, and default KMS aliases `alias/aws/*`); these are shown in a dedicated "Default Resources" tab and excluded from unmanaged totals
+- **CloudFormation name-based detection** — the CloudFormation categorizer now also matches resources by the CloudFormation physical-ID naming convention (`<stack>-<LogicalId>-<12-char suffix>`), catching CloudFormation-managed resources that lack the `aws:cloudformation:stack-name` tag (e.g., `aws-instance-scheduler-*` resources)
 - **Selective JSON report parsing instructions** in `.github/agents/build-test-fix.md` — added Step 3a with `jq`-based parsing patterns to avoid overwhelming LLM context with large reports
 
 ### Changed
 - **AWS Terraform provider default** — updated from `5.82.2` to `6.38.0` in `enumeration/remote/aws/provider.go` and `pkg/resource/schemas/repository.go`
 - **HTML report search** — search box now matches against both Resource ID and Name fields
 - **HTML report tab initialization** — JavaScript now selects the first available tab on page load, fixing edge cases where no tab was initially active
+- **HTML report table layout** — switched from flex-based row layout to proper `<table>` display with column borders, header styling, and fixed-width columns for clearer visual separation between Name, Resource Type, and Resource ID fields
 
 ### Changed
 - **Config enumeration — switched to SelectResourceConfig (Advanced Query) API** in `enumeration/remote/aws/repository/config_repository.go`. Replaces the previous `ListDiscoveredResources` + `GetDiscoveredResourceCounts` approach, which lagged on newly-started Config recorders. The new API queries the Config resource index directly via SQL expressions, returning results immediately and reducing scan time (8s → 2s for enumeration). Types are batched into chunks of 50 to stay within the 4 KB SQL expression limit.
@@ -35,6 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `enumeration/remote/resource_enumeration_error_handler_test.go` — rewrote from v1 `awserr` to v2 smithy-go error types
   - `pkg/iac/terraform/state/backend/s3_reader_test.go` — introduced `S3GetObjectAPI` interface and local mock, replacing v1 S3 mock
   - `pkg/iac/terraform/state/enumerator/s3_test.go` — introduced `mockListObjectsV2Client` using v2 `ListObjectsV2APIClient` interface, replacing v1 pagination callback mocks
+- **Categorizer — `AWSServiceRoleFor*` IAM roles classified as default resources** — moved `AWSServiceRoleFor` prefix detection from `ServiceLinkedCategorizer` to `DefaultResourceCategorizer` and added a resource-ID fallback so Config-enumerated service-linked roles are no longer misclassified as unmanaged
+- **Categorizer — `resourceName()` now checks `config_name` attribute** — Config-enumerated resources store their AWS Config name as `config_name`, not `name`; the helper now falls back to `config_name`, fixing name-based pattern matching for all categorizers
+- **Categorizer — CloudFormation regex no longer false-positives on UUIDs and ARNs** — KMS key UUIDs and ACM certificate ARNs contain 12-hex-char segments that matched the old `{12}` suffix pattern; added UUID and ARN exclusion to `matchesCfnNamePattern`
+- **Categorizer — CloudFormation suffix expanded to 12–13 characters** — recent CloudFormation stacks can generate 13-char random suffixes; `cfnPhysicalIDPattern` regex updated from `{12}` to `{12,13}`
+- **Categorizer — CDK/AWS Solutions naming pattern detection** — added `cdkNamePattern` regex to match `<lowercase-prefix>-<CamelCaseLogicalId>` resource names emitted by CDK and AWS Solutions stacks (e.g., `default-Ec2ResizeRequestHandler-Role`)
+- **Categorizer — `AwsSolutions` path detected as CloudFormation** — KMS aliases and other resources containing `/AwsSolutions/` in their name or ID are now classified as `cloudformation_managed`
+- **Test golden files — added `total_default_resources` to JSON/HTML expectations** — updated 5 JSON golden files and 4 HTML golden files to include the new `total_default_resources` summary field added by the categorizer changes
 
 ### Changed
 - **S3 backend testability** — `s3_reader.go` `S3Client` field changed from `*s3.Client` to `S3GetObjectAPI` interface; `s3.go` (enumerator) `client` field changed from `*s3.Client` to `s3.ListObjectsV2APIClient` interface

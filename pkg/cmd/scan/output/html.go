@@ -34,6 +34,7 @@ type HTMLTemplateParams struct {
 	Managed               []*resource.Resource
 	Unmanaged             []*resource.Resource
 	CloudFormationManaged []*resource.Resource
+	DefaultResources      []*resource.Resource
 	Unsupported           []*resource.Resource
 	Deleted               []*resource.Resource
 	Drifted               []*analyser.DriftedResource
@@ -117,12 +118,15 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 	}
 
 	// split unmanaged resources by category for separate tabs
-	var cfnManaged, otherUnmanaged []*resource.Resource
+	var cfnManaged, defaultResources, otherUnmanaged []*resource.Resource
 	if analysis.HasCategories() {
 		for _, r := range analysis.Unmanaged() {
-			if analysis.UnmanagedCategory(r) == "cloudformation_managed" {
+			switch analysis.UnmanagedCategory(r) {
+			case "cloudformation_managed":
 				cfnManaged = append(cfnManaged, r)
-			} else {
+			case "default_resource":
+				defaultResources = append(defaultResources, r)
+			default:
 				otherUnmanaged = append(otherUnmanaged, r)
 			}
 		}
@@ -138,6 +142,7 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		Managed:               analysis.Managed(),
 		Unmanaged:             otherUnmanaged,
 		CloudFormationManaged: cfnManaged,
+		DefaultResources:      defaultResources,
 		Unsupported:           analysis.Unsupported(),
 		Deleted:               analysis.Deleted(),
 		Drifted:               analysis.Drifted(),

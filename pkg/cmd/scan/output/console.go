@@ -226,10 +226,11 @@ func formatChangeValue(v interface{}) string {
 }
 
 func writeUnmanagedByCategory(analysis *analyser.Analysis) {
-	catOrder := []string{"cloudformation_managed", "service_linked", "unsupported", "unmanaged"}
+	catOrder := []string{"cloudformation_managed", "service_linked", "default_resource", "unsupported", "unmanaged"}
 	catNames := map[string]string{
 		"cloudformation_managed": "CloudFormation-managed",
 		"service_linked":         "Service-linked",
+		"default_resource":       "Default Resources",
 		"unsupported":            "Unsupported by Config",
 		"unmanaged":              "Unmanaged",
 	}

@@ -28,12 +28,6 @@ func (c *ServiceLinkedCategorizer) Categorize(r *resource.Resource) (Category, b
 		return "", false
 	}
 
-	if name, ok := (*attrs)["name"].(string); ok {
-		if strings.HasPrefix(name, "AWSServiceRoleFor") {
-			return CategoryServiceLinked, true
-		}
-	}
-
 	if path, ok := (*attrs)["path"].(string); ok {
 		if strings.HasPrefix(path, "/aws-service-role/") {
 			return CategoryServiceLinked, true

@@ -103,6 +103,12 @@
                     CloudFormation Managed (<span data-count="resource-cfn">{{len .CloudFormationManaged}}</span>)
                 </button>
                 {{end}}
+                {{if (gt (len .DefaultResources) 0)}}
+                <button type="button" role="tab" aria-selected="false" aria-controls="default-tab" id="default-res"
+                        tabindex="-1">
+                    Default Resources (<span data-count="resource-default">{{len .DefaultResources}}</span>)
+                </button>
+                {{end}}
                 {{if (gt (len .Deleted) 0)}}
                 <button type="button" role="tab" aria-selected="false" aria-controls="missing-tab" id="missing"
                         tabindex="-1">
@@ -194,6 +200,31 @@
                         <tbody>
                         {{range $res := .CloudFormationManaged}}
                         <tr data-kind="resource-cfn" class="resource-item row">
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .DefaultResources) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="default-tab" aria-labelledby="default-res">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $res := .DefaultResources}}
+                        <tr data-kind="resource-default" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
                             <td data-type="resource-id">{{$res.ResourceId}}</td>
@@ -354,6 +385,7 @@
             "[data-kind='resource-managed']": "[data-count='resource-managed']",
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
             "[data-kind='resource-cfn']": "[data-count='resource-cfn']",
+            "[data-kind='resource-default']": "[data-count='resource-default']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
             "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
             "[data-kind='resource-unsupported']": "[data-count='resource-unsupported']",

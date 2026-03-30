@@ -376,10 +376,12 @@ func scanRun(opts *pkg.ScanOptions) error {
 			chain := categorizer.NewChain(
 				categorizer.NewCloudFormationCategorizer(),
 				categorizer.NewServiceLinkedCategorizer(),
+				categorizer.NewDefaultResourceCategorizer(),
 				categorizer.NewUnsupportedCategorizer(configSupported),
 			)
 			cats := make(map[string]string, len(analysis.Unmanaged()))
 			cfnCount := 0
+			defaultCount := 0
 			for _, r := range analysis.Unmanaged() {
 				key := r.ResourceType() + "." + r.ResourceId()
 				cat := string(chain.Categorize(r))
@@ -387,12 +389,20 @@ func scanRun(opts *pkg.ScanOptions) error {
 				if cat == string(categorizer.CategoryCloudFormationManaged) {
 					cfnCount++
 				}
+				if cat == string(categorizer.CategoryDefaultResource) {
+					defaultCount++
+				}
 			}
 			analysis.SetUnmanagedCategories(cats)
 
 			// CloudFormation-managed resources are IaC — count them as managed
 			if cfnCount > 0 {
 				analysis.AdjustSummaryForCloudFormation(cfnCount)
+			}
+
+			// Default resources are auto-created by AWS, not user-managed drift
+			if defaultCount > 0 {
+				analysis.AdjustSummaryForDefaultResources(defaultCount)
 			}
 
 			if len(opts.ExcludeCategories) > 0 {

@@ -30,6 +30,7 @@ type Summary struct {
 	TotalDrifted               int  `json:"total_drifted"`
 	TotalUnsupported           int  `json:"total_unsupported"`
 	TotalCloudFormationManaged int  `json:"total_cloudformation_managed"`
+	TotalDefaultResources      int  `json:"total_default_resources"`
 	TotalIaCSourceCount        uint `json:"total_iac_source_count"`
 }
 
@@ -295,6 +296,14 @@ func (a *Analysis) AdjustSummaryForCloudFormation(cfnCount int) {
 	a.summary.TotalCloudFormationManaged = cfnCount
 	a.summary.TotalManaged += cfnCount
 	a.summary.TotalUnmanaged -= cfnCount
+}
+
+// AdjustSummaryForDefaultResources removes default resources from the unmanaged
+// total because they are auto-created by AWS, not user-managed drift.
+func (a *Analysis) AdjustSummaryForDefaultResources(count int) {
+	a.summary.TotalDefaultResources = count
+	a.summary.TotalUnmanaged -= count
+	a.summary.TotalResources -= count
 }
 
 func (a *Analysis) FilterUnmanagedByCategory(excludeCategories map[string]bool) {
