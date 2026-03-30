@@ -19,6 +19,8 @@ import (
 	"github.com/snyk/driftctl/enumeration/alerter"
 	"github.com/snyk/driftctl/enumeration/remote"
 	"github.com/snyk/driftctl/enumeration/remote/aws"
+	awsrepo "github.com/snyk/driftctl/enumeration/remote/aws/repository"
+	"github.com/snyk/driftctl/enumeration/remote/cache"
 	"github.com/snyk/driftctl/enumeration/remote/common"
 	"github.com/snyk/driftctl/enumeration/terraform"
 	"github.com/snyk/driftctl/enumeration/terraform/lock"
@@ -309,7 +311,7 @@ func scanRun(opts *pkg.ScanOptions) error {
 
 	resFactory := dctlresource.NewDriftctlResourceFactory(resourceSchemaRepository)
 
-	err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
+	awsCfg, err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
 	if err != nil {
 		if err == aws.ErrAWSCredentialsNotFound {
 			return err
@@ -374,8 +376,16 @@ func scanRun(opts *pkg.ScanOptions) error {
 		configSupported := aws.ConfigSupportedTerraformTypes()
 
 		if len(analysis.Unmanaged()) > 0 {
+			// Query CloudFormation for the authoritative set of managed physical resource IDs
+			cfnRepo := awsrepo.NewCloudFormationRepository(awsCfg, cache.New(100))
+			cfnManagedIDs, err := cfnRepo.ListAllStackResourcePhysicalIDs()
+			if err != nil {
+				logrus.Warnf("Could not list CloudFormation stack resources: %v", err)
+				cfnManagedIDs = nil
+			}
+
 			chain := categorizer.NewChain(
-				categorizer.NewCloudFormationCategorizer(),
+				categorizer.NewCloudFormationCategorizer(cfnManagedIDs),
 				categorizer.NewServiceLinkedCategorizer(),
 				categorizer.NewDefaultResourceCategorizer(),
 				categorizer.NewUnsupportedCategorizer(configSupported),

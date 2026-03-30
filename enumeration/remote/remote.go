@@ -2,6 +2,7 @@
 package remote
 
 import (
+	awscfg "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/pkg/errors"
 	"github.com/snyk/driftctl/enumeration"
 	"github.com/snyk/driftctl/enumeration/alerter"
@@ -25,13 +26,14 @@ func IsSupported(remote string) bool {
 	return false
 }
 
-// Activate initializes the given remote provider.
-func Activate(remote, version string, alerter alerter.Interface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.Factory, configDir string) error {
+// Activate initializes the given remote provider and returns the AWS config
+// so callers can create additional AWS service clients (e.g. CloudFormation).
+func Activate(remote, version string, alerter alerter.Interface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.Factory, configDir string) (awscfg.Config, error) {
 	switch remote {
 	case common.RemoteAWSTerraform:
 		return aws.Init(version, alerter, providerLibrary, remoteLibrary, progress, factory, configDir)
 	default:
-		return errors.Errorf("unsupported remote '%s'", remote)
+		return awscfg.Config{}, errors.Errorf("unsupported remote '%s'", remote)
 	}
 }
 

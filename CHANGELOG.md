@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-03-29
 
+### Changed
+- **CloudFormation categorization — replaced heuristic regex/tag matching with authoritative CloudFormation API** in `pkg/categorizer/cloudformation.go`. Previously used three unreliable strategies: `aws:cloudformation:stack-name` tag inspection (fails for untaggable resource types), regex matching on physical ID naming conventions (`<stack>-<LogicalId>-<12-13 char suffix>`), and CDK/AwsSolutions path patterns. Now calls `ListStacks` + `ListStackResources` via new `CloudFormationRepository` to build a definitive set of physical resource IDs that CloudFormation manages, then does a simple set-membership lookup. This eliminates false positives (e.g., resources with names that happened to match the regex) and false negatives (e.g., untaggable resources or stacks with non-standard naming).
+- **New `CloudFormationRepository`** in `enumeration/remote/aws/repository/cloudformation_repository.go` — queries all active CloudFormation stacks (CREATE_COMPLETE, UPDATE_COMPLETE, etc.) and enumerates their resources via `ListStackResources`, returning a cached set of physical resource IDs
+- **`aws.Init` and `remote.Activate` now return `aws.Config`** — allows `scan.go` to create additional AWS service clients (e.g., CloudFormation) after provider initialization without threading the config through unrelated layers
+
 ### Added
 - **AWS Config query now returns ARN, tags, and resource name** in `config_repository.go` — the `SelectResourceConfig` SQL expression now selects `arn` and `tags` in addition to the existing fields, enabling downstream categorization and richer display
 - **Config enumerator populates resource attributes** in `config_enumerator.go` — tags, ARN, and Config resource name are seeded into `CreateAbstractResource` so categorizers and output formatters can use them
