@@ -45,7 +45,8 @@ driftctl offers two scan modes:
 - **Plan mode** — Runs `terraform plan` against your Terraform root module to detect attribute-level configuration drift (e.g. a security group rule changed outside Terraform), then combines the results with AWS Config inventory to also identify unmanaged resources.
 
 Resources are automatically categorized to reduce false positives:
-- **CloudFormation-managed** — resources managed by CloudFormation stacks
+- **CloudFormation-managed** — resources managed by CloudFormation stacks (detected via CloudFormation API, tags, and naming patterns)
+- **Default resources** — AWS auto-created resources (default event buses, managed event rules, SSO reserved roles, default KMS aliases)
 - **Service-linked** — AWS service-linked roles and resources
 - **Unsupported** — resource types not covered by AWS Config
 
@@ -68,7 +69,7 @@ driftctl scan
 driftctl scan --mode plan --terraform-dir /path/to/terraform
 
 # Exclude false positives by category
-driftctl scan --exclude-category cloudformation_managed,service_linked
+driftctl scan --exclude-category cloudformation_managed,default_resources,service_linked
 ```
 
 ## Links

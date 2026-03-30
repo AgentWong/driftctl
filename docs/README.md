@@ -55,4 +55,4 @@ driftctl is an AWS-focused Terraform drift detection tool. It supports two scan 
 - `Resource` is an abstract representation of a cloud provider resource (e.g. S3 bucket, EC2 instance, etc.)
 - `BulkEnumerator` lists all supported resource types in one call via AWS Config
 - `Enumerator` lists resources of a given type from a given remote (legacy, per-type)
-- `Categorizer` classifies a resource into a category (cloudformation_managed, service_linked, unsupported, etc.)
+- `Categorizer` classifies a resource into a category (cloudformation_managed, default_resources, service_linked, unsupported, etc.)

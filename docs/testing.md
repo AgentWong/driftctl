@@ -72,7 +72,7 @@ For convenience, we try to put, as much as possible, terraform files used to gen
 
 Unit testing should not use any external dependency, so we mock all calls to the AWS SDK.
 
-Since the v1.0.0 refactoring, the primary component to test is the `ConfigRepository` which wraps the AWS Config API. Mock the `configserviceiface.ConfigServiceAPI` interface to test Config-based resource discovery.
+Since the v1.0.0 refactoring, the primary component to test is the `ConfigRepository` which wraps the AWS Config API (AWS SDK v2). Implement the `repository.ConfigRepository` interface with a test double to mock Config-based resource discovery.
 
 For the plan-based drift detection system, test with sample `tfjson.Plan` fixtures (see `pkg/terraform/plan/`).
 

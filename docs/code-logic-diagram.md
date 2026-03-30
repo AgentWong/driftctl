@@ -87,9 +87,9 @@ flowchart TD
 | Enumeration model | 103 individual enumerators | 1 BulkEnumerator (AWS Config SQL only — no fallback) |
 | Scan modes | Inventory only | **Inventory** (default) + **Plan** |
 | Drift granularity | Resource existence only | Existence + **attribute-level diffs** (plan mode) |
-| Resource categories | None | `cloudformation_managed` · `service_linked` · `unsupported` |
+| Resource categories | None | `cloudformation_managed` · `service_linked` · `unsupported` · `default_resources` |
 | AWS SDK | v1 | **v2** (smithy-go errors, paginator APIs) |
-| Terraform provider default | 3.19.0 | **5.82.2** |
+| Terraform provider default | 3.19.0 | **6.38.0** |
 
 ### Top-Level Scan Flow (mode selection)
 
@@ -161,15 +161,17 @@ flowchart TD
     CloudRes --> |remaining after match| Unmanaged[unmanaged]
     Unmanaged --> Categorizer
 
-    Categorizer --> CF{has tag<br>aws:cloudformation:stack-name?}
+    Categorizer --> CF{CloudFormation API<br>or tag/name pattern?}
     CF --> |yes| CFManaged[cloudformation_managed]
-    CF --> |no| SL{service-linked<br>role pattern?}
+    CF --> |no| DR{default resource?<br>event bus · SSO role<br>KMS alias/aws/* etc.}
+    DR --> |yes| DefManaged[default_resources]
+    DR --> |no| SL{service-linked<br>role pattern?}
     SL --> |yes| SLManaged[service_linked]
     SL --> |no| US{type in Config<br>mapping?}
     US --> |no| Unsupported[unsupported]
     US --> |yes| StillUnmanaged[unmanaged]
 
-    Managed & Deleted & CFManaged & SLManaged & Unsupported & StillUnmanaged --> ExcludeFilter[--exclude-category filter]
+    Managed & Deleted & CFManaged & DefManaged & SLManaged & Unsupported & StillUnmanaged --> ExcludeFilter[--exclude-category filter]
     ExcludeFilter --> Analysis([Analysis result])
 ```
 
@@ -200,12 +202,14 @@ flowchart TD
 ```mermaid
 flowchart LR
     Resource --> C1[CloudFormationCategorizer]
-    C1 --> |tag match| CFC([cloudformation_managed])
-    C1 --> |no match| C2[ServiceLinkedCategorizer]
-    C2 --> |path/name match| SLC([service_linked])
-    C2 --> |no match| C3[UnsupportedCategorizer]
-    C3 --> |not in Config mapping| UC([unsupported])
-    C3 --> |in Config mapping| Default([unmanaged])
+    C1 --> |API · tag · name pattern| CFC([cloudformation_managed])
+    C1 --> |no match| C2[DefaultResourceCategorizer]
+    C2 --> |event bus · SSO role · KMS alias/aws/*| DRC([default_resources])
+    C2 --> |no match| C3[ServiceLinkedCategorizer]
+    C3 --> |path/name match| SLC([service_linked])
+    C3 --> |no match| C4[UnsupportedCategorizer]
+    C4 --> |not in Config mapping| UC([unsupported])
+    C4 --> |in Config mapping| Default([unmanaged])
 ```
 
 ### Output Model
@@ -264,7 +268,7 @@ flowchart LR
         C3[State OR Terraform plan<br>plan mode needs no state]
         C4[Same 37+ middlewares<br>inventory mode only]
         C5[Analyzer or PlanAnalyzer<br>choice per mode]
-        C6[6 categories<br>managed · deleted · drifted · unmanaged<br>cloudformation_managed · service_linked · unsupported]
+        C6[7 categories<br>managed · deleted · drifted · unmanaged<br>cloudformation_managed · default_resources · service_linked · unsupported]
         C7[Attribute-level diffs<br>plan mode]
         C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7
     end
@@ -282,6 +286,7 @@ flowchart LR
 | AWS init | `enumeration/remote/aws/init.go` (103 AddEnumerator) | `enumeration/remote/aws/init.go` (1 AddBulkEnumerator) |
 | AWS enumeration | 103 `*_enumerator.go` files | `enumeration/remote/aws/config_enumerator.go` |
 | AWS repository | 20+ `*_repository.go` files | `enumeration/remote/aws/repository/config_repository.go` |
+| CloudFormation repository | — | `enumeration/remote/aws/repository/cloudformation_repository.go` |
 | Config mapping | — | `enumeration/remote/aws/config_resource_mapping.go` |
 | State reading | `pkg/iac/supplier/` | `pkg/iac/supplier/` (unchanged) |
 | Middlewares | `pkg/middlewares/` | `pkg/middlewares/` (unchanged) |
