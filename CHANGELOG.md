@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-03-30
+
+### Added
+- **golangci-lint — enabled 11 new linters** in `.golangci.yml`: `bodyclose`, `dupword`, `durationcheck`, `errorlint`, `gosec`, `misspell`, `nilerr`, `unconvert`, `usestdlibvars`, `wastedassign`, `whitespace`. Configured `gosec` to exclude G101 false positives and added `linters.exclusions.rules` for test-only G304/G703 suppressions.
+
+### Fixed
+- **errorlint** — replaced direct type assertions on errors with `errors.As`/`errors.Is` in `enumeration/remote/resource_enumeration_error_handler.go`, `enumeration/terraform/provider_installer.go`, `main.go`, `pkg/cmd/scan.go`, `pkg/iac/terraform/state/terraform_state_reader.go`, `pkg/middlewares/aws_api_gateway_api_expander.go`, and `test/acceptance/testing.go`
+- **nilerr** — fixed 4 instances in `pkg/middlewares/aws_api_gateway_api_expander.go` where errors were silently swallowed (`return nil` when `err != nil`), now properly returns the error
+- **bodyclose** — closed HTTP response bodies in `pkg/telemetry/telemetry.go` and `pkg/version/version.go`; added nolint for `http_reader.go` where the struct manages body lifecycle
+- **misspell** — corrected "occured" → "occurred" in `enumeration/remote/alerts/alerts.go` and corresponding test data
+- **usestdlibvars** — replaced string/int literals with `http.MethodGet`, `http.MethodPost`, `http.StatusOK`, `http.StatusNotFound` across 4 files
+- **whitespace** — removed unnecessary leading/trailing newlines across ~25 files
+- **gosec** — tightened file permissions (`os.ModePerm` → `0750`/`0600`) in `test/goldenfile/goldenfile.go`, `test/schemas/shemas.go`, `test/files.go`, and `enumeration/terraform/provider_installer_test.go`; added targeted nolint annotations for legitimate false positives (trusted embedded assets, plugin paths, test fixtures)
+
+### Changed
+- **AWS SDK v1 → v2 migration (test infrastructure)** — migrated all remaining AWS SDK v1 (`aws-sdk-go`) usage to v2 (`aws-sdk-go-v2`) in test files. Replaced `session.Session` with `aws.Config` in `test/acceptance/awsutils/aws.go`, updated 6 acceptance tests in `pkg/resource/aws/` and 1 in `pkg/iac/terraform/state/` to use v2 client constructors (`NewFromConfig`), v2 types (e.g., `ec2types.Filter`, `ecrtypes.ImageTagMutabilityImmutable`), and `context.Context` parameters. Deleted 37 dead files in `test/aws/` (22 auto-generated mocks and 15 interface definitions) that were unused outside the directory. Zero direct v1 imports remain in the codebase.
+
+### Fixed
+- **HTML output template** — updated `pkg/cmd/scan/output/assets/index.tmpl` to call `ResourceID` (7 occurrences) instead of the old `ResourceId` method name, resolving a template execution error when writing the HTML report
+
+### Changed
+- **Linting — `revive` compliance (var-naming, unused-parameter, error-strings, exported)**
+  - `var-naming`: renamed `Resource.Id` → `Resource.ID`, `SerializableResource.Id` → `SerializableResource.ID`, and `ResourceId()` → `ResourceID()` across all callers (~200 references in 50+ files)
+  - `unused-parameter`: replaced all unused function parameters with `_` in test callbacks and cobra command handlers across `pkg/cmd/`, `pkg/driftctl_test.go`, `pkg/middlewares/`, `pkg/resource/aws/`, and `pkg/telemetry/`
+  - `error-strings`: lowercased error strings passed to `errors.New()` in `enumeration/remote/resource_enumeration_error_handler_test.go`; added `//nolint:revive` for one string that mirrors an external Terraform error message verbatim
+  - `exported`: added doc comment for `Chain` type in `pkg/middlewares/chain_middleware.go`; rewrote `AwsNatGatewayEipAssoc.Execute` comment to begin with the method name per godoc convention
+
 ## [1.0.0] - 2026-03-29
 
 ### Changed

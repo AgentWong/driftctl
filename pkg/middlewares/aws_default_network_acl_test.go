@@ -21,33 +21,33 @@ func TestAwsDefaultNetworkACL_Execute(t *testing.T) {
 			"default network ACL is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
@@ -56,24 +56,24 @@ func TestAwsDefaultNetworkACL_Execute(t *testing.T) {
 			"default network acl is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},

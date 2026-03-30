@@ -14,7 +14,5 @@ func initAwsDefaultNetworkACLMetaData(resourceSchemaRepository dctlresource.Sche
 
 		// https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/default_network_acl#managing-subnets-in-a-default-network-acl
 		res.Attrs.SafeDelete([]string{"subnet_ids"})
-
 	})
-
 }

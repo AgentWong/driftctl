@@ -21,39 +21,39 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			name: "with managed resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
@@ -63,29 +63,29 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
@@ -94,11 +94,11 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			name: "with deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
@@ -109,55 +109,55 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			name: "with a mix of managed, unmanaged and deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain4",
+					ID:   "domain4",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain3",
+					ID:   "domain3",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain3",
+					ID:   "domain3",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "domain1",
+					ID:   "domain1",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
+					ID:   "domain2",
 					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain3",
+					ID:   "domain3",
 					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},

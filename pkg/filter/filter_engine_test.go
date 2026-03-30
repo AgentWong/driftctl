@@ -67,17 +67,17 @@ func TestFilterEngine_Run(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "barfoo",
+					ID:    "barfoo",
 				},
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 				},
 			},
 			want: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 				},
 			},
 		},
@@ -87,18 +87,18 @@ func TestFilterEngine_Run(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 				},
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 					Type:  "filtered_resource",
 				},
 			},
 			want: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 					Type:  "filtered_resource",
 				},
 			},

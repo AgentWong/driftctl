@@ -1,11 +1,12 @@
 package state_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	"github.com/snyk/driftctl/test"
 	"github.com/snyk/driftctl/test/acceptance"
@@ -89,8 +90,8 @@ func TestAcc_StateReader_WithMultiplesStatesInS3(t *testing.T) {
 }
 
 func createBucket(bucket string) error {
-	client := s3.New(awsutils.Session())
-	_, err := client.CreateBucket(&s3.CreateBucketInput{
+	client := s3.NewFromConfig(awsutils.Config())
+	_, err := client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: &bucket,
 	})
 	if err != nil {
@@ -100,13 +101,13 @@ func createBucket(bucket string) error {
 }
 
 func removeStateBucket(bucket string) error {
-	client := s3.New(awsutils.Session())
-	objects, err := client.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: &bucket})
+	client := s3.NewFromConfig(awsutils.Config())
+	objects, err := client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{Bucket: &bucket})
 	if err != nil {
 		return err
 	}
 	for _, object := range objects.Contents {
-		_, err := client.DeleteObject(&s3.DeleteObjectInput{
+		_, err := client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
 			Bucket: &bucket,
 			Key:    object.Key,
 		})
@@ -114,7 +115,7 @@ func removeStateBucket(bucket string) error {
 			return err
 		}
 	}
-	_, err = client.DeleteBucket(&s3.DeleteBucketInput{
+	_, err = client.DeleteBucket(context.TODO(), &s3.DeleteBucketInput{
 		Bucket: &bucket,
 	})
 	if err != nil {

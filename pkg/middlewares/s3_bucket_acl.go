@@ -17,7 +17,6 @@ func NewS3BucketACL() S3BucketACL {
 
 // Execute applies the S3BucketACL middleware.
 func (m S3BucketACL) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	for _, iacResource := range *resourcesFromState {
 		// Ignore all resources other than s3 buckets
 		if iacResource.ResourceType() != aws.AwsS3BucketResourceType {
@@ -33,7 +32,7 @@ func (m S3BucketACL) Execute(remoteResources, resourcesFromState *[]*resource.Re
 				if aclAttr != "private" {
 					logrus.WithFields(logrus.Fields{
 						"type": remoteResource.ResourceType(),
-						"id":   remoteResource.ResourceId(),
+						"id":   remoteResource.ResourceID(),
 					}).Debug("Found a resource to update")
 					remoteResource.Attrs.SafeDelete([]string{"grant"})
 				}

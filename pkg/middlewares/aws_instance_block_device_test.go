@@ -30,14 +30,14 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 			}{
 				expectedResource: &[]*resource.Resource{
 					{
-						Id:   "dummy-instance",
+						ID:   "dummy-instance",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"availability_zone": "eu-west-3",
 						},
 					},
 					{
-						Id:   "vol-02862d9b39045a3a4",
+						ID:   "vol-02862d9b39045a3a4",
 						Type: "aws_ebs_volume",
 						Attrs: &resource.Attributes{
 							"id":                   "vol-02862d9b39045a3a4",
@@ -55,7 +55,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:   "vol-018c5ae89895aca4c",
+						ID:   "vol-018c5ae89895aca4c",
 						Type: "aws_ebs_volume",
 						Attrs: &resource.Attributes{
 							"id":                   "vol-018c5ae89895aca4c",
@@ -71,19 +71,19 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:    "vol-foobar",
+						ID:    "vol-foobar",
 						Type:  "aws_ebs_volume",
 						Attrs: &resource.Attributes{},
 					},
 				},
 				resourcesFromState: &[]*resource.Resource{
 					{
-						Id:    "vol-foobar",
+						ID:    "vol-foobar",
 						Type:  "aws_ebs_volume",
 						Attrs: &resource.Attributes{},
 					},
 					{
-						Id:   "dummy-instance",
+						ID:   "dummy-instance",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"availability_zone": "eu-west-3",
@@ -119,7 +119,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 			},
 			func(factory *dctlresource.MockResourceFactory) {
 				foo := resource.Resource{
-					Id:   "vol-02862d9b39045a3a4",
+					ID:   "vol-02862d9b39045a3a4",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"id":                   "vol-02862d9b39045a3a4",
@@ -141,7 +141,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 				})).Times(1).Return(&foo, nil)
 
 				bar := resource.Resource{
-					Id:   "vol-018c5ae89895aca4c",
+					ID:   "vol-018c5ae89895aca4c",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"id":                   "vol-018c5ae89895aca4c",
@@ -170,14 +170,14 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 			}{
 				expectedResource: &[]*resource.Resource{
 					&resource.Resource{
-						Id:   "dummy-instance",
+						ID:   "dummy-instance",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"availability_zone": "eu-west-3",
 						},
 					},
 					&resource.Resource{
-						Id:   "vol-02862d9b39045a3a4",
+						ID:   "vol-02862d9b39045a3a4",
 						Type: "aws_ebs_volume",
 						Attrs: &resource.Attributes{
 							"id":                   "vol-02862d9b39045a3a4",
@@ -195,7 +195,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 						},
 					},
 					&resource.Resource{
-						Id:   "vol-018c5ae89895aca4c",
+						ID:   "vol-018c5ae89895aca4c",
 						Type: "aws_ebs_volume",
 						Attrs: &resource.Attributes{
 							"id":                   "vol-018c5ae89895aca4c",
@@ -213,7 +213,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 				},
 				resourcesFromState: &[]*resource.Resource{
 					&resource.Resource{
-						Id:   "dummy-instance",
+						ID:   "dummy-instance",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"availability_zone": "eu-west-3",
@@ -252,7 +252,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 			},
 			func(factory *dctlresource.MockResourceFactory) {
 				foo := resource.Resource{
-					Id:   "vol-02862d9b39045a3a4",
+					ID:   "vol-02862d9b39045a3a4",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"id":                   "vol-02862d9b39045a3a4",
@@ -274,7 +274,7 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 				})).Times(1).Return(&foo, nil)
 
 				bar := resource.Resource{
-					Id:   "vol-018c5ae89895aca4c",
+					ID:   "vol-018c5ae89895aca4c",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"id":                   "vol-018c5ae89895aca4c",
@@ -303,14 +303,14 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 			}{
 				expectedResource: &[]*resource.Resource{
 					&resource.Resource{
-						Id:   "dummy-instance",
+						ID:   "dummy-instance",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"availability_zone": "eu-west-3",
 						},
 					},
 					&resource.Resource{
-						Id:   "vol-02862d9b39045a3a4",
+						ID:   "vol-02862d9b39045a3a4",
 						Type: "aws_ebs_volume",
 						Attrs: &resource.Attributes{
 							"id": "vol-02862d9b39045a3a4",
@@ -319,14 +319,14 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 				},
 				resourcesFromState: &[]*resource.Resource{
 					&resource.Resource{
-						Id:   "vol-02862d9b39045a3a4",
+						ID:   "vol-02862d9b39045a3a4",
 						Type: "aws_ebs_volume",
 						Attrs: &resource.Attributes{
 							"id": "vol-02862d9b39045a3a4",
 						},
 					},
 					&resource.Resource{
-						Id:   "dummy-instance",
+						ID:   "dummy-instance",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"availability_zone": "eu-west-3",
@@ -339,13 +339,12 @@ func TestAwsInstanceBlockDeviceResourceMapper_Execute(t *testing.T) {
 					},
 				},
 			},
-			func(factory *dctlresource.MockResourceFactory) {},
+			func(_ *dctlresource.MockResourceFactory) {},
 			false,
 		},
 	}
 	for _, c := range tests {
 		t.Run(c.name, func(tt *testing.T) {
-
 			factory := &dctlresource.MockResourceFactory{}
 			if c.mocks != nil {
 				c.mocks(factory)

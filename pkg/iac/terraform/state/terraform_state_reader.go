@@ -1,6 +1,7 @@
 package state
 
 import (
+	stderrors "errors"
 	"fmt"
 	"strings"
 
@@ -139,7 +140,8 @@ func (r *TerraformStateReader) retrieve() (map[string][]decodedRes, error) {
 					// It will allow driftctl to read state generated with a superior version of provider
 					// than the actually supported one
 					// by ignoring new fields
-					_, isPathError := err.(cty.PathError)
+					var pathError cty.PathError
+					isPathError := stderrors.As(err, &pathError)
 					if isPathError {
 						logrus.WithFields(logrus.Fields{
 							"name": resName,

@@ -22,7 +22,7 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 			},
 			want: []bool{
@@ -35,7 +35,7 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 			},
 			want: []bool{
@@ -48,11 +48,11 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "ignored_resource",
-					Id:   "id2",
+					ID:   "id2",
 				},
 			},
 			want: []bool{
@@ -66,43 +66,43 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "wildcard_resource",
-					Id:   "id1/with/slash",
+					ID:   "id1/with/slash",
 				},
 				{
 					Type: "wildcard_resource",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "wildcard_resource",
-					Id:   "id2",
+					ID:   "id2",
 				},
 				{
 					Type: "wildcard_resource",
-					Id:   "id3",
+					ID:   "id3",
 				},
 				{
 					Type: "ignored_resource",
-					Id:   "id2",
+					ID:   "id2",
 				},
 				{
 					Type: "resource_type",
-					Id:   "id.with.dots",
+					ID:   "id.with.dots",
 				},
 				{
 					Type: "resource_type",
-					Id:   "idwith\\",
+					ID:   "idwith\\",
 				},
 				{
 					Type: "resource_type",
-					Id:   "idwith\\backslashes",
+					ID:   "idwith\\backslashes",
 				},
 				{
 					Type: "resource_type",
-					Id:   "idwith/slashes",
+					ID:   "idwith/slashes",
 				},
 			},
 			want: []bool{
@@ -124,31 +124,31 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "type2",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "type2",
-					Id:   "id11",
+					ID:   "id11",
 				},
 				{
 					Type: "type2",
-					Id:   "id2",
+					ID:   "id2",
 				},
 				{
 					Type: "type3",
-					Id:   "id100",
+					ID:   "id100",
 				},
 				{
 					Type: "type3",
-					Id:   "id101",
+					ID:   "id101",
 				},
 				{
 					Type: "type4",
-					Id:   "id\\WithBac*slash***\\*\\",
+					ID:   "id\\WithBac*slash***\\*\\",
 				},
 			},
 			want: []bool{
@@ -167,39 +167,39 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "type2",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "type2",
-					Id:   "id11",
+					ID:   "id11",
 				},
 				{
 					Type: "type2",
-					Id:   "id2",
+					ID:   "id2",
 				},
 				{
 					Type: "type3",
-					Id:   "id100",
+					ID:   "id100",
 				},
 				{
 					Type: "type3",
-					Id:   "id101",
+					ID:   "id101",
 				},
 				{
 					Type: "iam_user",
-					Id:   "id\\WithBac*slash***\\*\\",
+					ID:   "id\\WithBac*slash***\\*\\",
 				},
 				{
 					Type: "some_type",
-					Id:   "idwith/slash",
+					ID:   "idwith/slash",
 				},
 				{
 					Type: "some_type",
-					Id:   "idwith/slash/",
+					ID:   "idwith/slash/",
 				},
 			},
 			want: []bool{
@@ -220,39 +220,39 @@ func TestDriftIgnore_IsResourceIgnored(t *testing.T) {
 			resources: []*resource.Resource{
 				{
 					Type: "type1",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "type2",
-					Id:   "id1",
+					ID:   "id1",
 				},
 				{
 					Type: "type2",
-					Id:   "id11",
+					ID:   "id11",
 				},
 				{
 					Type: "type2",
-					Id:   "id2",
+					ID:   "id2",
 				},
 				{
 					Type: "type3",
-					Id:   "id100",
+					ID:   "id100",
 				},
 				{
 					Type: "type3",
-					Id:   "id101",
+					ID:   "id101",
 				},
 				{
 					Type: "iam_user",
-					Id:   "id\\WithBac*slash***\\*\\",
+					ID:   "id\\WithBac*slash***\\*\\",
 				},
 				{
 					Type: "some_type",
-					Id:   "idwith/slash",
+					ID:   "idwith/slash",
 				},
 				{
 					Type: "some_type",
-					Id:   "idwith/slash/",
+					ID:   "idwith/slash/",
 				},
 			},
 			want: []bool{
@@ -438,17 +438,17 @@ func TestDriftIgnore_IsTypeIgnored(t *testing.T) {
 				// This type should not be ignored because of `!aws_iam_policy_attachment.foo*` expression
 				{
 					Type: "aws_iam_policy_attachment",
-					Id:   "foobar",
+					ID:   "foobar",
 				},
 				// This type should not be ignored because `aws_route` type is not ignored and is a child of `aws_route_table`
 				{
 					Type: "aws_route_table",
-					Id:   "uselessId",
+					ID:   "uselessId",
 				},
 				// This type should not be ignored because of `!aws_route.barfoo` expression
 				{
 					Type: "aws_route",
-					Id:   "barfoo",
+					ID:   "barfoo",
 				},
 			},
 			want: []bool{

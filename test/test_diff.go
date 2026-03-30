@@ -56,7 +56,7 @@ func TestAgainstGoldenFileNoCty(
 	for _, r := range rawResources {
 		res := r
 		expectedResources = append(expectedResources, &resource.Resource{
-			Id:    res["id"].(string),
+			ID:    res["id"].(string),
 			Type:  ty,
 			Attrs: (*resource.Attributes)(&res),
 		})

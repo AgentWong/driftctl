@@ -24,10 +24,8 @@ func NewAwsRouteTableExpander(alerter alerter.Interface, resourceFactory resourc
 
 // Execute applies the AwsRouteTableExpander middleware.
 func (m AwsRouteTableExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newList := make([]*resource.Resource, 0, len(*resourcesFromState))
 	for _, res := range *resourcesFromState {
-
 		// Ignore all resources other than (default) routes tables
 		if res.ResourceType() != aws.AwsRouteTableResourceType &&
 			res.ResourceType() != aws.AwsDefaultRouteTableResourceType {
@@ -84,7 +82,7 @@ func (m *AwsRouteTableExpander) handleTable(table *resource.Resource, results *[
 		if route["destination_prefix_list_id"] != nil {
 			prefixListID = route["destination_prefix_list_id"].(string)
 		}
-		routeID := aws.CalculateRouteID(&table.Id, &cidrBlock, &ipv6CidrBlock, &prefixListID)
+		routeID := aws.CalculateRouteID(&table.ID, &cidrBlock, &ipv6CidrBlock, &prefixListID)
 
 		data := map[string]interface{}{
 			"destination_cidr_block":      route["cidr_block"],
@@ -99,7 +97,7 @@ func (m *AwsRouteTableExpander) handleTable(table *resource.Resource, results *[
 			"nat_gateway_id":              route["nat_gateway_id"],
 			"network_interface_id":        route["network_interface_id"],
 			"origin":                      "CreateRoute",
-			"route_table_id":              table.Id,
+			"route_table_id":              table.ID,
 			"state":                       "active",
 			"transit_gateway_id":          route["transit_gateway_id"],
 			"vpc_endpoint_id":             route["vpc_endpoint_id"],
@@ -138,7 +136,7 @@ func (m *AwsRouteTableExpander) handleDefaultTable(table *resource.Resource, res
 		if route["destination_prefix_list_id"] != nil {
 			prefixListID = route["destination_prefix_list_id"].(string)
 		}
-		routeID := aws.CalculateRouteID(&table.Id, &cidrBlock, &ipv6CidrBlock, &prefixListID)
+		routeID := aws.CalculateRouteID(&table.ID, &cidrBlock, &ipv6CidrBlock, &prefixListID)
 
 		data := map[string]interface{}{
 			"destination_cidr_block":      route["cidr_block"],
@@ -151,7 +149,7 @@ func (m *AwsRouteTableExpander) handleDefaultTable(table *resource.Resource, res
 			"nat_gateway_id":              route["nat_gateway_id"],
 			"network_interface_id":        route["network_interface_id"],
 			"origin":                      "CreateRoute",
-			"route_table_id":              table.Id,
+			"route_table_id":              table.ID,
 			"state":                       "active",
 			"transit_gateway_id":          route["transit_gateway_id"],
 			"vpc_endpoint_id":             route["vpc_endpoint_id"],
@@ -173,7 +171,7 @@ func (m *AwsRouteTableExpander) handleDefaultTable(table *resource.Resource, res
 
 func (m *AwsRouteTableExpander) routeExists(routeID string, resourcesFromState []*resource.Resource) bool {
 	for _, res := range resourcesFromState {
-		if res.ResourceType() == aws.AwsRouteResourceType && res.ResourceId() == routeID {
+		if res.ResourceType() == aws.AwsRouteResourceType && res.ResourceID() == routeID {
 			return true
 		}
 	}

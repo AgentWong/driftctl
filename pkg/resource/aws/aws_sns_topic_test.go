@@ -1,15 +1,15 @@
 package aws_test
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/snyk/driftctl/test"
-
-	"github.com/aws/aws-sdk-go/service/sns"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/sns"
+
+	"github.com/snyk/driftctl/test"
 	"github.com/snyk/driftctl/test/acceptance"
 	"github.com/snyk/driftctl/test/acceptance/awsutils"
 )
@@ -26,7 +26,7 @@ func TestAcc_Aws_SNSTopic(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				ShouldRetry: acceptance.LinearBackoff(10 * time.Minute),
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -34,8 +34,8 @@ func TestAcc_Aws_SNSTopic(t *testing.T) {
 					result.AssertManagedCount(3)
 
 					for _, resource := range result.Managed() {
-						if strings.Contains(resource.ResourceId(), "user-updates-topic3") {
-							mutatedTopicArn = resource.ResourceId()
+						if strings.Contains(resource.ResourceID(), "user-updates-topic3") {
+							mutatedTopicArn = resource.ResourceID()
 						}
 					}
 				},
@@ -45,8 +45,8 @@ func TestAcc_Aws_SNSTopic(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				PreExec: func() {
-					client := sns.New(awsutils.Session())
-					_, err := client.SetTopicAttributes(&sns.SetTopicAttributesInput{
+					client := sns.NewFromConfig(awsutils.Config())
+					_, err := client.SetTopicAttributes(context.TODO(), &sns.SetTopicAttributesInput{
 						AttributeName:  aws.String("DisplayName"),
 						AttributeValue: aws.String("CHANGED"),
 						TopicArn:       &mutatedTopicArn,
@@ -55,7 +55,7 @@ func TestAcc_Aws_SNSTopic(t *testing.T) {
 						t.Fatal(err)
 					}
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

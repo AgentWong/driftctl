@@ -43,7 +43,7 @@ func (m EipAssociationExpander) Execute(_, resourcesFromState *[]*resource.Resou
 			aws.AwsEipAssociationResourceType,
 			*assocID,
 			map[string]interface{}{
-				"allocation_id":        res.ResourceId(),
+				"allocation_id":        res.ResourceID(),
 				"id":                   *assocID,
 				"instance_id":          attributes["instance"],
 				"network_interface_id": attributes["network_interface"],
@@ -65,7 +65,7 @@ func (m EipAssociationExpander) haveMatchingEipAssociation(cur *resource.Resourc
 			continue
 		}
 		assocID := cur.Attributes().GetString("association_id")
-		if assocID != nil && res.ResourceId() == *assocID {
+		if assocID != nil && res.ResourceID() == *assocID {
 			return true
 		}
 	}

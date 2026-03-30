@@ -313,7 +313,7 @@ func TestTerraformStateReader_VersionSupported(t *testing.T) {
 		{
 			name:      "should return invalid version error",
 			statePath: "testdata/v4/invalid_version.tfstate",
-			err:       errors.New("invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."),
+			err:       errors.New("invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."), //nolint:revive // mirrors external Terraform error
 		},
 	}
 

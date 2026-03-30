@@ -23,9 +23,9 @@ func TestStore(t *testing.T) {
 				"test-value_|)": 13,
 				"duration_key":  "23",
 				"null":          nil,
-				"res":           &resource.Resource{Id: "id", Type: "type"},
+				"res":           &resource.Resource{ID: "id", Type: "type"},
 			},
-			expectedJSON: `{"duration_key":"23","null":null,"res":{"Id":"id","Type":"type","Attrs":null},"test-value_|)":13}`,
+			expectedJSON: `{"duration_key":"23","null":null,"res":{"ID":"id","Type":"type","Attrs":null},"test-value_|)":13}`,
 		},
 		{
 			name:         "test empty bucket",

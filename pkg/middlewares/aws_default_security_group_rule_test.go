@@ -20,12 +20,12 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 			name: "Should ignore default rules if not managed",
 			remoteResources: &[]*resource.Resource{
 				{
-					Id:    "default-sg",
+					ID:    "default-sg",
 					Type:  aws.AwsDefaultSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "default-ingress",
+					ID:   "default-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":                     "ingress",
@@ -38,7 +38,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-egress",
+					ID:   "default-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -51,7 +51,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-ingress",
+					ID:   "dummy-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "ingress",
@@ -63,7 +63,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-egress",
+					ID:   "dummy-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -79,12 +79,12 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 			resourcesFromState: &[]*resource.Resource{},
 			expected: &[]*resource.Resource{
 				&resource.Resource{
-					Id:    "default-sg",
+					ID:    "default-sg",
 					Type:  aws.AwsDefaultSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "dummy-ingress",
+					ID:   "dummy-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "ingress",
@@ -96,7 +96,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-egress",
+					ID:   "dummy-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -115,17 +115,17 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 			name: "Should not ignore default rules if managed",
 			remoteResources: &[]*resource.Resource{
 				&resource.Resource{
-					Id:    "default-sg",
+					ID:    "default-sg",
 					Type:  aws.AwsDefaultSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "dummy-sg",
+					ID:    "dummy-sg",
 					Type:  aws.AwsSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "default-ingress",
+					ID:   "default-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":                     "ingress",
@@ -138,7 +138,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-egress",
+					ID:   "default-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -151,7 +151,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-ingress",
+					ID:   "dummy-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "ingress",
@@ -163,7 +163,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-egress",
+					ID:   "dummy-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -176,7 +176,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-egress-2",
+					ID:   "default-egress-2",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -191,12 +191,12 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 			},
 			resourcesFromState: &[]*resource.Resource{
 				&resource.Resource{
-					Id:    "default-sg",
+					ID:    "default-sg",
 					Type:  aws.AwsDefaultSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "default-ingress",
+					ID:   "default-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":                     "ingress",
@@ -209,7 +209,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-egress",
+					ID:   "default-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -224,17 +224,17 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 			},
 			expected: &[]*resource.Resource{
 				&resource.Resource{
-					Id:    "default-sg",
+					ID:    "default-sg",
 					Type:  aws.AwsDefaultSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "dummy-sg",
+					ID:    "dummy-sg",
 					Type:  aws.AwsSecurityGroupResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "default-ingress",
+					ID:   "default-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":                     "ingress",
@@ -247,7 +247,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-egress",
+					ID:   "default-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -260,7 +260,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-ingress",
+					ID:   "dummy-ingress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "ingress",
@@ -272,7 +272,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "dummy-egress",
+					ID:   "dummy-egress",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",
@@ -285,7 +285,7 @@ func TestAwsDefaultSecurityGroupRule_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-egress-2",
+					ID:   "default-egress-2",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"type":              "egress",

@@ -54,7 +54,7 @@ func (m AwsDefaultSQSQueuePolicy) Execute(remoteResources, resourcesFromState *[
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   res.ResourceId(),
+			"id":   res.ResourceID(),
 			"type": res.ResourceType(),
 		}).Debug("Ignoring default queue policy as it is not managed by IaC")
 	}

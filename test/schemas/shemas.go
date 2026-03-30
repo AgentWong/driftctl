@@ -20,11 +20,11 @@ func WriteTestSchema(schema map[string]providers.Schema, provider, version strin
 	_, relativeFilePath, _, _ := runtime.Caller(0)
 	fileName := path.Join(path.Dir(relativeFilePath), provider, version, "schema.json")
 	content, _ := gojson.Marshal(schema)
-	err := os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
+	err := os.MkdirAll(filepath.Dir(fileName), 0750)
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(fileName, content, os.ModePerm)
+	err = os.WriteFile(fileName, content, 0600)
 	if err != nil {
 		return err
 	}

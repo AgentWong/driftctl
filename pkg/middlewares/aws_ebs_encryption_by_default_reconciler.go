@@ -53,9 +53,9 @@ func (m AwsEbsEncryptionByDefaultReconciler) Execute(remoteResources, resourcesF
 		// The reason why is that the id is a random string created by Terraform that we need to compare two resources.
 		newRemoteResources = append(newRemoteResources, m.resourceFactory.CreateAbstractResource(
 			res.ResourceType(),
-			res.ResourceId(),
+			res.ResourceID(),
 			map[string]interface{}{
-				"id":      res.ResourceId(),
+				"id":      res.ResourceID(),
 				"enabled": *defaultEbsEncryption.Attributes().GetBool("enabled"),
 			},
 		))

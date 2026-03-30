@@ -17,7 +17,6 @@ func NewAwsDefaultSubnet() AwsDefaultSubnet {
 
 // Execute applies the AwsDefaultSubnet middleware.
 func (m AwsDefaultSubnet) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -42,11 +41,10 @@ func (m AwsDefaultSubnet) Execute(remoteResources, resourcesFromState *[]*resour
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default Subnet as it is not managed by IaC")
 		}
-
 	}
 
 	*remoteResources = newRemoteResources

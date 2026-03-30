@@ -109,13 +109,12 @@ func runTest(t *testing.T, cases TestCases) {
 }
 
 func TestDriftctlRun_BasicBehavior(t *testing.T) {
-
 	cases := TestCases{
 		{
 			name:            "analysis duration is set",
 			stateResources:  []*resource.Resource{},
 			remoteResources: []*resource.Resource{},
-			assert: func(_ *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.NotZero(result.Duration)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
@@ -130,7 +129,7 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			name: "infrastructure should be in sync",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "id",
+					ID:   "id",
 					Type: "type",
 					Attrs: &resource.Attributes{
 						"foobar": "barfoo",
@@ -139,14 +138,14 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "id",
+					ID:   "id",
 					Type: "type",
 					Attrs: &resource.Attributes{
 						"foobar": "barfoo",
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertInfrastructureIsInSync()
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
@@ -166,7 +165,7 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				&resource.Resource{},
 			},
 			remoteResources: []*resource.Resource{},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertDeletedCount(1)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
@@ -183,7 +182,7 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			remoteResources: []*resource.Resource{
 				&resource.Resource{},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertUnmanagedCount(1)
 			},
 			assertStore: func(t *testing.T, store memstore.Store) {
@@ -196,12 +195,12 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			name: "we should ignore default AWS IAM role when strict mode is disabled",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "fake",
+					ID:    "fake",
 					Type:  "FakeResource",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "role-policy-test-1",
+					ID:   "role-policy-test-1",
 					Type: aws.AwsIamPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "policy-test-1",
@@ -211,33 +210,33 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "fake",
+					ID:    "fake",
 					Type:  "FakeResource",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "role-test-1",
+					ID:   "role-test-1",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/test",
 					},
 				},
 				&resource.Resource{
-					Id:   "role-policy-test-1",
+					ID:   "role-policy-test-1",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role": "role-test-1",
 					},
 				},
 				&resource.Resource{
-					Id:   "role-policy-test-1",
+					ID:   "role-policy-test-1",
 					Type: aws.AwsIamPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "policy-test-1",
 					},
 				},
 				&resource.Resource{
-					Id:   "policy-attachment-test-1",
+					ID:   "policy-attachment-test-1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy-test-1",
@@ -246,14 +245,14 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "role-test-2",
+					ID:   "role-test-2",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/test",
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(2)
 				result.AssertUnmanagedCount(2)
 				result.AssertDeletedCount(0)
@@ -275,12 +274,12 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			name: "we should not ignore default AWS IAM role when strict mode is enabled",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "fake",
+					ID:    "fake",
 					Type:  "FakeResource",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "policy-test-1",
+					ID:   "policy-test-1",
 					Type: aws.AwsIamPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "policy-test-1",
@@ -290,33 +289,33 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "fake",
+					ID:    "fake",
 					Type:  "FakeResource",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "role-test-1",
+					ID:   "role-test-1",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/test",
 					},
 				},
 				&resource.Resource{
-					Id:   "role-policy-test-1",
+					ID:   "role-policy-test-1",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role": "role-test-1",
 					},
 				},
 				&resource.Resource{
-					Id:   "policy-test-1",
+					ID:   "policy-test-1",
 					Type: aws.AwsIamPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "policy-test-1",
 					},
 				},
 				&resource.Resource{
-					Id:   "policy-attachment-test-1",
+					ID:   "policy-attachment-test-1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy-test-1",
@@ -325,14 +324,14 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "role-test-2",
+					ID:   "role-test-2",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/test",
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(2)
 				result.AssertUnmanagedCount(4)
 				result.AssertDeletedCount(0)
@@ -354,12 +353,12 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			name: "we should not ignore default AWS IAM role when strict mode is enabled and a filter is specified",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "fake",
+					ID:    "fake",
 					Type:  "FakeResource",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "policy-test-1",
+					ID:   "policy-test-1",
 					Type: aws.AwsIamPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "policy-test-1",
@@ -368,33 +367,33 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "fake",
+					ID:    "fake",
 					Type:  "FakeResource",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "role-test-1",
+					ID:   "role-test-1",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/test",
 					},
 				},
 				&resource.Resource{
-					Id:   "role-policy-test-1",
+					ID:   "role-policy-test-1",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role": "role-test-1",
 					},
 				},
 				&resource.Resource{
-					Id:   "policy-test-1",
+					ID:   "policy-test-1",
 					Type: aws.AwsIamPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "policy-test-1",
 					},
 				},
 				&resource.Resource{
-					Id:   "policy-attachment-test-1",
+					ID:   "policy-attachment-test-1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy-test-1",
@@ -403,14 +402,14 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "role-test-2",
+					ID:   "role-test-2",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/test",
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertCoverage(0)
 				result.AssertInfrastructureIsNotSync()
 				result.AssertManagedCount(0)
@@ -449,17 +448,17 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 			stateResources: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "res1",
+					ID:    "res1",
 					Type:  "not-filtered",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "res2",
+					ID:    "res2",
 					Type:  "filtered",
 					Attrs: &resource.Attributes{},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertUnmanagedCount(1)
 				result.AssertResourceUnmanaged("res2", "filtered")
 			},
@@ -478,17 +477,17 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 			stateResources: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "res1",
+					ID:    "res1",
 					Type:  "not-filtered",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "res2",
+					ID:    "res2",
 					Type:  "filtered",
 					Attrs: &resource.Attributes{},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertUnmanagedCount(1)
 				result.AssertResourceUnmanaged("res2", "filtered")
 			},
@@ -507,19 +506,19 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 			stateResources: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "res1",
+					ID:   "res1",
 					Type: "filtered",
 					Attrs: &resource.Attributes{
 						"test_field": "value to filter on",
 					},
 				},
 				&resource.Resource{
-					Id:    "res2",
+					ID:    "res2",
 					Type:  "not-filtered",
 					Attrs: &resource.Attributes{},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertUnmanagedCount(1)
 				result.AssertResourceUnmanaged("res1", "filtered")
 			},
@@ -544,7 +543,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test bucket policy expander middleware",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -554,7 +553,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"id":     "foo",
@@ -563,7 +562,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(1)
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
@@ -580,7 +579,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test instance block device middleware",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "dummy-instance",
+					ID:   "dummy-instance",
 					Type: "aws_instance",
 					Attrs: &resource.Attributes{
 						"availability_zone": "us-east-1",
@@ -601,7 +600,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "vol-018c5ae89895aca4c",
+					ID:   "vol-018c5ae89895aca4c",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"encrypted":            false,
@@ -610,7 +609,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "vol-02862d9b39045a3a4",
+					ID:   "vol-02862d9b39045a3a4",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"type":                 "gp3",
@@ -619,7 +618,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(2)
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
@@ -636,7 +635,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test route table expander middleware",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "table",
+					ID:   "table",
 					Type: "aws_route_table",
 					Attrs: &resource.Attributes{
 						"route": []interface{}{
@@ -655,7 +654,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "r-table1080289494",
+					ID:   "r-table1080289494",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":         "table",
@@ -667,7 +666,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "r-table2750132062",
+					ID:   "r-table2750132062",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":              "table",
@@ -679,7 +678,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(2)
 				result.AssertInfrastructureIsInSync()
 			},
@@ -697,7 +696,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test sns topic policy expander middleware",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -708,7 +707,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"id":     "foo",
@@ -717,7 +716,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(1)
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
@@ -734,7 +733,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test sqs queue policy expander middleware",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsSqsQueueResourceType,
 					Attrs: &resource.Attributes{
 						"id":     "foo",
@@ -744,7 +743,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"id":        "foo",
@@ -753,7 +752,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(1)
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
@@ -771,7 +770,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			stateResources: []*resource.Resource{
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-3970541193",
+					ID:   "sgrule-3970541193",
 					Attrs: &resource.Attributes{
 						"id":                       "sgrule-3970541193",
 						"type":                     "ingress",
@@ -785,7 +784,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-845917806",
+					ID:   "sgrule-845917806",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-845917806",
 						"type":              "egress",
@@ -799,7 +798,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-294318973",
+					ID:   "sgrule-294318973",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-294318973",
 						"type":              "ingress",
@@ -812,7 +811,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-2471889226",
+					ID:   "sgrule-2471889226",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-2471889226",
 						"type":              "ingress",
@@ -825,7 +824,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-3587309474",
+					ID:   "sgrule-3587309474",
 					Attrs: &resource.Attributes{
 						"id":                       "sgrule-3587309474",
 						"type":                     "ingress",
@@ -840,7 +839,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-3970541193",
+					ID:   "sgrule-3970541193",
 					Attrs: &resource.Attributes{
 						"id":                       "sgrule-3970541193",
 						"type":                     "ingress",
@@ -854,7 +853,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-1707973622",
+					ID:   "sgrule-1707973622",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-1707973622",
 						"type":              "egress",
@@ -867,7 +866,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-2821752134",
+					ID:   "sgrule-2821752134",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-2821752134",
 						"type":              "egress",
@@ -880,7 +879,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-2165103420",
+					ID:   "sgrule-2165103420",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-2165103420",
 						"type":              "ingress",
@@ -893,7 +892,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-2582518759",
+					ID:   "sgrule-2582518759",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-2582518759",
 						"type":              "ingress",
@@ -906,7 +905,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-2471889226",
+					ID:   "sgrule-2471889226",
 					Attrs: &resource.Attributes{
 						"id":                "sgrule-2471889226",
 						"type":              "ingress",
@@ -919,7 +918,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 				},
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-3587309474",
+					ID:   "sgrule-3587309474",
 					Attrs: &resource.Attributes{
 						"id":                       "sgrule-3587309474",
 						"type":                     "ingress",
@@ -931,7 +930,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(7)
 				result.AssertInfrastructureIsInSync()
 			},
@@ -950,7 +949,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			stateResources: []*resource.Resource{
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-3970541193",
+					ID:   "sgrule-3970541193",
 					Attrs: &resource.Attributes{
 						"id":                       "sgrule-3970541193",
 						"type":                     "ingress",
@@ -963,7 +962,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "iduser1",
+					ID:   "iduser1",
 					Type: aws.AwsIamUserPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy_arn1",
@@ -971,7 +970,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "idrole1",
+					ID:   "idrole1",
 					Type: aws.AwsIamRolePolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy_arn1",
@@ -982,7 +981,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
 					Type: aws.AwsSecurityGroupRuleResourceType,
-					Id:   "sgrule-3970541193",
+					ID:   "sgrule-3970541193",
 					Attrs: &resource.Attributes{
 						"id":                       "sgrule-3970541193",
 						"type":                     "ingress",
@@ -995,7 +994,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "iduser1",
+					ID:   "iduser1",
 					Type: aws.AwsIamUserPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy_arn1",
@@ -1003,7 +1002,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "idrole1",
+					ID:   "idrole1",
 					Type: aws.AwsIamRolePolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "policy_arn1",
@@ -1011,7 +1010,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertManagedCount(2)
 				result.AssertInfrastructureIsInSync()
 			},
@@ -1029,7 +1028,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test aws role managed policy expander",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "role_with_managed_policy_attr",
+					ID:   "role_with_managed_policy_attr",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"name": "role_with_managed_policy_attr",
@@ -1040,7 +1039,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "role_with_managed_policy_attr-arn2",
+					ID:   "role_with_managed_policy_attr-arn2",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "arn2",
@@ -1048,28 +1047,28 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "role_with_empty_managed_policy_attribute",
+					ID:   "role_with_empty_managed_policy_attribute",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"managed_policy_arns": []interface{}{},
 					},
 				},
 				&resource.Resource{
-					Id:    "role_without_managed_policy_attribute",
+					ID:    "role_without_managed_policy_attribute",
 					Type:  aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:   "role_with_managed_policy_attr",
+					ID:   "role_with_managed_policy_attr",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"name": "role_with_managed_policy_attr",
 					},
 				},
 				&resource.Resource{
-					Id:   "role_with_managed_policy_attr-arn1",
+					ID:   "role_with_managed_policy_attr-arn1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "arn1",
@@ -1077,7 +1076,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "role_with_managed_policy_attr-arn2",
+					ID:   "role_with_managed_policy_attr-arn2",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"policy_arn": "arn2",
@@ -1085,17 +1084,17 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:    "role_with_empty_managed_policy_attribute",
+					ID:    "role_with_empty_managed_policy_attribute",
 					Type:  aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "role_without_managed_policy_attribute",
+					ID:    "role_without_managed_policy_attribute",
 					Type:  aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertInfrastructureIsInSync()
 				result.AssertManagedCount(5)
 			},
@@ -1104,24 +1103,24 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			name: "test aws eip association expander middleware",
 			stateResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "ID",
+					ID:    "ID",
 					Type:  "ANOTHERTYPE",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "associdpresentinstate",
+					ID:    "associdpresentinstate",
 					Type:  aws.AwsEipAssociationResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "associdpresentinstate",
+					ID:   "associdpresentinstate",
 					Type: aws.AwsEipResourceType,
 					Attrs: &resource.Attributes{
 						"association_id": "associdpresentinstate",
 					},
 				},
 				&resource.Resource{
-					Id:   "associdNOTpresentinstate",
+					ID:   "associdNOTpresentinstate",
 					Type: aws.AwsEipResourceType,
 					Attrs: &resource.Attributes{
 						"association_id":    "associdNOTpresentinstate",
@@ -1134,24 +1133,24 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 			},
 			remoteResources: []*resource.Resource{
 				&resource.Resource{
-					Id:    "ID",
+					ID:    "ID",
 					Type:  "ANOTHERTYPE",
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:    "associdpresentinstate",
+					ID:    "associdpresentinstate",
 					Type:  aws.AwsEipAssociationResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				&resource.Resource{
-					Id:   "associdpresentinstate",
+					ID:   "associdpresentinstate",
 					Type: aws.AwsEipResourceType,
 					Attrs: &resource.Attributes{
 						"association_id": "associdpresentinstate",
 					},
 				},
 				&resource.Resource{
-					Id:   "associdNOTpresentinstate",
+					ID:   "associdNOTpresentinstate",
 					Type: aws.AwsEipAssociationResourceType,
 					Attrs: &resource.Attributes{
 						"allocation_id":        "associdNOTpresentinstate",
@@ -1163,7 +1162,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "associdNOTpresentinstate",
+					ID:   "associdNOTpresentinstate",
 					Type: aws.AwsEipResourceType,
 					Attrs: &resource.Attributes{
 						"association_id":    "associdNOTpresentinstate",
@@ -1174,7 +1173,7 @@ func TestDriftctlRun_Middlewares(t *testing.T) {
 					},
 				},
 			},
-			assert: func(t *testing.T, result *test.ScanResult, err error) {
+			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertInfrastructureIsInSync()
 				result.AssertManagedCount(5)
 			},
@@ -1191,7 +1190,6 @@ type normalizationTestCase struct {
 }
 
 func TestDriftctlRun_TestResourcesNormalization(t *testing.T) {
-
 	readResourceFile := func(ty, path string) ([]*resource.Resource, error) {
 		results := []*resource.Resource{}
 		file, err := os.ReadFile(path)
@@ -1217,7 +1215,6 @@ func TestDriftctlRun_TestResourcesNormalization(t *testing.T) {
 
 	cases := []normalizationTestCase{}
 	for _, res := range dctlresource.GetSupportedTypes() {
-
 		providerName := strings.SplitN(res, "_", 2)[0]
 		providerVersion, exist := defaultProviderVersions[providerName]
 		if !exist {
@@ -1233,7 +1230,6 @@ func TestDriftctlRun_TestResourcesNormalization(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.Resource, func(t *testing.T) {
-
 			folder := path.Join(c.ProviderName, c.ProviderVersion, c.Resource)
 
 			// _ = os.MkdirAll(path.Join("test", folder), os.ModePerm)
@@ -1353,5 +1349,4 @@ func TestDriftctlRun_TestResourcesNormalization(t *testing.T) {
 			results.AssertInfrastructureIsInSync()
 		})
 	}
-
 }

@@ -19,7 +19,7 @@ func TestRoute53RecordIDReconcilier_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{
 				{},
 				{
-					Id:   "1234_toto_TXT",
+					ID:   "1234_toto_TXT",
 					Type: aws.AwsRoute53RecordResourceType,
 					Attrs: &resource.Attributes{
 						"id":      "1234_toto_TXT",
@@ -32,7 +32,7 @@ func TestRoute53RecordIDReconcilier_Execute(t *testing.T) {
 			expected: []*resource.Resource{
 				{},
 				{
-					Id:   "1234_toto.example.com_TXT",
+					ID:   "1234_toto.example.com_TXT",
 					Type: aws.AwsRoute53RecordResourceType,
 					Attrs: &resource.Attributes{
 						"id":      "1234_toto.example.com_TXT",
@@ -54,7 +54,6 @@ func TestRoute53RecordIDReconcilier_Execute(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.expected, tt.resourcesFromState)
-
 		})
 	}
 }

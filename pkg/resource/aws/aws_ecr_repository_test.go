@@ -1,11 +1,11 @@
 package aws_test
 
 import (
+	"context"
 	"testing"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-
-	"github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	ecrtypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
 
 	"github.com/snyk/driftctl/test"
 	"github.com/snyk/driftctl/test/acceptance"
@@ -23,14 +23,14 @@ func TestAcc_Aws_ECRRepository(t *testing.T) {
 				Env: map[string]string{
 					"AWS_REGION": "us-east-1",
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}
 					result.AssertInfrastructureIsInSync()
 					result.AssertManagedCount(1)
 
-					mutatedRepositoryID = result.Managed()[0].ResourceId()
+					mutatedRepositoryID = result.Managed()[0].ResourceID()
 				},
 			},
 			{
@@ -38,16 +38,16 @@ func TestAcc_Aws_ECRRepository(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				PreExec: func() {
-					client := ecr.New(awsutils.Session())
-					_, err := client.PutImageTagMutability(&ecr.PutImageTagMutabilityInput{
+					client := ecr.NewFromConfig(awsutils.Config())
+					_, err := client.PutImageTagMutability(context.TODO(), &ecr.PutImageTagMutabilityInput{
 						RepositoryName:     &mutatedRepositoryID,
-						ImageTagMutability: aws.String("IMMUTABLE"),
+						ImageTagMutability: ecrtypes.ImageTagMutabilityImmutable,
 					})
 					if err != nil {
 						t.Fatal(err)
 					}
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

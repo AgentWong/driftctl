@@ -11,7 +11,6 @@ import (
 )
 
 func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
-
 	tests := []struct {
 		name               string
 		remoteResources    []*resource.Resource
@@ -22,32 +21,32 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 			"test that default account is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "a-dummy-account",
+					ID:    "a-dummy-account",
 					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsAPIGatewayAccountResourceType,
-					Attrs: &resource.Attributes{},
-				},
-			},
-			[]*resource.Resource{
-				{
-					Id:    "default-managed-by-IaC",
+					ID:    "default-managed-by-IaC",
 					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID:    "default-managed-by-IaC",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
+					Attrs: &resource.Attributes{},
+				},
+			},
+			[]*resource.Resource{
+				{
+					ID: "fake",
 				},
 				{
-					Id:    "default-managed-by-IaC",
+					ID:    "default-managed-by-IaC",
 					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -57,15 +56,15 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 			"test that default account is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "a-dummy-account",
+					ID:    "a-dummy-account",
 					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "default-managed-by-IaC",
+					ID:    "default-managed-by-IaC",
 					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -73,7 +72,7 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 			},
 		},

@@ -52,7 +52,6 @@ func NewFmtCmd(opts *pkg.FmtOptions) *cobra.Command {
 }
 
 func runFmt(opts *pkg.FmtOptions, reader io.Reader) error {
-
 	var analysisText []byte
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {

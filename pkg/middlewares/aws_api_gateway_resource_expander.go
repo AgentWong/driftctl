@@ -47,13 +47,13 @@ func (m *AwsAPIGatewayResourceExpander) handleResource(api *resource.Resource, r
 	}
 
 	newResource := m.resourceFactory.CreateAbstractResource(aws.AwsAPIGatewayResourceResourceType, *resourceID, map[string]interface{}{
-		"rest_api_id": api.ResourceId(),
+		"rest_api_id": api.ResourceID(),
 		"path":        "/",
 	})
 
 	*results = append(*results, newResource)
 	logrus.WithFields(logrus.Fields{
-		"id": newResource.ResourceId(),
+		"id": newResource.ResourceID(),
 	}).Debug("Created new resource from api gateway rest api")
 
 	return nil

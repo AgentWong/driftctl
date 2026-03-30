@@ -30,13 +30,13 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 						"path":        "/",
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "bar",
+					ID:   "bar",
 					Type: aws.AwsAPIGatewayResourceResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "bar",
@@ -45,14 +45,14 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "bar",
 					},
 				},
 				{
-					Id:   "bar",
+					ID:   "bar",
 					Type: aws.AwsAPIGatewayResourceResourceType,
 				},
 			},
@@ -61,28 +61,28 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			name: "empty or unknown root_resource_id",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "",
 					},
 				},
 				{
-					Id:    "bar",
+					ID:    "bar",
 					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "",
 					},
 				},
 				{
-					Id:    "bar",
+					ID:    "bar",
 					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},

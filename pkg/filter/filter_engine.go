@@ -25,7 +25,6 @@ type filtrableResource struct {
 
 // Run evaluates the JMESPath expression against the given resources and returns matched ones.
 func (e *Engine) Run(resources []*resource.Resource) ([]*resource.Resource, error) {
-
 	if e.expr == nil {
 		return nil, errors.New("expression is nil")
 	}
@@ -41,7 +40,7 @@ func (e *Engine) Run(resources []*resource.Resource) ([]*resource.Resource, erro
 		f := filtrableResource{
 			Attr: attrs,
 			Res:  res,
-			ID:   res.ResourceId(),
+			ID:   res.ResourceID(),
 			Type: res.ResourceType(),
 		}
 		filtrableResources = append(

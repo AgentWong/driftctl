@@ -13,7 +13,6 @@ import (
 )
 
 func parseFromFlag(from []string) ([]config.SupplierConfig, error) {
-
 	configs := make([]config.SupplierConfig, 0, len(from))
 
 	for _, flag := range from {

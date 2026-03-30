@@ -40,7 +40,7 @@ func (m VPCDefaultSecurityGroupSanitizer) Execute(remoteResources, resourcesFrom
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default unmanaged security group")
 		}

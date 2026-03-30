@@ -153,11 +153,11 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		Deleted:               analysis.Deleted(),
 		Drifted:               analysis.Drifted(),
 		Alerts:                analysis.Alerts(),
-		Stylesheet:            template.CSS(styleFile),
+		Stylesheet:            template.CSS(styleFile), //nolint:gosec // G203: styleFile is a trusted embedded asset
 		ScanDuration:          analysis.Duration.Round(time.Second).String(),
 		ProviderName:          analysis.ProviderName,
 		ProviderVersion:       analysis.ProviderVersion,
-		LogoSvg:               template.HTML(logoSvgFile),
+		LogoSvg:               template.HTML(logoSvgFile), //nolint:gosec // G203: logoSvgFile is a trusted embedded asset
 		FaviconBase64:         base64.StdEncoding.EncodeToString(faviconFile),
 	}
 

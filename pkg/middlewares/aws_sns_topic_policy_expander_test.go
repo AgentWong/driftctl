@@ -25,7 +25,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			name: "Inline policy no attached policy",
 			resourcesFromState: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -36,7 +36,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "arn",
@@ -44,7 +44,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -59,7 +59,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					"id":     "ID",
 					"policy": "{\"policy\":\"coucou\"}",
 				}).Once().Return(&resource.Resource{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -74,7 +74,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			name: "No inline policy, attached policy",
 			resourcesFromState: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "arn",
@@ -82,7 +82,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -93,7 +93,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "arn",
@@ -101,7 +101,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -116,7 +116,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			name: "inline policy and dup attached policy",
 			resourcesFromState: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -125,7 +125,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -136,7 +136,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "arn",
@@ -144,7 +144,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -159,7 +159,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			name: "inline policy and attached policy",
 			resourcesFromState: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -168,7 +168,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID2",
+					ID:   "ID2",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn2",
@@ -179,7 +179,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: &[]*resource.Resource{
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicResourceType,
 					Attrs: &resource.Attributes{
 						"arn": "arn",
@@ -187,7 +187,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -196,7 +196,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ID2",
+					ID:   "ID2",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn2",
@@ -209,7 +209,7 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 				factory.On("CreateAbstractResource", awsresource.AwsSnsTopicPolicyResourceType, "ID", mock.MatchedBy(func(input map[string]interface{}) bool {
 					return input["id"] == "ID"
 				})).Once().Return(&resource.Resource{
-					Id:   "ID",
+					ID:   "ID",
 					Type: awsresource.AwsSnsTopicPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"arn":    "arn",
@@ -223,7 +223,6 @@ func TestAwsSNSTopicPolicyExpander_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			factory := &dctlresource.MockResourceFactory{}
 			if tt.mock != nil {
 				tt.mock(factory)

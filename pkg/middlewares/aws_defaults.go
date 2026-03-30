@@ -54,14 +54,14 @@ func (m AwsDefaults) awsIamRolePolicyDefaults(remoteResources []*resource.Resour
 		var role *resource.Resource
 		for _, res := range remoteResources {
 			if res.ResourceType() == aws.AwsIamRoleResourceType &&
-				res.ResourceId() == (*remoteResource.Attrs)["role"] {
+				res.ResourceID() == (*remoteResource.Attrs)["role"] {
 				role = res
 				break
 			}
 		}
 
 		if role == nil {
-			logrus.Warnf("Role for %s role policy not found. Is that supposed to happen ?", remoteResource.ResourceId())
+			logrus.Warnf("Role for %s role policy not found. Is that supposed to happen ?", remoteResource.ResourceID())
 			continue
 		}
 
@@ -98,7 +98,7 @@ func (m AwsDefaults) Execute(remoteResources, resourcesFromState *[]*resource.Re
 		}
 
 		logrus.WithFields(logrus.Fields{
-			"id":   res.ResourceId(),
+			"id":   res.ResourceID(),
 			"type": res.ResourceType(),
 		}).Debug("Ignoring default AWS resource")
 	}
@@ -119,7 +119,7 @@ func (m AwsDefaults) Execute(remoteResources, resourcesFromState *[]*resource.Re
 		}
 
 		logrus.WithFields(logrus.Fields{
-			"id":   res.ResourceId(),
+			"id":   res.ResourceID(),
 			"type": res.ResourceType(),
 		}).Debug("Ignoring default AWS resource")
 	}

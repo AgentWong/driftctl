@@ -1,11 +1,12 @@
 package aws_test
 
 import (
+	"context"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/service/route53"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/route53"
+
 	"github.com/snyk/driftctl/test"
 	"github.com/snyk/driftctl/test/acceptance"
 	"github.com/snyk/driftctl/test/acceptance/awsutils"
@@ -22,14 +23,14 @@ func TestAcc_Aws_Route53HealthCheck(t *testing.T) {
 				Env: map[string]string{
 					"AWS_REGION": "us-east-1",
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}
 					result.AssertInfrastructureIsInSync()
 					result.AssertManagedCount(2)
 
-					mutatedHealthCheckID = result.Managed()[0].ResourceId()
+					mutatedHealthCheckID = result.Managed()[0].ResourceID()
 				},
 			},
 			{
@@ -37,8 +38,8 @@ func TestAcc_Aws_Route53HealthCheck(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				PreExec: func() {
-					client := route53.New(awsutils.Session())
-					_, err := client.UpdateHealthCheck(&route53.UpdateHealthCheckInput{
+					client := route53.NewFromConfig(awsutils.Config())
+					_, err := client.UpdateHealthCheck(context.TODO(), &route53.UpdateHealthCheckInput{
 						Disabled:      aws.Bool(true),
 						HealthCheckId: &mutatedHealthCheckID,
 						ResourcePath:  aws.String("/bad"),
@@ -47,7 +48,7 @@ func TestAcc_Aws_Route53HealthCheck(t *testing.T) {
 						t.Fatal(err)
 					}
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

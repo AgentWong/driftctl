@@ -20,28 +20,28 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			"ignore default iam roles when they're not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "AWSServiceRoleForSSO",
+					ID:   "AWSServiceRoleForSSO",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/sso.amazonaws.com",
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole",
+					ID:   "OrganizationAccountAccessRole",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/sso.amazonaws.com/",
 					},
 				},
 				{
-					Id:   "terraform-20210408093258091700000001",
+					ID:   "terraform-20210408093258091700000001",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/",
 					},
 				},
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -51,7 +51,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -59,7 +59,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "terraform-20210408093258091700000001",
+					ID:   "terraform-20210408093258091700000001",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/",
@@ -69,7 +69,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			func(t *testing.T, remoteResources, _ []*resource.Resource) {
 				assert.Len(t, remoteResources, 3)
 				for _, remoteResource := range remoteResources {
-					if remoteResource.ResourceId() == "AWSServiceRoleForSSO" {
+					if remoteResource.ResourceID() == "AWSServiceRoleForSSO" {
 						t.Fatal("AWSServiceRoleForSSO should have been ignored")
 					}
 				}
@@ -79,7 +79,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			"ignore default iam roles when they're managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "AWSServiceRoleForSSO",
+					ID:   "AWSServiceRoleForSSO",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path":        "/aws-service-role/sso.amazonaws.com/",
@@ -87,14 +87,14 @@ func TestAwsDefaults_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole",
+					ID:   "OrganizationAccountAccessRole",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/sso.amazonaws.com/",
 					},
 				},
 				{
-					Id:   "driftctl_assume_role:driftctl_policy.10",
+					ID:   "driftctl_assume_role:driftctl_policy.10",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/",
@@ -106,21 +106,21 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "AWSServiceRoleForSSO",
+					ID:   "AWSServiceRoleForSSO",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/sso.amazonaws.com/",
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole",
+					ID:   "OrganizationAccountAccessRole",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/sso.amazonaws.com/",
 					},
 				},
 				{
-					Id:   "driftctl_assume_role:driftctl_policy.10",
+					ID:   "driftctl_assume_role:driftctl_policy.10",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/",
@@ -137,35 +137,35 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			"ignore default iam role policies when they're not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "AWSServiceRoleForSSO",
+					ID:   "AWSServiceRoleForSSO",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/sso.amazonaws.com",
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole",
+					ID:   "OrganizationAccountAccessRole",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/sso.amazonaws.com",
 					},
 				},
 				{
-					Id:   "AWSServiceRoleForSSO",
+					ID:   "AWSServiceRoleForSSO",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role": "AWSServiceRoleForSSO",
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole",
+					ID:   "OrganizationAccountAccessRole",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role": "OrganizationAccountAccessRole",
 					},
 				},
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -175,7 +175,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -186,11 +186,11 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			func(t *testing.T, remoteResources, _ []*resource.Resource) {
 				assert.Len(t, remoteResources, 3)
 				for _, remoteResource := range remoteResources {
-					if remoteResource.ResourceId() == "AWSServiceRoleForSSO" &&
+					if remoteResource.ResourceID() == "AWSServiceRoleForSSO" &&
 						remoteResource.ResourceType() == aws.AwsIamRoleResourceType {
 						t.Fatal("AWSServiceRoleForSSO role should have been ignored")
 					}
-					if remoteResource.ResourceId() == "AWSServiceRoleForSSO" &&
+					if remoteResource.ResourceID() == "AWSServiceRoleForSSO" &&
 						remoteResource.ResourceType() == aws.AwsIamRolePolicyResourceType {
 						t.Fatal("AWSServiceRoleForSSO policy should have been ignored")
 					}
@@ -201,28 +201,28 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			"ignore default iam role policies even when they're managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "custom-role",
+					ID:   "custom-role",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/not-aws-service-role/sso.amazonaws.com",
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole",
+					ID:   "OrganizationAccountAccessRole",
 					Type: aws.AwsIamRoleResourceType,
 					Attrs: &resource.Attributes{
 						"path": "/aws-service-role/sso.amazonaws.com",
 					},
 				},
 				{
-					Id:   "driftctl_assume_role:driftctl_policy.10",
+					ID:   "driftctl_assume_role:driftctl_policy.10",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role": "custom-role",
 					},
 				},
 				{
-					Id:   "OrganizationAccountAccessRole:AdministratorAccess",
+					ID:   "OrganizationAccountAccessRole:AdministratorAccess",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role":        "OrganizationAccountAccessRole",
@@ -232,7 +232,7 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "OrganizationAccountAccessRole:AdministratorAccess",
+					ID:   "OrganizationAccountAccessRole:AdministratorAccess",
 					Type: aws.AwsIamRolePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"role":        "OrganizationAccountAccessRole",
@@ -243,11 +243,11 @@ func TestAwsDefaults_Execute(t *testing.T) {
 			func(t *testing.T, remoteResources, _ []*resource.Resource) {
 				assert.Len(t, remoteResources, 2)
 				for _, remoteResource := range remoteResources {
-					if remoteResource.ResourceId() == "OrganizationAccountAccessRole" &&
+					if remoteResource.ResourceID() == "OrganizationAccountAccessRole" &&
 						remoteResource.ResourceType() == aws.AwsIamRoleResourceType {
 						t.Fatal("OrganizationAccountAccessRole role should have been ignored")
 					}
-					if remoteResource.ResourceId() == "OrganizationAccountAccessRole:AdministratorAccess" &&
+					if remoteResource.ResourceID() == "OrganizationAccountAccessRole:AdministratorAccess" &&
 						remoteResource.ResourceType() == aws.AwsIamRolePolicyResourceType {
 						t.Fatal("OrganizationAccountAccessRole:AdministratorAccess policy should have been ignored")
 					}

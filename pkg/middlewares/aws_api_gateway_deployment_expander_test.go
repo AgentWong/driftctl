@@ -22,14 +22,14 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			name: "no stages created from deployment state resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAPIGatewayDeploymentResourceType,
 					Attrs: &resource.Attributes{
 						"rest_api_id": "api",
 					},
 				},
 				{
-					Id:   "bar",
+					ID:   "bar",
 					Type: aws.AwsAPIGatewayDeploymentResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name":  "",
@@ -37,7 +37,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ags-api-baz",
+					ID:   "ags-api-baz",
 					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
@@ -46,7 +46,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "ags-api-baz",
+					ID:   "ags-api-baz",
 					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
@@ -63,13 +63,13 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 					"ags-api-foo",
 					map[string]interface{}{},
 				).Once().Return(&resource.Resource{
-					Id:   "ags-api-foo",
+					ID:   "ags-api-foo",
 					Type: aws.AwsAPIGatewayStageResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAPIGatewayDeploymentResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name":  "foo",
@@ -77,7 +77,7 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "ags-api-baz",
+					ID:   "ags-api-baz",
 					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
@@ -86,14 +86,14 @@ func TestAwsApiGatewayDeploymentExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "ags-api-baz",
+					ID:   "ags-api-baz",
 					Type: aws.AwsAPIGatewayStageResourceType,
 					Attrs: &resource.Attributes{
 						"stage_name": "baz",
 					},
 				},
 				{
-					Id:   "ags-api-foo",
+					ID:   "ags-api-foo",
 					Type: aws.AwsAPIGatewayStageResourceType,
 				},
 			},

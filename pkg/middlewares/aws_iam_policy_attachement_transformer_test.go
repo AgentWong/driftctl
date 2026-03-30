@@ -28,7 +28,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			args: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamUserPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "policy_arn1",
@@ -38,7 +38,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamUserPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "policy_arn2",
@@ -50,7 +50,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			expected: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id1",
@@ -63,7 +63,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id2",
@@ -83,7 +83,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 					"groups":     []interface{}{},
 					"roles":      []interface{}{},
 				}).Once().Return(&resource.Resource{
-					Id:   "id1",
+					ID:   "id1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"id":         "id1",
@@ -100,7 +100,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 					"groups":     []interface{}{},
 					"roles":      []interface{}{},
 				}).Once().Return(&resource.Resource{
-					Id:   "id2",
+					ID:   "id2",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"id":         "id2",
@@ -117,7 +117,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			args: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamRolePolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "policy_arn1",
@@ -127,7 +127,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamRolePolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "policy_arn2",
@@ -139,7 +139,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			expected: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id1",
@@ -152,7 +152,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id2",
@@ -172,7 +172,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 					"groups":     []interface{}{},
 					"roles":      []interface{}{"role1"},
 				}).Once().Return(&resource.Resource{
-					Id:   "id1",
+					ID:   "id1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"id":         "id1",
@@ -189,7 +189,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 					"groups":     []interface{}{},
 					"roles":      []interface{}{"role2"},
 				}).Once().Return(&resource.Resource{
-					Id:   "id2",
+					ID:   "id2",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"id":         "id2",
@@ -206,7 +206,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			args: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamGroupPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "policy_arn1",
@@ -216,7 +216,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamGroupPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "policy_arn2",
@@ -228,7 +228,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			expected: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id1",
@@ -241,7 +241,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id2",
@@ -261,7 +261,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 					"groups":     []interface{}{"group1"},
 					"roles":      []interface{}{},
 				}).Once().Return(&resource.Resource{
-					Id:   "id1",
+					ID:   "id1",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"id":         "id1",
@@ -278,7 +278,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 					"groups":     []interface{}{"group2"},
 					"roles":      []interface{}{},
 				}).Once().Return(&resource.Resource{
-					Id:   "id2",
+					ID:   "id2",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 					Attrs: &resource.Attributes{
 						"id":         "id2",
@@ -295,7 +295,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			args: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id1",
@@ -308,7 +308,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id2",
@@ -323,7 +323,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 			expected: argRes{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "id1",
+						ID:   "id1",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id1",
@@ -336,7 +336,7 @@ func TestIamPolicyAttachmentTransformer_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					&resource.Resource{
-						Id:   "id2",
+						ID:   "id2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"id":         "id2",

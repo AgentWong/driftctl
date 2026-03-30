@@ -19,7 +19,6 @@ import (
 // Init configures the AWS provider and registers its enumerators with the remote library.
 // It returns the aws.Config so callers can create additional AWS service clients.
 func Init(version string, _ alerter.Interface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.Factory, configDir string) (aws.Config, error) {
-
 	provider, err := NewTerraformProvider(version, progress, configDir)
 	if err != nil {
 		return aws.Config{}, err

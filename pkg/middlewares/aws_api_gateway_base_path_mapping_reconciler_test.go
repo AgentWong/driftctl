@@ -21,39 +21,39 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			name: "with managed resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
@@ -63,29 +63,29 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 			},
@@ -94,11 +94,11 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			name: "with deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
@@ -109,55 +109,55 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			name: "with a mix of managed, unmanaged and deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping4",
+					ID:   "mapping4",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping3",
+					ID:   "mapping3",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping3",
+					ID:   "mapping3",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "mapping1",
+					ID:   "mapping1",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
+					ID:   "mapping2",
 					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping3",
+					ID:   "mapping3",
 					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 			},

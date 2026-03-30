@@ -8,7 +8,6 @@ import (
 )
 
 func getConfig() Config {
-
 	config := Config{
 		Level:        logrus.WarnLevel,
 		ReportCaller: false,

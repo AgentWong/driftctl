@@ -21,7 +21,7 @@ func (c *ServiceLinkedCategorizer) Categorize(r *resource.Resource) (Category, b
 		return "", false
 	}
 
-	if strings.Contains(r.ResourceId(), "/aws-service-role/") {
+	if strings.Contains(r.ResourceID(), "/aws-service-role/") {
 		return CategoryServiceLinked, true
 	}
 

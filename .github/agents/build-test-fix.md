@@ -14,7 +14,7 @@ You are an iterative development agent for the driftctl Go CLI project. Your job
 - AWS credentials are loaded from `.env` via godotenv (AWS_PROFILE and AWS_REGION)
 - The CLI uses cobra framework; the main command is `scan`
 - This project is AWS-only; do not add Azure, GCP, or GitHub provider support
-- driftctl uses AWS SDK Go **v1** (`github.com/aws/aws-sdk-go`), which does **not** support the `sso_session` config format
+- driftctl uses AWS SDK Go **v2** (`github.com/aws/aws-sdk-go-v2`), which supports `sso_session` profiles natively
 
 ## Workflow
 
@@ -46,14 +46,11 @@ DCTL_S3_REGION=us-west-1 ./bin/driftctl scan \
   --output html://test-output/report.html
 ```
 
-**Before running:** Ensure AWS credentials are available. SDK v1 cannot use `sso_session`-based profiles directly. You must export temporary credentials:
+**Before running:** Ensure AWS credentials are available. SDK v2 supports `sso_session` profiles natively:
 
 ```bash
-# 1. Login to SSO (opens browser)
+# Login to SSO (opens browser) — credentials are loaded automatically
 aws sso login --profile $AWS_PROFILE
-
-# 2. Export credentials as env vars for SDK v1 compatibility
-eval "$(aws configure export-credentials --profile $AWS_PROFILE --format env)"
 ```
 
 ### Step 3: Analyze
@@ -63,7 +60,7 @@ eval "$(aws configure export-credentials --profile $AWS_PROFILE --format env)"
 - Exit code 2: a runtime error occurred
 
 For runtime errors, read the error output and `test-output/report.json`. Common issues:
-- **AWS SSO credential errors ("missing required configuration: sso_region, sso_start_url"):** The AWS profile uses the `sso_session` format which SDK v1 doesn't support. Export temporary credentials using `aws configure export-credentials` as shown in Step 2.
+- **AWS SSO credential errors ("missing required configuration: sso_region, sso_start_url"):** Ensure you have logged in via `aws sso login --profile $AWS_PROFILE`. SDK v2 supports `sso_session` profiles natively.
 - **S3 BucketRegionError (301):** The S3 bucket is in a different region than `AWS_REGION`. Set `DCTL_S3_REGION=us-west-1` when running the scan.
 - **Terraform provider download failures:** check network access and `--config-dir`
 - **Resource enumeration errors:** check if the AWS Config recorder is enabled in the target region

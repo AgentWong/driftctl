@@ -35,7 +35,7 @@ func initAwsSecurityGroupRuleMetaData(resourceSchemaRepository dctlresource.Sche
 		val.SafeDelete([]string{"to_port"})
 		id := CreateSecurityGroupRuleIDHash(val)
 		_ = val.SafeSet([]string{"id"}, id)
-		res.Id = id
+		res.ID = id
 	})
 	resourceSchemaRepository.SetHumanReadableAttributesFunc(AwsSecurityGroupRuleResourceType, func(res *resource.Resource) map[string]string {
 		val := res.Attrs

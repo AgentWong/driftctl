@@ -48,8 +48,8 @@ func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromSta
 				_ = attrs.SafeSet([]string{"prefix_list_ids"}, []interface{}{})
 				res := m.createRule(attrs)
 				logrus.WithFields(logrus.Fields{
-					"formerRuleId": stateResource.ResourceId(),
-					"newRuleId":    res.ResourceId(),
+					"formerRuleId": stateResource.ResourceID(),
+					"newRuleId":    res.ResourceID(),
 				}).Debug("Splitting aws_security_group_rule")
 				res.Attrs.SafeDelete([]string{"self"})
 				newStateResources = append(newStateResources, res)
@@ -64,8 +64,8 @@ func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromSta
 				_ = attrs.SafeSet([]string{"prefix_list_ids"}, []interface{}{})
 				res := m.createRule(attrs)
 				logrus.WithFields(logrus.Fields{
-					"formerRuleId": stateResource.ResourceId(),
-					"newRuleId":    res.ResourceId(),
+					"formerRuleId": stateResource.ResourceID(),
+					"newRuleId":    res.ResourceID(),
 				}).Debug("Splitting aws_security_group_rule")
 				res.Attrs.SafeDelete([]string{"self"})
 				newStateResources = append(newStateResources, res)
@@ -80,8 +80,8 @@ func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromSta
 				_ = attrs.SafeSet([]string{"prefix_list_ids"}, []interface{}{listID})
 				res := m.createRule(attrs)
 				logrus.WithFields(logrus.Fields{
-					"formerRuleId": stateResource.ResourceId(),
-					"newRuleId":    res.ResourceId(),
+					"formerRuleId": stateResource.ResourceID(),
+					"newRuleId":    res.ResourceID(),
 				}).Debug("Splitting aws_security_group_rule")
 				res.Attrs.SafeDelete([]string{"self"})
 				newStateResources = append(newStateResources, res)
@@ -96,8 +96,8 @@ func (m VPCSecurityGroupRuleSanitizer) Execute(remoteResources, resourcesFromSta
 			_ = attrs.SafeSet([]string{"prefix_list_ids"}, []interface{}{})
 			res := m.createRule(attrs)
 			logrus.WithFields(logrus.Fields{
-				"formerRuleId": stateResource.ResourceId(),
-				"newRuleId":    res.ResourceId(),
+				"formerRuleId": stateResource.ResourceID(),
+				"newRuleId":    res.ResourceID(),
 			}).Debug("Splitting aws_security_group_rule")
 			res.Attrs.SafeDelete([]string{"self"})
 			newStateResources = append(newStateResources, res)

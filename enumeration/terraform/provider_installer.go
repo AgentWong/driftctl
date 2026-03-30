@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	stderrors "errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -52,7 +53,8 @@ func (p *ProviderInstaller) Install() (string, error) {
 			providerDir,
 		)
 		if err != nil {
-			if notFoundErr, ok := err.(error2.ProviderNotFoundError); ok {
+			var notFoundErr error2.ProviderNotFoundError
+			if stderrors.As(err, &notFoundErr) {
 				notFoundErr.Version = p.config.Version
 				return "", notFoundErr
 			}

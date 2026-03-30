@@ -28,10 +28,9 @@ func Current() string {
 
 // CheckLatest returns the latest version string if a newer version is available, or "" if current is up to date.
 func CheckLatest() string {
-
 	client := &http.Client{}
 
-	req, _ := http.NewRequest("GET", "https://telemetry.driftctl.com/version", nil)
+	req, _ := http.NewRequest(http.MethodGet, "https://telemetry.driftctl.com/version", nil)
 	req.Header.Set("driftctl-version", Current())
 	req.Header.Set("driftctl-os", runtime.GOOS)
 	req.Header.Set("driftctl-arch", runtime.GOARCH)
@@ -41,8 +40,9 @@ func CheckLatest() string {
 		logrus.Debugf("Unable to check for a newer version: %+v", err)
 		return ""
 	}
+	defer func() { _ = res.Body.Close() }()
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		logrus.Debugf("Unable to check for a newer version: %s", res.Status)
 		return ""
 	}

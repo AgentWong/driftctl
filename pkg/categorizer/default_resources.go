@@ -19,7 +19,7 @@ func NewDefaultResourceCategorizer() *DefaultResourceCategorizer {
 // Categorize returns CategoryDefaultResource if the resource is an AWS-managed default resource.
 func (c *DefaultResourceCategorizer) Categorize(r *resource.Resource) (Category, bool) {
 	resType := r.ResourceType()
-	resID := r.ResourceId()
+	resID := r.ResourceID()
 	name := resourceName(r)
 
 	switch resType {

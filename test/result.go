@@ -27,7 +27,7 @@ func NewScanResult(t *testing.T, analysis *analyser.Analysis) *ScanResult {
 // AssertResourceUnmanaged fails the test if no unmanaged resource with the given id and type is found.
 func (r *ScanResult) AssertResourceUnmanaged(id, ty string) {
 	for _, u := range r.Unmanaged() {
-		if u.ResourceType() == ty && u.ResourceId() == id {
+		if u.ResourceType() == ty && u.ResourceID() == id {
 			return
 		}
 	}
@@ -37,7 +37,7 @@ func (r *ScanResult) AssertResourceUnmanaged(id, ty string) {
 // AssertResourceDeleted fails the test if no deleted resource with the given id and type is found.
 func (r *ScanResult) AssertResourceDeleted(id, ty string) {
 	for _, u := range r.Deleted() {
-		if u.ResourceType() == ty && u.ResourceId() == id {
+		if u.ResourceType() == ty && u.ResourceID() == id {
 			return
 		}
 	}

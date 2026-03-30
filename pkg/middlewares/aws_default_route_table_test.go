@@ -21,31 +21,31 @@ func TestAwsDefaultRouteTable_Execute(t *testing.T) {
 			"test that default route tables are not excluded when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
@@ -54,23 +54,23 @@ func TestAwsDefaultRouteTable_Execute(t *testing.T) {
 			"test that default route tables are excluded when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 			},
@@ -93,7 +93,6 @@ func TestAwsDefaultRouteTable_Execute(t *testing.T) {
 					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
-
 		})
 	}
 }

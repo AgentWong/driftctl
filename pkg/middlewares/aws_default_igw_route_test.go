@@ -21,25 +21,25 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 			"default internet gateway route is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-igw-route",
+					ID:   "default-igw-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -47,7 +47,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -57,7 +57,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-igw-route",
+					ID:   "default-igw-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -67,25 +67,25 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-igw-route",
+					ID:   "default-igw-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -93,7 +93,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -106,25 +106,25 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 			"default internet gateway route is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-igw-route",
+					ID:   "default-igw-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":         "default-route-table",
@@ -133,7 +133,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-igw-non-default-route",
+					ID:   "default-igw-non-default-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":         "default-route-table",
@@ -142,7 +142,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-igw-default-ipv6-route",
+					ID:   "default-igw-default-ipv6-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":              "default-route-table",
@@ -151,7 +151,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",
@@ -162,25 +162,25 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "default-igw-non-default-route",
+					ID:   "default-igw-non-default-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":         "default-route-table",
@@ -189,7 +189,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-igw-default-ipv6-route",
+					ID:   "default-igw-default-ipv6-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id":              "default-route-table",
@@ -198,7 +198,7 @@ func TestAwsDefaultInternetGatewayRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-route",
+					ID:   "dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "default-route-table",

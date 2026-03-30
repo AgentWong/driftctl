@@ -24,7 +24,6 @@ func NewAwsRoleManagedPolicyExpander(resourceFactory resource.Factory) *AwsRoleM
 
 // Execute applies the AwsRoleManagedPolicyExpander middleware.
 func (a AwsRoleManagedPolicyExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newList := make([]*resource.Resource, 0)
 	for _, res := range *remoteResources {
 		// Ignore all resources other than iam_role
@@ -96,7 +95,6 @@ func (a AwsRoleManagedPolicyExpander) Execute(remoteResources, resourcesFromStat
 		res.Attributes().SafeDelete([]string{"managed_policy_arns"})
 
 		newList = append(newList, res)
-
 	}
 	*resourcesFromState = newList
 	return nil

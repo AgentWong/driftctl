@@ -23,32 +23,32 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 			name: "test nothing is expanded",
 			remoteResources: []*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "non-ingress-and-egress",
+					ID:    "non-ingress-and-egress",
 					Type:  aws.AwsNetworkACLResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expectedFromState: []*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "non-ingress-and-egress",
+					ID:    "non-ingress-and-egress",
 					Type:  aws.AwsNetworkACLResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expectedFromRemote: []*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 			},
 		},
@@ -56,10 +56,10 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 			name: "network ACL rule are expanded",
 			remoteResources: []*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "ingress-and-egress-should-be-removed-from-remote-res",
+					ID:   "ingress-and-egress-should-be-removed-from-remote-res",
 					Type: aws.AwsNetworkACLResourceType,
 					Attrs: &resource.Attributes{
 						"ingress": "something",
@@ -91,7 +91,7 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 						"to_port":         80,
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "acl-rule1",
+					ID:   "acl-rule1",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				})
 
@@ -118,7 +118,7 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 						"to_port":         80,
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "acl-rule2",
+					ID:   "acl-rule2",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				})
 
@@ -145,7 +145,7 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 						"to_port":         80,
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "acl-rule3",
+					ID:   "acl-rule3",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				})
 
@@ -172,13 +172,13 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 						"to_port":         80,
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "default-acl-rule1",
+					ID:   "default-acl-rule1",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "acl",
+					ID:   "acl",
 					Type: aws.AwsNetworkACLResourceType,
 					Attrs: &resource.Attributes{
 						"ingress": []interface{}{
@@ -223,7 +223,7 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 					Attrs: &resource.Attributes{
 						"ingress": []interface{}{
@@ -242,44 +242,44 @@ func TestAwsNetworkACLExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "acl-rule3",
+					ID:   "acl-rule3",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				},
 			},
 			expectedFromRemote: []*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "ingress-and-egress-should-be-removed-from-remote-res",
+					ID:    "ingress-and-egress-should-be-removed-from-remote-res",
 					Type:  aws.AwsNetworkACLResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expectedFromState: []*resource.Resource{
 				{
-					Id:    "acl",
+					ID:    "acl",
 					Type:  aws.AwsNetworkACLResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:   "acl-rule1",
+					ID:   "acl-rule1",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				},
 				{
-					Id:   "acl-rule2",
+					ID:   "acl-rule2",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				},
 				{
-					Id:   "acl-rule3",
+					ID:   "acl-rule3",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				},
 				{
-					Id:   "default-acl-rule1",
+					ID:   "default-acl-rule1",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				},
 				{
-					Id:    "default-acl",
+					ID:    "default-acl",
 					Type:  aws.AwsDefaultNetworkACLResourceType,
 					Attrs: &resource.Attributes{},
 				},

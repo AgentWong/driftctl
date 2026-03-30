@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	stderrors "errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -53,7 +54,7 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 		Short: "Scan",
 		Long:  "Scan",
 		Args:  cobra.NoArgs,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			from, _ := cmd.Flags().GetStringSlice("from")
 
 			iacSource, err := parseFromFlag(from)
@@ -145,7 +146,7 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			return scanRun(opts)
 		},
 	}
@@ -313,7 +314,7 @@ func scanRun(opts *pkg.ScanOptions) error {
 
 	awsCfg, err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
 	if err != nil {
-		if err == aws.ErrAWSCredentialsNotFound {
+		if stderrors.Is(err, aws.ErrAWSCredentialsNotFound) {
 			return err
 		}
 		return err
@@ -394,7 +395,7 @@ func scanRun(opts *pkg.ScanOptions) error {
 			cfnCount := 0
 			defaultCount := 0
 			for _, r := range analysis.Unmanaged() {
-				key := r.ResourceType() + "." + r.ResourceId()
+				key := r.ResourceType() + "." + r.ResourceID()
 				cat := string(chain.Categorize(r))
 				cats[key] = cat
 				if cat == string(categorizer.CategoryCloudFormationManaged) {

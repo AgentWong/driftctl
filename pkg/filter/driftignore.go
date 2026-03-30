@@ -127,7 +127,7 @@ func (r *DriftIgnore) shouldIgnoreType(ty resource.Type) bool {
 
 // IsResourceIgnored reports whether the given resource should be ignored.
 func (r *DriftIgnore) IsResourceIgnored(res *resource.Resource) bool {
-	return r.match(fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId()))
+	return r.match(fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceID()))
 }
 
 func (r *DriftIgnore) match(strRes string) bool {

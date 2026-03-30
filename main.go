@@ -2,6 +2,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -30,7 +31,6 @@ func main() {
 }
 
 func run() int {
-
 	config.Init()
 	logger.Init()
 	build := build.Build{}
@@ -74,7 +74,8 @@ func run() int {
 	}()
 
 	if _, err := driftctlCmd.ExecuteC(); err != nil {
-		if _, isNotInSync := err.(cmderrors.InfrastructureNotInSync); isNotInSync {
+		var notInSync cmderrors.InfrastructureNotInSync
+		if errors.As(err, &notInSync) {
 			return scan.ExitNotInSync
 		}
 		if cmd.IsReportingEnabled(&driftctlCmd.Command) {

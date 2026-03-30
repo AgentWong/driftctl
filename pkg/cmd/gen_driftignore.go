@@ -21,7 +21,7 @@ func NewGenDriftIgnoreCmd() *cobra.Command {
 		Short: "Generate a .driftignore file based on your scan result",
 		Long:  "This command will generate a new .driftignore file containing your current drifts\n\nExample: driftctl scan -o json://stdout | driftctl gen-driftignore",
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			_, list, err := genDriftIgnore(opts)
 			if err != nil {
 				return err
@@ -30,7 +30,7 @@ func NewGenDriftIgnoreCmd() *cobra.Command {
 			ignoreFile := os.Stdout
 			if opts.OutputPath != "-" {
 				var err error
-				ignoreFile, err = os.OpenFile(opts.OutputPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+				ignoreFile, err = os.OpenFile(opts.OutputPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644) //nolint:gosec // G302: 0644 is intentional for a user-readable config file
 				if err != nil {
 					return errors.Errorf("error opening output file: %s", err)
 				}

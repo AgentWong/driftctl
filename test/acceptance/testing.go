@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"io"
 	iofs "io/fs"
@@ -163,7 +164,6 @@ func (c *AccTestCase) getResult(t *testing.T) *test.ScanResult {
  * e.g. ACC_AWS_PROFILE will override AWS_PROFILE
  */
 func (c *AccTestCase) resolveTerraformEnv() map[string]string {
-
 	environMap := make(map[string]string, len(os.Environ()))
 
 	const PREFIX string = "ACC_"
@@ -274,7 +274,8 @@ func runDriftCtlCmd(driftctlCmd *cmd.DriftctlCmd) (*cobra.Command, string, error
 	os.Stdout = w
 	cmd, cmdErr := driftctlCmd.ExecuteC()
 	// Ignore not in sync errors in acceptance test context
-	if _, isNotInSyncErr := cmdErr.(cmderrors.InfrastructureNotInSync); isNotInSyncErr {
+	var notInSync cmderrors.InfrastructureNotInSync
+	if stderrors.As(cmdErr, &notInSync) {
 		cmdErr = nil
 	}
 	outC := make(chan string)
@@ -321,7 +322,6 @@ func (c *AccTestCase) setEnv(env []string) {
 
 // Run executes an acceptance test case.
 func Run(t *testing.T, c AccTestCase) {
-
 	logger.Init()
 
 	if os.Getenv("DRIFTCTL_ACC") == "" {

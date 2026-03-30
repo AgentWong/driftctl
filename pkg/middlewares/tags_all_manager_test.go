@@ -20,7 +20,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 			name: "With multiple resources that are tags_all compatible",
 			remoteResources: &[]*resource.Resource{
 				{
-					Id:   "dummy-instance",
+					ID:   "dummy-instance",
 					Type: "aws_instance",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -34,7 +34,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-ebs-volume",
+					ID:   "dummy-ebs-volume",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -50,7 +50,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 			},
 			resourcesFromState: &[]*resource.Resource{
 				{
-					Id:   "dummy-instance",
+					ID:   "dummy-instance",
 					Type: "aws_instance",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -63,7 +63,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-ebs-volume",
+					ID:   "dummy-ebs-volume",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{

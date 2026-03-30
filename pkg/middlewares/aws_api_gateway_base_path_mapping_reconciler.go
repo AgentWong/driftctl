@@ -57,7 +57,7 @@ func (m AwsAPIGatewayBasePathMappingReconciler) Execute(remoteResources, resourc
 		// Remove duplicates (e.g. same id, the opposite type)
 		isDuplicate := false
 		for _, managed := range managedAPIMapping {
-			if managed.ResourceId() == unmanaged.ResourceId() {
+			if managed.ResourceID() == unmanaged.ResourceID() {
 				isDuplicate = true
 				break
 			}

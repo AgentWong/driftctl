@@ -23,7 +23,7 @@ func (c *CloudFormationCategorizer) Categorize(r *resource.Resource) (Category, 
 	if len(c.managedIDs) == 0 {
 		return "", false
 	}
-	if c.managedIDs[r.ResourceId()] {
+	if c.managedIDs[r.ResourceID()] {
 		return CategoryCloudFormationManaged, true
 	}
 	return "", false

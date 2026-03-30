@@ -17,7 +17,6 @@ func NewAwsDefaultNetworkACL() AwsDefaultNetworkACL {
 
 // Execute applies the AwsDefaultNetworkACL middleware.
 func (m AwsDefaultNetworkACL) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -44,7 +43,7 @@ func (m AwsDefaultNetworkACL) Execute(remoteResources, resourcesFromState *[]*re
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   remoteResource.ResourceId(),
+			"id":   remoteResource.ResourceID(),
 			"type": remoteResource.ResourceType(),
 		}).Debug("Ignoring default network ACL as it is not managed by IaC")
 	}

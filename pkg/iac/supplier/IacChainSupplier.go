@@ -41,7 +41,6 @@ func (r *IacChainSupplier) AddSupplier(supplier resource2.IaCSupplier) {
 
 // Resources returns all resources from all registered suppliers.
 func (r *IacChainSupplier) Resources() ([]*resource.Resource, error) {
-
 	for _, supplier := range r.suppliers {
 		sup := supplier
 		r.runner.Run(func() (interface{}, error) {

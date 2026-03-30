@@ -38,7 +38,6 @@ func NewTelemetry(build build.Interface) *Telemetry {
 
 // SendTelemetry transmits the collected telemetry data.
 func (te Telemetry) SendTelemetry(store memstore.Bucket) {
-
 	if !te.build.IsUsageReportingEnabled() {
 		logrus.Debug("Usage reporting is disabled on this build, telemetry skipped")
 		return
@@ -82,13 +81,13 @@ func (te Telemetry) SendTelemetry(store memstore.Bucket) {
 	}
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("POST", "https://telemetry.driftctl.com/telemetry", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, "https://telemetry.driftctl.com/telemetry", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
-	_, err = client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		logrus.Debugf("Unable to send telemetry data: %+v", err)
 		return
 	}
-
+	defer func() { _ = resp.Body.Close() }()
 }

@@ -41,7 +41,6 @@ func GetIACSupplier(configs []config.SupplierConfig,
 	alerter *alerter.Alerter,
 	factory resource.Factory,
 	filter filter.Filter) (resource2.IaCSupplier, error) {
-
 	chainSupplier := NewIacChainSupplier()
 	for _, config := range configs {
 		if !IsSupplierSupported(config.Key) {

@@ -151,7 +151,7 @@
                         <tr data-kind="resource-managed" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                             {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ else }}<td></td>{{ end }}
                         </tr>
                         {{end}}
@@ -177,7 +177,7 @@
                         <tr data-kind="resource-unmanaged" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                         </tr>
                         {{end}}
                         </tbody>
@@ -202,7 +202,7 @@
                         <tr data-kind="resource-cfn" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                         </tr>
                         {{end}}
                         </tbody>
@@ -227,7 +227,7 @@
                         <tr data-kind="resource-default" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                         </tr>
                         {{end}}
                         </tbody>
@@ -253,7 +253,7 @@
                         <tr data-kind="resource-deleted" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                             {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ else }}<td></td>{{ end }}
                         </tr>
                         {{end}}
@@ -280,7 +280,7 @@
                         <tr data-kind="resource-drifted" class="resource-item row">
                             <td data-type="resource-name">{{$dr.Res.DisplayName}}</td>
                             <td data-type="resource-type">{{$dr.Res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$dr.Res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$dr.Res.ResourceID}}</td>
                             <td>
                                 {{range $change := $dr.AttributeChanges}}
                                 <div>~ {{$change.Path}}: {{$change.Before}} =&gt; {{$change.After}}</div>
@@ -311,7 +311,7 @@
                         <tr data-kind="resource-unsupported" class="resource-item row">
                             <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                             {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ else }}<td></td>{{ end }}
                         </tr>
                         {{end}}

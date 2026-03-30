@@ -16,7 +16,6 @@ func NewRoute53DefaultZoneRecordSanitizer() Route53DefaultZoneRecordSanitizer {
 
 // Execute applies the Route53DefaultZoneRecordSanitizer middleware.
 func (m Route53DefaultZoneRecordSanitizer) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	// We iterate on remote resource and adding them to a new slice except for default records
@@ -48,11 +47,10 @@ func (m Route53DefaultZoneRecordSanitizer) Execute(remoteResources, resourcesFro
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default unmanaged record")
 		}
-
 	}
 
 	*remoteResources = newRemoteResources

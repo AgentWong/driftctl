@@ -194,19 +194,18 @@ func initAwsNetworkACLRuleMetaData(resourceSchemaRepository dctlresource.SchemaR
 		// While reading remote we always got protocol as a number.
 		// We cannot predict how the user decided to write the protocol on IaC side.
 		// This workaround is mandatory to harmonize resources ID
-		res.Id = CreateNetworkACLRuleID(
+		res.ID = CreateNetworkACLRuleID(
 			*res.Attrs.GetString("network_acl_id"),
 			(*res.Attrs)["rule_number"].(int64),
 			*res.Attrs.GetBool("egress"),
 			*res.Attrs.GetString("protocol"),
 		)
-		_ = res.Attrs.SafeSet([]string{"id"}, res.Id)
+		_ = res.Attrs.SafeSet([]string{"id"}, res.ID)
 
 		res.Attrs.DeleteIfDefault("cidr_block")
 		res.Attrs.DeleteIfDefault("ipv6_cidr_block")
 	})
 	resourceSchemaRepository.SetHumanReadableAttributesFunc(AwsNetworkACLRuleResourceType, func(res *resource.Resource) map[string]string {
-
 		ruleNumber := strconv.FormatInt((*res.Attrs)["rule_number"].(int64), 10)
 		if ruleNumber == "32767" {
 			ruleNumber = "*"

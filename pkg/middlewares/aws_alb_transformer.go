@@ -31,7 +31,7 @@ func (m AwsALBTransformer) Execute(_, resourcesFromState *[]*resource.Resource) 
 
 		newStateResources = append(newStateResources, m.resourceFactory.CreateAbstractResource(
 			aws.AwsLoadBalancerResourceType,
-			res.ResourceId(),
+			res.ResourceID(),
 			*res.Attributes(),
 		))
 	}

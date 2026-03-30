@@ -38,7 +38,7 @@ func (m AwsIamIDReconciler) Execute(remoteResources, _ *[]*resource.Resource) er
 
 	for _, res := range *remoteResources {
 		// Only rewrite IDs that look like AWS internal unique identifiers
-		if !awsIamUniqueIDPattern.MatchString(res.ResourceId()) {
+		if !awsIamUniqueIDPattern.MatchString(res.ResourceID()) {
 			continue
 		}
 
@@ -47,10 +47,10 @@ func (m AwsIamIDReconciler) Execute(remoteResources, _ *[]*resource.Resource) er
 			if name != "" {
 				logrus.WithFields(logrus.Fields{
 					"type":   res.ResourceType(),
-					"old_id": res.ResourceId(),
+					"old_id": res.ResourceID(),
 					"new_id": name,
 				}).Debug("Reconciling IAM resource ID from Config unique ID to name")
-				res.Id = name
+				res.ID = name
 			}
 			continue
 		}
@@ -62,10 +62,10 @@ func (m AwsIamIDReconciler) Execute(remoteResources, _ *[]*resource.Resource) er
 			if ok && arn != "" {
 				logrus.WithFields(logrus.Fields{
 					"type":   res.ResourceType(),
-					"old_id": res.ResourceId(),
+					"old_id": res.ResourceID(),
 					"new_id": arn,
 				}).Debug("Reconciling IAM policy ID from Config unique ID to ARN")
-				res.Id = arn
+				res.ID = arn
 			}
 		}
 	}

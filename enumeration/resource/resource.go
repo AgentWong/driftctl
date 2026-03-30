@@ -53,7 +53,7 @@ func (s *TerraformStateSource) InternalName() string {
 
 // Resource represents a single cloud or IaC resource.
 type Resource struct {
-	Id     string
+	ID     string
 	Type   string
 	Attrs  *Attributes
 	Sch    *Schema `json:"-" diff:"-"`
@@ -65,9 +65,9 @@ func (r *Resource) Schema() *Schema {
 	return r.Sch
 }
 
-// ResourceId returns the resource's unique identifier.
-func (r *Resource) ResourceId() string {
-	return r.Id
+// ResourceID returns the resource's unique identifier.
+func (r *Resource) ResourceID() string {
+	return r.ID
 }
 
 // ResourceType returns the Terraform type string.
@@ -116,7 +116,7 @@ func (r *Resource) DisplayName() string {
 
 // Equal reports whether two resources are logically the same.
 func (r *Resource) Equal(res *Resource) bool {
-	if r.ResourceId() != res.ResourceId() || r.ResourceType() != res.ResourceType() {
+	if r.ResourceID() != res.ResourceID() || r.ResourceType() != res.ResourceType() {
 		return false
 	}
 
@@ -134,7 +134,7 @@ type Factory interface {
 
 // SerializableResource is the JSON representation of a Resource.
 type SerializableResource struct {
-	Id                 string              `json:"id"`
+	ID                 string              `json:"id"`
 	Type               string              `json:"type"`
 	Name               string              `json:"name,omitempty"`
 	ReadableAttributes map[string]string   `json:"human_readable_attributes,omitempty"`
@@ -153,7 +153,7 @@ func NewSerializableResource(res *Resource) *SerializableResource {
 		}
 	}
 	sr := &SerializableResource{
-		Id:                 res.ResourceId(),
+		ID:                 res.ResourceID(),
 		Type:               res.ResourceType(),
 		Name:               extractResourceName(res),
 		ReadableAttributes: formatReadableAttributes(res),
@@ -200,7 +200,7 @@ func Sort(res []*Resource) []*Resource {
 		if res[i].ResourceType() != res[j].ResourceType() {
 			return res[i].ResourceType() < res[j].ResourceType()
 		}
-		return res[i].ResourceId() < res[j].ResourceId()
+		return res[i].ResourceID() < res[j].ResourceID()
 	})
 	return res
 }

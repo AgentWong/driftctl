@@ -70,7 +70,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 			testFile: aws.String("terraform-provider-aws_3.5.0_linux_amd64.zip"),
 			assert: func(assert *assert.Assertions, tmpDir string, err error) {
 				assert.Nil(err)
-				file, err := os.ReadFile(path.Join(tmpDir, "terraform-provider-aws_v3.5.0_x5"))
+				file, err := os.ReadFile(path.Join(tmpDir, "terraform-provider-aws_v3.5.0_x5")) //nolint:gosec // G304: test file path from controlled test variable
 				assert.Nil(err)
 				assert.Equal([]byte{0x74, 0x65, 0x73, 0x74, 0xa}, file)
 			},
@@ -78,7 +78,6 @@ func TestProviderDownloader_Download(t *testing.T) {
 	}
 
 	for _, c := range cases {
-
 		t.Run(c.name, func(tt *testing.T) {
 			tmpDir := tt.TempDir()
 
@@ -103,6 +102,5 @@ func TestProviderDownloader_Download(t *testing.T) {
 
 			c.assert(assert, tmpDir, err)
 		})
-
 	}
 }

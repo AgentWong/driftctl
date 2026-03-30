@@ -95,7 +95,7 @@ func TestSendTelemetry(t *testing.T) {
 				Arch:    runtime.GOARCH,
 				Client:  "driftctl",
 			},
-			setStoreValues: func(s memstore.Bucket, a *analyser.Analysis) {},
+			setStoreValues: func(_ memstore.Bucket, _ *analyser.Analysis) {},
 		},
 	}
 	for _, tt := range tests {
@@ -112,7 +112,6 @@ func TestSendTelemetry(t *testing.T) {
 					"POST",
 					"https://telemetry.driftctl.com/telemetry",
 					func(req *http.Request) (*http.Response, error) {
-
 						requestTelemetry := &telemetry{}
 						requestBody, err := io.ReadAll(req.Body)
 						if err != nil {

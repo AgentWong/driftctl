@@ -43,14 +43,14 @@ func (m IamPolicyAttachmentTransformer) transform(resources *[]*resource.Resourc
 		if res.ResourceType() == aws.AwsIamUserPolicyAttachmentResourceType {
 			attrs := *res.Attributes()
 			policyAttachmentData := resource.Attributes{
-				"id":         res.ResourceId(),
+				"id":         res.ResourceID(),
 				"policy_arn": attrs["policy_arn"],
 				"users":      []interface{}{attrs["user"]},
 				"groups":     []interface{}{},
 				"roles":      []interface{}{},
 			}
 
-			policyAttachment := m.resourceFactory.CreateAbstractResource(aws.AwsIamPolicyAttachmentResourceType, res.ResourceId(), policyAttachmentData)
+			policyAttachment := m.resourceFactory.CreateAbstractResource(aws.AwsIamPolicyAttachmentResourceType, res.ResourceID(), policyAttachmentData)
 
 			newResources = append(newResources, policyAttachment)
 			continue
@@ -59,14 +59,14 @@ func (m IamPolicyAttachmentTransformer) transform(resources *[]*resource.Resourc
 		if res.ResourceType() == aws.AwsIamRolePolicyAttachmentResourceType {
 			attrs := *res.Attributes()
 			policyAttachmentData := resource.Attributes{
-				"id":         res.ResourceId(),
+				"id":         res.ResourceID(),
 				"policy_arn": attrs["policy_arn"],
 				"users":      []interface{}{},
 				"groups":     []interface{}{},
 				"roles":      []interface{}{attrs["role"]},
 			}
 
-			policyAttachment := m.resourceFactory.CreateAbstractResource(aws.AwsIamPolicyAttachmentResourceType, res.ResourceId(), policyAttachmentData)
+			policyAttachment := m.resourceFactory.CreateAbstractResource(aws.AwsIamPolicyAttachmentResourceType, res.ResourceID(), policyAttachmentData)
 
 			newResources = append(newResources, policyAttachment)
 			continue
@@ -75,14 +75,14 @@ func (m IamPolicyAttachmentTransformer) transform(resources *[]*resource.Resourc
 		if res.ResourceType() == aws.AwsIamGroupPolicyAttachmentResourceType {
 			attrs := *res.Attributes()
 			policyAttachmentData := resource.Attributes{
-				"id":         res.ResourceId(),
+				"id":         res.ResourceID(),
 				"policy_arn": attrs["policy_arn"],
 				"users":      []interface{}{},
 				"groups":     []interface{}{attrs["group"]},
 				"roles":      []interface{}{},
 			}
 
-			policyAttachment := m.resourceFactory.CreateAbstractResource(aws.AwsIamPolicyAttachmentResourceType, res.ResourceId(), policyAttachmentData)
+			policyAttachment := m.resourceFactory.CreateAbstractResource(aws.AwsIamPolicyAttachmentResourceType, res.ResourceID(), policyAttachmentData)
 
 			newResources = append(newResources, policyAttachment)
 			continue

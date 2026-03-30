@@ -67,15 +67,15 @@ func (m *AwsSQSQueuePolicyExpander) handlePolicy(queue *resource.Resource, resul
 	}
 
 	data := map[string]interface{}{
-		"queue_url": queue.Id,
-		"id":        queue.Id,
+		"queue_url": queue.ID,
+		"id":        queue.ID,
 		"policy":    policy,
 	}
 
-	newPolicy := m.resourceFactory.CreateAbstractResource("aws_sqs_queue_policy", queue.Id, data)
+	newPolicy := m.resourceFactory.CreateAbstractResource("aws_sqs_queue_policy", queue.ID, data)
 	*results = append(*results, newPolicy)
 	logrus.WithFields(logrus.Fields{
-		"id": newPolicy.ResourceId(),
+		"id": newPolicy.ResourceID(),
 	}).Debug("Created new policy from sqs queue")
 
 	queue.Attrs.SafeDelete([]string{"policy"})
@@ -89,7 +89,7 @@ func (m *AwsSQSQueuePolicyExpander) handlePolicy(queue *resource.Resource, resul
 func (m *AwsSQSQueuePolicyExpander) hasPolicyAttached(queue *resource.Resource, resourcesFromState *[]*resource.Resource) bool {
 	for _, res := range *resourcesFromState {
 		if res.ResourceType() == aws.AwsSqsQueuePolicyResourceType &&
-			res.ResourceId() == queue.Id {
+			res.ResourceID() == queue.ID {
 			return true
 		}
 	}

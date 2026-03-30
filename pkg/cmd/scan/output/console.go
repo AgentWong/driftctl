@@ -68,7 +68,7 @@ func (c *Console) Write(analysis *analyser.Analysis) error {
 				if deletedResource.SourceString() != "" {
 					humanStringSource = deletedResource.SourceString()
 				}
-				humanString := fmt.Sprintf("%s- %s (%s)", indentBase, deletedResource.ResourceId(), humanStringSource)
+				humanString := fmt.Sprintf("%s- %s (%s)", indentBase, deletedResource.ResourceID(), humanStringSource)
 
 				if humanAttrs := formatResourceAttributes(deletedResource); humanAttrs != "" {
 					humanString += fmt.Sprintf("\n%s    %s", indentBase, humanAttrs)
@@ -81,7 +81,7 @@ func (c *Console) Write(analysis *analyser.Analysis) error {
 	if analysis.Summary().TotalDrifted > 0 {
 		fmt.Println("Found drifted resources:")
 		for _, dr := range analysis.Drifted() {
-			fmt.Printf("  - %s (%s):\n", dr.Res.ResourceType(), dr.Res.ResourceId())
+			fmt.Printf("  - %s (%s):\n", dr.Res.ResourceType(), dr.Res.ResourceID())
 			for _, ch := range dr.AttributeChanges {
 				fmt.Printf("    %s %s: %s => %s\n",
 					color.YellowString("~"),
@@ -102,7 +102,7 @@ func (c *Console) Write(analysis *analyser.Analysis) error {
 			for _, ty := range keys {
 				fmt.Printf("  %s:\n", ty)
 				for _, res := range unmanagedByType[ty] {
-					humanString := fmt.Sprintf("    - %s", res.ResourceId())
+					humanString := fmt.Sprintf("    - %s", res.ResourceID())
 					if humanAttrs := formatResourceAttributes(res); humanAttrs != "" {
 						humanString += fmt.Sprintf("\n        %s", humanAttrs)
 					}
@@ -259,7 +259,7 @@ func writeUnmanagedByCategory(analysis *analyser.Analysis) {
 		for _, ty := range keys {
 			fmt.Printf("    %s:\n", ty)
 			for _, res := range byType[ty] {
-				humanString := fmt.Sprintf("      - %s", res.ResourceId())
+				humanString := fmt.Sprintf("      - %s", res.ResourceID())
 				if humanAttrs := formatResourceAttributes(res); humanAttrs != "" {
 					humanString += fmt.Sprintf("\n          %s", humanAttrs)
 				}

@@ -14,13 +14,12 @@ type FakeMiddleware struct {
 	Err  error
 }
 
-func (m FakeMiddleware) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
+func (m FakeMiddleware) Execute(_, _ *[]*resource.Resource) error {
 	callCounters[m.Name]++
 	return m.Err
 }
 
 func TestChainMiddleware(t *testing.T) {
-
 	callCounters = make(map[string]int)
 
 	fakeMiddleware1 := FakeMiddleware{
@@ -46,11 +45,9 @@ func TestChainMiddleware(t *testing.T) {
 	if callCounters["2"] != 1 {
 		t.Error("Middleware 2 was not called correctly")
 	}
-
 }
 
 func TestChainMiddlewareErrorShouldStopExecution(t *testing.T) {
-
 	callCounters = make(map[string]int)
 
 	fakeMiddleware1 := FakeMiddleware{
@@ -81,5 +78,4 @@ func TestChainMiddlewareErrorShouldStopExecution(t *testing.T) {
 	if callCounters["2"] != 0 {
 		t.Error("Middleware 2 was called after error happen in middleware 1")
 	}
-
 }

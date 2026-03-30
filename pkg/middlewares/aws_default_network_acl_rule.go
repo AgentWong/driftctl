@@ -17,7 +17,6 @@ func NewAwsDefaultNetworkACLRule() AwsDefaultNetworkACLRule {
 
 // Execute applies the AwsDefaultNetworkACLRule middleware.
 func (m AwsDefaultNetworkACLRule) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -50,7 +49,7 @@ func (m AwsDefaultNetworkACLRule) Execute(remoteResources, resourcesFromState *[
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":             remoteResource.ResourceId(),
+			"id":             remoteResource.ResourceID(),
 			"type":           remoteResource.ResourceType(),
 			"network_acl_id": *remoteResource.Attrs.GetString("network_acl_id"),
 		}).Debug("Ignoring default ACL rule as it is not managed by IaC")
@@ -62,7 +61,6 @@ func (m AwsDefaultNetworkACLRule) Execute(remoteResources, resourcesFromState *[
 }
 
 func (m *AwsDefaultNetworkACLRule) isDefaultACLRule(res *resource.Resource) bool {
-
 	isIPv4 := res.Attrs.GetString("cidr_block") != nil
 	ruleNumber, ruleNumberOk := (*res.Attrs)["rule_number"].(int64)
 

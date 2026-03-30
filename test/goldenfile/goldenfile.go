@@ -58,7 +58,7 @@ func WriteRootFile(p string, content []byte, name string) {
 	}
 
 	p = path.Join(path.Join(Root, GoldenFilePath), p)
-	if err := os.MkdirAll(p, os.ModePerm); err != nil {
+	if err := os.MkdirAll(p, 0750); err != nil {
 		panic(err)
 	}
 	var indentBuffer bytes.Buffer
@@ -70,7 +70,7 @@ func WriteRootFile(p string, content []byte, name string) {
 		logrus.Error(err)
 	}
 
-	if err := os.WriteFile(fmt.Sprintf("%s%c%s", p, os.PathSeparator, sanitizeName(name)), output, os.ModePerm); err != nil {
+	if err := os.WriteFile(fmt.Sprintf("%s%c%s", p, os.PathSeparator, sanitizeName(name)), output, 0600); err != nil {
 		panic(err)
 	}
 }
@@ -101,7 +101,7 @@ func WriteFile(p string, content []byte, name string) {
 	}
 
 	p = path.Join(GoldenFilePath, p)
-	if err := os.MkdirAll(p, os.ModePerm); err != nil {
+	if err := os.MkdirAll(p, 0750); err != nil {
 		panic(err)
 	}
 	var indentBuffer bytes.Buffer
@@ -113,7 +113,7 @@ func WriteFile(p string, content []byte, name string) {
 		logrus.Error(err)
 	}
 
-	if err := os.WriteFile(fmt.Sprintf("%s%c%s", p, os.PathSeparator, sanitizeName(name)), output, os.ModePerm); err != nil {
+	if err := os.WriteFile(fmt.Sprintf("%s%c%s", p, os.PathSeparator, sanitizeName(name)), output, 0600); err != nil {
 		panic(err)
 	}
 }

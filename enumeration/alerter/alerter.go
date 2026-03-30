@@ -65,7 +65,7 @@ func (a *Alerter) SendAlert(key string, alert Alert) {
 
 // IsResourceIgnored reports whether any alert for the given resource has the ignore flag set.
 func (a *Alerter) IsResourceIgnored(res *resource.Resource) bool {
-	alert, alertExists := a.alerts[fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId())]
+	alert, alertExists := a.alerts[fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceID())]
 	wildcardAlert, wildcardAlertExists := a.alerts[res.ResourceType()]
 	shouldIgnoreAlert := a.shouldBeIgnored(alert)
 	shouldIgnoreWildcardAlert := a.shouldBeIgnored(wildcardAlert)

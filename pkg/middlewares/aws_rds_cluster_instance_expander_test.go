@@ -22,12 +22,12 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			name: "should not map any rds cluster instance into db instances",
 			remoteResources: []*resource.Resource{
 				{
-					Id:    "db-0",
+					ID:    "db-0",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "db-1",
+					ID:    "db-1",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -35,12 +35,12 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			stateResources: []*resource.Resource{},
 			expectedRemoteResources: []*resource.Resource{
 				{
-					Id:    "db-0",
+					ID:    "db-0",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "db-1",
+					ID:    "db-1",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -51,24 +51,24 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			name: "should import db instances in state",
 			remoteResources: []*resource.Resource{
 				{
-					Id:    "bucket89713",
+					ID:    "bucket89713",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "bucket01",
+					ID:    "bucket01",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:   "aurora-cluster-demo-0",
+					ID:   "aurora-cluster-demo-0",
 					Type: aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{
 						"field": "test",
 					},
 				},
 				{
-					Id:   "aurora-cluster-demo-1",
+					ID:   "aurora-cluster-demo-1",
 					Type: aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{
 						"field": "test",
@@ -77,36 +77,36 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			},
 			stateResources: []*resource.Resource{
 				{
-					Id:    "aurora-cluster-demo-0",
+					ID:    "aurora-cluster-demo-0",
 					Type:  aws.AwsRDSClusterInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-1",
+					ID:    "aurora-cluster-demo-1",
 					Type:  aws.AwsRDSClusterInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expectedRemoteResources: []*resource.Resource{
 				{
-					Id:    "bucket89713",
+					ID:    "bucket89713",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "bucket01",
+					ID:    "bucket01",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:   "aurora-cluster-demo-0",
+					ID:   "aurora-cluster-demo-0",
 					Type: aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{
 						"field": "test",
 					},
 				},
 				{
-					Id:   "aurora-cluster-demo-1",
+					ID:   "aurora-cluster-demo-1",
 					Type: aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{
 						"field": "test",
@@ -115,14 +115,14 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			},
 			expectedStateResources: []*resource.Resource{
 				{
-					Id:   "aurora-cluster-demo-0",
+					ID:   "aurora-cluster-demo-0",
 					Type: aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{
 						"field": "test",
 					},
 				},
 				{
-					Id:   "aurora-cluster-demo-1",
+					ID:   "aurora-cluster-demo-1",
 					Type: aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{
 						"field": "test",
@@ -132,7 +132,7 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			mock: func(factory *dctlresource.MockResourceFactory) {
 				factory.On("CreateAbstractResource", aws.AwsDbInstanceResourceType, "aurora-cluster-demo-0", map[string]interface{}{"field": "test"}).
 					Return(&resource.Resource{
-						Id:    "aurora-cluster-demo-0",
+						ID:    "aurora-cluster-demo-0",
 						Type:  aws.AwsDbInstanceResourceType,
 						Attrs: &resource.Attributes{"field": "test"},
 					}).
@@ -140,7 +140,7 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 
 				factory.On("CreateAbstractResource", aws.AwsDbInstanceResourceType, "aurora-cluster-demo-1", map[string]interface{}{"field": "test"}).
 					Return(&resource.Resource{
-						Id:    "aurora-cluster-demo-1",
+						ID:    "aurora-cluster-demo-1",
 						Type:  aws.AwsDbInstanceResourceType,
 						Attrs: &resource.Attributes{"field": "test"},
 					}).
@@ -151,68 +151,68 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			name: "should find only one db instances in remote",
 			remoteResources: []*resource.Resource{
 				{
-					Id:    "bucket89713",
+					ID:    "bucket89713",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "bucket01",
+					ID:    "bucket01",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-0",
+					ID:    "aurora-cluster-demo-0",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			stateResources: []*resource.Resource{
 				{
-					Id:    "bucket01",
+					ID:    "bucket01",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-0",
+					ID:    "aurora-cluster-demo-0",
 					Type:  aws.AwsRDSClusterInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-1",
+					ID:    "aurora-cluster-demo-1",
 					Type:  aws.AwsRDSClusterInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expectedRemoteResources: []*resource.Resource{
 				{
-					Id:    "bucket89713",
+					ID:    "bucket89713",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "bucket01",
+					ID:    "bucket01",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-0",
+					ID:    "aurora-cluster-demo-0",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expectedStateResources: []*resource.Resource{
 				{
-					Id:    "bucket01",
+					ID:    "bucket01",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-0",
+					ID:    "aurora-cluster-demo-0",
 					Type:  aws.AwsDbInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "aurora-cluster-demo-1",
+					ID:    "aurora-cluster-demo-1",
 					Type:  aws.AwsRDSClusterInstanceResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -220,7 +220,7 @@ func TestAwsRDSClusterInstanceExpander_Execute(t *testing.T) {
 			mock: func(factory *dctlresource.MockResourceFactory) {
 				factory.On("CreateAbstractResource", aws.AwsDbInstanceResourceType, "aurora-cluster-demo-0", map[string]interface{}{}).
 					Return(&resource.Resource{
-						Id:    "aurora-cluster-demo-0",
+						ID:    "aurora-cluster-demo-0",
 						Type:  aws.AwsDbInstanceResourceType,
 						Attrs: &resource.Attributes{},
 					}).

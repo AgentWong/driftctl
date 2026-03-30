@@ -35,19 +35,19 @@ func (a *PlanAnalyzer) Analyze() (*Analysis, error) {
 		switch pr.Action {
 		case plan.ActionUpdate:
 			analysis.AddDrifted(&DriftedResource{
-				Res:              &resource.Resource{Type: pr.Type, Id: pr.ID},
+				Res:              &resource.Resource{Type: pr.Type, ID: pr.ID},
 				AttributeChanges: convertChanges(pr.AttributeChanges),
 			})
 		case plan.ActionDelete:
-			analysis.AddDeleted(&resource.Resource{Type: pr.Type, Id: pr.ID})
+			analysis.AddDeleted(&resource.Resource{Type: pr.Type, ID: pr.ID})
 		case plan.ActionCreate, plan.ActionNoOp, plan.ActionRead:
-			analysis.AddManaged(&resource.Resource{Type: pr.Type, Id: pr.ID})
+			analysis.AddManaged(&resource.Resource{Type: pr.Type, ID: pr.ID})
 		}
 	}
 
 	// Resources found in cloud inventory but not in the plan are unmanaged
 	for _, cr := range a.configResources {
-		key := cr.ResourceType() + "." + cr.ResourceId()
+		key := cr.ResourceType() + "." + cr.ResourceID()
 		if !planResourceIDs[key] {
 			analysis.AddUnmanaged(cr)
 		}

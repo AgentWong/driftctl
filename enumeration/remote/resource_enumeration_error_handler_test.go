@@ -33,7 +33,6 @@ func newSmithyResponseError(statusCode int, code string) error {
 }
 
 func TestHandleAwsEnumerationErrors(t *testing.T) {
-
 	tests := []struct {
 		name       string
 		err        error
@@ -72,14 +71,14 @@ func TestHandleAwsEnumerationErrors(t *testing.T) {
 		},
 		{
 			name:       "Handle AccessDenied error",
-			err:        remoteerr.NewResourceListingError(errors.New("an error occured: AccessDenied: 403"), resourceaws.AwsVpcResourceType),
-			wantAlerts: alerter.Alerts{"aws_vpc": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("an error occured: AccessDenied: 403"), "aws_vpc", "aws_vpc"), alerts.EnumerationPhase)}},
+			err:        remoteerr.NewResourceListingError(errors.New("an error occurred: AccessDenied: 403"), resourceaws.AwsVpcResourceType),
+			wantAlerts: alerter.Alerts{"aws_vpc": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("an error occurred: AccessDenied: 403"), "aws_vpc", "aws_vpc"), alerts.EnumerationPhase)}},
 			wantErr:    false,
 		},
 		{
 			name:       "Access denied error on a single resource",
-			err:        remoteerr.NewResourceScanningError(errors.New("error: AccessDenied: 403 ..."), resourceaws.AwsS3BucketResourceType, "my-bucket"),
-			wantAlerts: alerter.Alerts{"aws_s3_bucket.my-bucket": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("error: AccessDenied: 403 ..."), "aws_s3_bucket.my-bucket", "aws_s3_bucket"), alerts.EnumerationPhase)}},
+			err:        remoteerr.NewResourceScanningError(errors.New("error, access denied 403"), resourceaws.AwsS3BucketResourceType, "my-bucket"),
+			wantAlerts: alerter.Alerts{"aws_s3_bucket.my-bucket": []alerter.Alert{alerts.NewRemoteAccessDeniedAlert(common.RemoteAWSTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("error, access denied 403"), "aws_s3_bucket.my-bucket", "aws_s3_bucket"), alerts.EnumerationPhase)}},
 			wantErr:    false,
 		},
 	}
@@ -91,7 +90,6 @@ func TestHandleAwsEnumerationErrors(t *testing.T) {
 
 			retrieve := alertr.Retrieve()
 			assert.Equal(t, tt.wantAlerts, retrieve)
-
 		})
 	}
 }
@@ -151,7 +149,6 @@ func TestDetailsFetchingAccessDeniedAlert_GetProviderMessage(t *testing.T) {
 }
 
 func TestResourceScanningErrorMethods(t *testing.T) {
-
 	tests := []struct {
 		name                 string
 		err                  *remoteerr.ResourceScanningError
@@ -166,14 +163,14 @@ func TestResourceScanningErrorMethods(t *testing.T) {
 		},
 		{
 			name:                 "Handle AccessDenied error",
-			err:                  remoteerr.NewResourceListingError(errors.New("an error occured: AccessDenied: 403"), resourceaws.AwsVpcResourceType),
-			expectedError:        "error scanning resource type aws_vpc: an error occured: AccessDenied: 403",
+			err:                  remoteerr.NewResourceListingError(errors.New("an error occurred: AccessDenied: 403"), resourceaws.AwsVpcResourceType),
+			expectedError:        "error scanning resource type aws_vpc: an error occurred: AccessDenied: 403",
 			expectedResourceType: resourceaws.AwsVpcResourceType,
 		},
 		{
 			name:                 "Access denied error on a single resource",
-			err:                  remoteerr.NewResourceScanningError(errors.New("error: AccessDenied: 403 ..."), resourceaws.AwsS3BucketResourceType, "my-bucket"),
-			expectedError:        "error scanning resource aws_s3_bucket.my-bucket: error: AccessDenied: 403 ...",
+			err:                  remoteerr.NewResourceScanningError(errors.New("error, access denied 403"), resourceaws.AwsS3BucketResourceType, "my-bucket"),
+			expectedError:        "error scanning resource aws_s3_bucket.my-bucket: error, access denied 403",
 			expectedResourceType: resourceaws.AwsS3BucketResourceType,
 		},
 	}

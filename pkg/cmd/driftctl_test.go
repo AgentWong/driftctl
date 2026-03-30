@@ -59,7 +59,6 @@ func TestDriftctlCmd_Completion(t *testing.T) {
 }
 
 func TestDriftctlCmd_Scan(t *testing.T) {
-
 	cases := []struct {
 		env  map[string]string
 		args []string
@@ -127,7 +126,7 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			}
 			cmd := NewDriftctlCmd(mocks.MockBuild{})
 			scanCmd, _, _ := cmd.Find([]string{"scan"})
-			scanCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+			scanCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 			args := append([]string{"scan"}, c.args...)
 			_, err := test.Execute(&cmd.Command, args...)
 			if c.err == nil && err != nil || c.err != nil && err == nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// Chain is a sequence of Middleware functions executed in order.
 type Chain []Middleware
 
 // NewChain creates a Chain.

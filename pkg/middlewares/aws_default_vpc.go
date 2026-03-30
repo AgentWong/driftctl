@@ -17,7 +17,6 @@ func NewAwsDefaultVPC() AwsDefaultVPC {
 
 // Execute applies the AwsDefaultVPC middleware.
 func (m AwsDefaultVPC) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -42,11 +41,10 @@ func (m AwsDefaultVPC) Execute(remoteResources, resourcesFromState *[]*resource.
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default VPC as it is not managed by IaC")
 		}
-
 	}
 
 	*remoteResources = newRemoteResources

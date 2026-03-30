@@ -31,7 +31,6 @@ type S3Backend struct {
 
 // NewS3Reader creates an S3Backend that reads state from the given bucket/key path.
 func NewS3Reader(path string) (*S3Backend, error) {
-
 	backend := S3Backend{}
 	bucketPath := strings.Split(path, "/")
 	if len(bucketPath) < 2 {

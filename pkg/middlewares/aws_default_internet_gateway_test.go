@@ -21,25 +21,25 @@ func TestAwsDefaultInternetGateway_Execute(t *testing.T) {
 			"default internet gateway is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "dummy-vpc",
+					ID:   "dummy-vpc",
 					Type: aws.AwsVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "dummy-igw",
+					ID:   "dummy-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "dummy-vpc",
@@ -48,7 +48,7 @@ func TestAwsDefaultInternetGateway_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
@@ -57,25 +57,25 @@ func TestAwsDefaultInternetGateway_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "dummy-vpc",
+					ID:   "dummy-vpc",
 					Type: aws.AwsVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "dummy-igw",
+					ID:   "dummy-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "dummy-vpc",
@@ -87,25 +87,25 @@ func TestAwsDefaultInternetGateway_Execute(t *testing.T) {
 			"default internet gateway is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "dummy-vpc",
+					ID:   "dummy-vpc",
 					Type: aws.AwsVpcResourceType,
 				},
 				{
-					Id:   "default-igw",
+					ID:   "default-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "default-vpc",
 					},
 				},
 				{
-					Id:   "dummy-igw",
+					ID:   "dummy-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "dummy-vpc",
@@ -115,18 +115,18 @@ func TestAwsDefaultInternetGateway_Execute(t *testing.T) {
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-vpc",
+					ID:   "default-vpc",
 					Type: aws.AwsDefaultVpcResourceType,
 				},
 				{
-					Id:   "dummy-vpc",
+					ID:   "dummy-vpc",
 					Type: aws.AwsVpcResourceType,
 				},
 				{
-					Id:   "dummy-igw",
+					ID:   "dummy-igw",
 					Type: aws.AwsInternetGatewayResourceType,
 					Attrs: &resource.Attributes{
 						"vpc_id": "dummy-vpc",

@@ -41,7 +41,7 @@ func (p *ProviderDownloader) Download(url, path string) error {
 		"path": path,
 	}).Debug("Downloading provider")
 
-	req, err := http.NewRequestWithContext(p.context, "GET", url, nil)
+	req, err := http.NewRequestWithContext(p.context, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}

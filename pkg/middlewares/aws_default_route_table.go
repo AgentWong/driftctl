@@ -17,7 +17,6 @@ func NewAwsDefaultRouteTable() AwsDefaultRouteTable {
 
 // Execute applies the AwsDefaultRouteTable middleware.
 func (m AwsDefaultRouteTable) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -42,11 +41,10 @@ func (m AwsDefaultRouteTable) Execute(remoteResources, resourcesFromState *[]*re
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default route table as it is not managed by IaC")
 		}
-
 	}
 
 	*remoteResources = newRemoteResources

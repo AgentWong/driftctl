@@ -19,7 +19,7 @@ func TestAcc_Aws_RouteTableAssociation(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				ShouldRetry: acceptance.LinearBackoff(10 * time.Minute),
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

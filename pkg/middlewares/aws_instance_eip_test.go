@@ -23,7 +23,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 			args: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:   "instance1",
+						ID:   "instance1",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "1.2.3.4",
@@ -31,7 +31,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:   "instance2",
+						ID:   "instance2",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "1.2.3.4",
@@ -41,7 +41,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 				},
 				resourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "instance1",
+						ID:   "instance1",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "5.6.7.8",
@@ -59,12 +59,12 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 			expected: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:    "instance1",
+						ID:    "instance1",
 						Type:  "aws_instance",
 						Attrs: &resource.Attributes{},
 					},
 					{
-						Id:   "instance2",
+						ID:   "instance2",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "1.2.3.4",
@@ -74,7 +74,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 				},
 				resourcesFromState: &[]*resource.Resource{
 					{
-						Id:    "instance1",
+						ID:    "instance1",
 						Type:  "aws_instance",
 						Attrs: &resource.Attributes{},
 					},
@@ -92,7 +92,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 			args: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:   "instance1",
+						ID:   "instance1",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "1.2.3.4",
@@ -100,7 +100,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:   "instance2",
+						ID:   "instance2",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "1.2.3.4",
@@ -110,7 +110,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 				},
 				resourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "instance1",
+						ID:   "instance1",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "5.6.7.8",
@@ -128,12 +128,12 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 			expected: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:    "instance1",
+						ID:    "instance1",
 						Type:  "aws_instance",
 						Attrs: &resource.Attributes{},
 					},
 					{
-						Id:   "instance2",
+						ID:   "instance2",
 						Type: "aws_instance",
 						Attrs: &resource.Attributes{
 							"public_ip":  "1.2.3.4",
@@ -143,7 +143,7 @@ func TestAwsInstanceEIP_Execute(t *testing.T) {
 				},
 				resourcesFromState: &[]*resource.Resource{
 					{
-						Id:    "instance1",
+						ID:    "instance1",
 						Type:  "aws_instance",
 						Attrs: &resource.Attributes{},
 					},

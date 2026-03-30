@@ -30,7 +30,7 @@ func (m AwsAPIGatewayRestAPIPolicyExpander) Execute(_, resourcesFromState *[]*re
 
 		newList = append(newList, res)
 
-		if hasRestAPIPolicyAttached(res.ResourceId(), resourcesFromState) {
+		if hasRestAPIPolicyAttached(res.ResourceID(), resourcesFromState) {
 			res.Attrs.SafeDelete([]string{"policy"})
 			continue
 		}
@@ -51,16 +51,16 @@ func (m *AwsAPIGatewayRestAPIPolicyExpander) handlePolicy(api *resource.Resource
 	}
 
 	data := map[string]interface{}{
-		"id":          api.ResourceId(),
-		"rest_api_id": api.ResourceId(),
+		"id":          api.ResourceID(),
+		"rest_api_id": api.ResourceID(),
 		"policy":      policy,
 	}
 
-	newPolicy := m.resourceFactory.CreateAbstractResource(aws.AwsAPIGatewayRestAPIPolicyResourceType, api.ResourceId(), data)
+	newPolicy := m.resourceFactory.CreateAbstractResource(aws.AwsAPIGatewayRestAPIPolicyResourceType, api.ResourceID(), data)
 
 	*results = append(*results, newPolicy)
 	logrus.WithFields(logrus.Fields{
-		"id": newPolicy.ResourceId(),
+		"id": newPolicy.ResourceID(),
 	}).Debug("Created new policy from api gateway rest api")
 
 	api.Attrs.SafeDelete([]string{"policy"})
@@ -74,7 +74,7 @@ func (m *AwsAPIGatewayRestAPIPolicyExpander) handlePolicy(api *resource.Resource
 func hasRestAPIPolicyAttached(api string, resourcesFromState *[]*resource.Resource) bool {
 	for _, res := range *resourcesFromState {
 		if res.ResourceType() == aws.AwsAPIGatewayRestAPIPolicyResourceType &&
-			res.ResourceId() == api {
+			res.ResourceID() == api {
 			return true
 		}
 	}

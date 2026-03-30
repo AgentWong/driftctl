@@ -28,7 +28,7 @@ func (r *DriftctlResourceFactory) CreateAbstractResource(ty, id string, data map
 
 	schema, _ := r.resourceSchemaRepository.GetSchema(ty)
 	res := resource.Resource{
-		Id:    id,
+		ID:    id,
 		Type:  ty,
 		Attrs: &attributes,
 		Sch:   schema,

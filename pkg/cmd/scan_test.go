@@ -13,17 +13,16 @@ import (
 )
 
 // TODO: Test successful scan
-func TestScanCmd(t *testing.T) {
+func TestScanCmd(_ *testing.T) {
 	rootCmd := &cobra.Command{Use: "root"}
 	rootCmd.AddCommand(NewScanCmd(&pkg.ScanOptions{}))
 	// test.Execute(rootCmd, "scan")
-
 }
 
 func TestScanCmd_Valid(t *testing.T) {
 	rootCmd := &cobra.Command{Use: "root"}
 	scanCmd := NewScanCmd(&pkg.ScanOptions{})
-	scanCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+	scanCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 	rootCmd.AddCommand(scanCmd)
 
 	cases := []struct {
@@ -148,7 +147,7 @@ func Test_Options(t *testing.T) {
 
 			rootCmd := &cobra.Command{Use: "root"}
 			scanCmd := NewScanCmd(opts)
-			scanCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+			scanCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 			rootCmd.AddCommand(scanCmd)
 
 			_, err := test.Execute(rootCmd, tt.args...)

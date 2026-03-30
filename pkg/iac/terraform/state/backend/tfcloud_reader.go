@@ -52,7 +52,7 @@ func (t *TFCloudBackend) getToken() (string, error) {
 			return "", err
 		}
 
-		file, err := os.Open(tfConfigFile)
+		file, err := os.Open(tfConfigFile) //nolint:gosec // G304: path from getTerraformConfigFile()
 		if err != nil {
 			return "", err
 		}

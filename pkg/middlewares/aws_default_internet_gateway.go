@@ -49,7 +49,7 @@ func (m AwsDefaultInternetGateway) Execute(remoteResources, resourcesFromState *
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   remoteResource.ResourceId(),
+			"id":   remoteResource.ResourceID(),
 			"type": remoteResource.ResourceType(),
 		}).Debug("Ignoring default internet gateway as it is not managed by IaC")
 	}
@@ -64,7 +64,7 @@ func isDefaultInternetGateway(internetGateway *resource.Resource, remoteResource
 	for _, remoteResource := range *remoteResources {
 		if remoteResource.ResourceType() == aws.AwsDefaultVpcResourceType {
 			vpcID, exist := internetGateway.Attrs.Get("vpc_id")
-			return exist && vpcID == remoteResource.ResourceId()
+			return exist && vpcID == remoteResource.ResourceID()
 		}
 	}
 	return false

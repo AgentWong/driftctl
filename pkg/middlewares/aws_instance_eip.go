@@ -19,7 +19,7 @@ func (a AwsInstanceEIP) Execute(remoteResources, resourcesFromState *[]*resource
 
 		if a.hasEIP(remoteResource, resourcesFromState) {
 			logrus.WithFields(logrus.Fields{
-				"instance": remoteResource.ResourceId(),
+				"instance": remoteResource.ResourceID(),
 			}).Debug("Ignore instance public ip and dns as it has an eip attached")
 			a.ignorePublicIPAndDNS(remoteResource, remoteResources, resourcesFromState)
 		}
@@ -31,12 +31,12 @@ func (a AwsInstanceEIP) Execute(remoteResources, resourcesFromState *[]*resource
 func (a AwsInstanceEIP) hasEIP(instance *resource.Resource, resources *[]*resource.Resource) bool {
 	for _, res := range *resources {
 		if res.ResourceType() == aws.AwsEipResourceType {
-			if (*res.Attrs)["instance"] == instance.ResourceId() {
+			if (*res.Attrs)["instance"] == instance.ResourceID() {
 				return true
 			}
 		}
 		if res.ResourceType() == aws.AwsEipAssociationResourceType {
-			if (*res.Attrs)["instance_id"] == instance.ResourceId() {
+			if (*res.Attrs)["instance_id"] == instance.ResourceID() {
 				return true
 			}
 		}
@@ -49,7 +49,7 @@ func (a AwsInstanceEIP) ignorePublicIPAndDNS(instance *resource.Resource, resour
 	for _, resources := range resourcesSet {
 		for _, res := range *resources {
 			if res.ResourceType() == instance.ResourceType() &&
-				res.ResourceId() == instance.ResourceId() {
+				res.ResourceID() == instance.ResourceID() {
 				res.Attrs.SafeDelete([]string{"public_dns"})
 				res.Attrs.SafeDelete([]string{"public_ip"})
 			}

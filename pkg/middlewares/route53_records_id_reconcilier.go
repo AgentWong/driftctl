@@ -22,9 +22,7 @@ func NewRoute53RecordIDReconcilier() Route53RecordIDReconcilier {
 
 // Execute applies the Route53RecordIDReconcilier middleware.
 func (m Route53RecordIDReconcilier) Execute(_, resourcesFromState *[]*resource.Resource) error {
-
 	for _, stateResource := range *resourcesFromState {
-
 		if stateResource.ResourceType() != aws.AwsRoute53RecordResourceType {
 			continue
 		}
@@ -35,11 +33,11 @@ func (m Route53RecordIDReconcilier) Execute(_, resourcesFromState *[]*resource.R
 			(*stateResource.Attrs)["type"].(string),
 		}
 		newID := strings.Join(vars, "_")
-		if newID != stateResource.Id {
-			stateResource.Id = newID
+		if newID != stateResource.ID {
+			stateResource.ID = newID
 			_ = stateResource.Attrs.SafeSet([]string{"id"}, newID)
 			logrus.WithFields(logrus.Fields{
-				"old_id": stateResource.ResourceId(),
+				"old_id": stateResource.ResourceID(),
 				"new_id": newID,
 			}).Debug("Normalized route53 record ID")
 		}

@@ -49,7 +49,6 @@ func (r *SchemaRepository) fetchNestedBlocks(root string, metadata map[string]re
 
 // Init populates the repository with schemas from the given provider.
 func (r *SchemaRepository) Init(providerName, providerVersion string, schema map[string]providers.Schema) error {
-
 	if providerVersion == "" {
 		switch providerName {
 		case "aws":

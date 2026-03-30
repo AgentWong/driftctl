@@ -50,7 +50,7 @@ func (m AwsDefaultInternetGatewayRoute) Execute(remoteResources, resourcesFromSt
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   remoteResource.ResourceId(),
+			"id":   remoteResource.ResourceID(),
 			"type": remoteResource.ResourceType(),
 		}).Debug("Ignoring default internet gateway route as it is not managed by IaC")
 	}
@@ -67,7 +67,7 @@ func isDefaultInternetGatewayRoute(route *resource.Resource, remoteResources *[]
 			isDefaultInternetGateway(remoteResource, remoteResources) {
 			gtwID, gtwIDExist := route.Attrs.Get("gateway_id")
 			destCIDRBlock, destCIDRBlockExist := route.Attrs.Get("destination_cidr_block")
-			return gtwIDExist && destCIDRBlockExist && gtwID == remoteResource.ResourceId() && destCIDRBlock == "0.0.0.0/0"
+			return gtwIDExist && destCIDRBlockExist && gtwID == remoteResource.ResourceID() && destCIDRBlock == "0.0.0.0/0"
 		}
 	}
 	return false

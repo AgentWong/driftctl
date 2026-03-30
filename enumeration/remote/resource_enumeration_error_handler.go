@@ -16,8 +16,8 @@ import (
 
 // HandleResourceEnumerationError inspects a resource enumeration error and raises an alert if appropriate.
 func HandleResourceEnumerationError(err error, alerter alerter.Interface) error {
-	listError, ok := err.(*remoteerror.ResourceScanningError)
-	if !ok {
+	var listError *remoteerror.ResourceScanningError
+	if !errors.As(err, &listError) {
 		return err
 	}
 

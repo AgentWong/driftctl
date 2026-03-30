@@ -82,7 +82,7 @@ func Test_runFmt(t *testing.T) {
 func TestFmtCmd_Valid(t *testing.T) {
 	rootCmd := &cobra.Command{Use: "root"}
 	scanCmd := NewFmtCmd(&pkg.FmtOptions{})
-	scanCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+	scanCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 	rootCmd.AddCommand(scanCmd)
 
 	cases := []struct {

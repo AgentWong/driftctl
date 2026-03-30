@@ -21,10 +21,8 @@ func NewAwsInstanceBlockDeviceResourceMapper(resourceFactory resource.Factory) A
 
 // Execute applies the AwsInstanceBlockDeviceResourceMapper middleware.
 func (a AwsInstanceBlockDeviceResourceMapper) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newStateResources := make([]*resource.Resource, 0)
 	for _, stateRes := range *resourcesFromState {
-
 		// Ignore all resources other than aws_instance
 		if stateRes.ResourceType() != aws.AwsInstanceResourceType {
 			newStateResources = append(newStateResources, stateRes)
@@ -36,7 +34,7 @@ func (a AwsInstanceBlockDeviceResourceMapper) Execute(remoteResources, resources
 				rootBlock := rootBlock.(map[string]interface{})
 				logrus.WithFields(logrus.Fields{
 					"volume":   rootBlock["volume_id"],
-					"instance": stateRes.ResourceId(),
+					"instance": stateRes.ResourceID(),
 				}).Debug("Creating aws_ebs_volume from aws_instance.root_block_device")
 				data := map[string]interface{}{
 					"availability_zone":    (*stateRes.Attrs)["availability_zone"],
@@ -67,7 +65,7 @@ func (a AwsInstanceBlockDeviceResourceMapper) Execute(remoteResources, resources
 				}
 				logrus.WithFields(logrus.Fields{
 					"volume":   blockDevice["volume_id"],
-					"instance": stateRes.ResourceId(),
+					"instance": stateRes.ResourceID(),
 				}).Debug("Creating aws_ebs_volume from aws_instance.ebs_block_device")
 				data := map[string]interface{}{
 					"availability_zone":    (*stateRes.Attrs)["availability_zone"],
@@ -120,7 +118,7 @@ func (a AwsInstanceBlockDeviceResourceMapper) volumeTags(instance *resource.Reso
 func (a AwsInstanceBlockDeviceResourceMapper) hasBlockDevice(blockDevice map[string]interface{}, resourcesFromState *[]*resource.Resource) bool {
 	for _, stateRes := range *resourcesFromState {
 		if stateRes.ResourceType() == aws.AwsEbsVolumeResourceType &&
-			stateRes.ResourceId() == blockDevice["volume_id"] {
+			stateRes.ResourceID() == blockDevice["volume_id"] {
 			return true
 		}
 	}

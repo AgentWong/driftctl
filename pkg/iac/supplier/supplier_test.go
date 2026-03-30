@@ -108,7 +108,6 @@ func TestGetIACSupplier(t *testing.T) {
 }
 
 func TestGetSupportedSchemes(t *testing.T) {
-
 	want := []string{
 		"tfstate://",
 		"tfstate+s3://",

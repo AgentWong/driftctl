@@ -14,10 +14,11 @@ func NewAwsNatGatewayEipAssoc() AwsNatGatewayEipAssoc {
 	return AwsNatGatewayEipAssoc{}
 }
 
+// Execute removes aws_eip_association resources created implicitly by NAT gateways.
 // When creating a nat gateway, we associate an EIP to the gateway
 // It implies that driftctl read a aws_eip_association resource from remote
 // As we cannot use aws_eip_association in terraform to assign an eip to an aws_nat_gateway
-// Execute we should remove this association to ensure we do not output noise in unmanaged resources
+// we should remove this association to ensure we do not output noise in unmanaged resources
 func (a AwsNatGatewayEipAssoc) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0, len(*remoteResources))
 	var newResources []*resource.Resource
@@ -31,7 +32,7 @@ func (a AwsNatGatewayEipAssoc) Execute(remoteResources, resourcesFromState *[]*r
 
 		if a.isAssociatedToNatGateway(remoteResource, remoteResources) {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring aws_eip_association from remote resource list as it is associated to a nat gateway")
 			continue
@@ -49,7 +50,7 @@ func (a AwsNatGatewayEipAssoc) Execute(remoteResources, resourcesFromState *[]*r
 
 		if a.isAssociatedToNatGateway(stateResource, remoteResources) {
 			logrus.WithFields(logrus.Fields{
-				"id":   stateResource.ResourceId(),
+				"id":   stateResource.ResourceID(),
 				"type": stateResource.ResourceType(),
 			}).Debug("Ignoring aws_eip_association from state resource list as it is associated to a nat gateway")
 			continue

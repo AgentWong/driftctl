@@ -17,7 +17,6 @@ func NewAwsNetworkACLExpander(resourceFactory resource.Factory) AwsNetworkACLExp
 
 // Execute applies the AwsNetworkACLExpander middleware.
 func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newResourcesFromState := make([]*resource.Resource, 0, len(*resourcesFromState))
 
 	for _, stateResource := range *resourcesFromState {
@@ -30,7 +29,7 @@ func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*r
 
 		newResourcesFromState = append(newResourcesFromState, m.expandBlock(
 			resourcesFromState,
-			stateResource.ResourceId(),
+			stateResource.ResourceID(),
 			false,
 			stateResource.Attrs.GetSlice("ingress"),
 		)...)
@@ -38,7 +37,7 @@ func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*r
 
 		newResourcesFromState = append(newResourcesFromState, m.expandBlock(
 			resourcesFromState,
-			stateResource.ResourceId(),
+			stateResource.ResourceID(),
 			true,
 			stateResource.Attrs.GetSlice("egress"),
 		)...)

@@ -48,7 +48,7 @@ func ParseTerraformFromHCL(filename string) (*TerraformBlock, error) {
 func GetCurrentWorkspaceName(cwd string) string {
 	name := DefaultStateName // See https://github.com/hashicorp/terraform/blob/main/internal/backend/backend.go#L33
 
-	data, err := os.ReadFile(path.Join(cwd, ".terraform/environment"))
+	data, err := os.ReadFile(path.Join(cwd, ".terraform/environment")) //nolint:gosec // G304: cwd is from the working directory
 	if err != nil {
 		return name
 	}

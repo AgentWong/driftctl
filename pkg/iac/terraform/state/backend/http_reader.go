@@ -38,7 +38,7 @@ func NewHTTPReader(client pkghttp.HTTPClient, rawURL string, opts *Options) (*HT
 
 func (h *HTTPBackend) Read(p []byte) (n int, err error) {
 	if h.reader == nil {
-		res, err := h.client.Do(h.request)
+		res, err := h.client.Do(h.request) //nolint:bodyclose // body lifecycle is managed by the struct via Close()
 		if err != nil {
 			return 0, err
 		}

@@ -32,7 +32,7 @@ func (m AwsALBListenerTransformer) Execute(_, resourcesFromState *[]*resource.Re
 
 		newStateResources = append(newStateResources, m.resourceFactory.CreateAbstractResource(
 			aws.AwsLoadBalancerListenerResourceType,
-			res.ResourceId(),
+			res.ResourceID(),
 			*res.Attributes(),
 		))
 	}

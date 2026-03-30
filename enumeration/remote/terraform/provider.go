@@ -149,7 +149,6 @@ func (p *Provider) configure(alias string) error {
 
 // ReadResource reads a single resource from the Terraform provider.
 func (p *Provider) ReadResource(args tf.ReadResourceArgs) (*cty.Value, error) {
-
 	logrus.WithFields(logrus.Fields{
 		"id":    args.ID,
 		"type":  args.Ty,

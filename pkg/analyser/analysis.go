@@ -97,7 +97,7 @@ func (a Analysis) MarshalJSON() ([]byte, error) {
 	for _, u := range a.unmanaged {
 		sr := *resource.NewSerializableResource(u)
 		if a.unmanagedCategories != nil {
-			key := u.ResourceType() + "." + u.ResourceId()
+			key := u.ResourceType() + "." + u.ResourceID()
 			if cat, ok := a.unmanagedCategories[key]; ok {
 				sr.Category = cat
 			}
@@ -142,19 +142,19 @@ func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 	}
 	for _, u := range bla.Unmanaged {
 		a.AddUnmanaged(&resource.Resource{
-			Id:   u.Id,
+			ID:   u.ID,
 			Type: u.Type,
 		})
 	}
 	for _, d := range bla.Deleted {
 		a.AddDeleted(&resource.Resource{
-			Id:   d.Id,
+			ID:   d.ID,
 			Type: d.Type,
 		})
 	}
 	for _, u := range bla.Unsupported {
 		a.unsupported = append(a.unsupported, &resource.Resource{
-			Id:   u.Id,
+			ID:   u.ID,
 			Type: u.Type,
 		})
 		a.summary.TotalUnsupported++
@@ -162,7 +162,7 @@ func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 	}
 	for _, m := range bla.Managed {
 		res := &resource.Resource{
-			Id:   m.Id,
+			ID:   m.ID,
 			Type: m.Type,
 		}
 		if m.Source != nil {
@@ -191,7 +191,7 @@ func (a *Analysis) UnmarshalJSON(bytes []byte) error {
 	a.ProviderName = bla.ProviderName
 	a.ProviderVersion = bla.ProviderVersion
 	a.SetIaCSourceCount(bla.Summary.TotalIaCSourceCount)
-	a.Duration = time.Duration(bla.ScanDuration) * time.Second
+	a.Duration = time.Duration(bla.ScanDuration) * time.Second //nolint:gosec // G115: ScanDuration is always a small positive integer
 	a.Date = bla.Date
 	return nil
 }
@@ -292,7 +292,7 @@ func (a *Analysis) UnmanagedCategory(r *resource.Resource) string {
 	if a.unmanagedCategories == nil {
 		return ""
 	}
-	return a.unmanagedCategories[r.ResourceType()+"."+r.ResourceId()]
+	return a.unmanagedCategories[r.ResourceType()+"."+r.ResourceID()]
 }
 
 // SetUnmanagedCategories sets the category labels for unmanaged resources.
@@ -341,7 +341,7 @@ func (a *Analysis) FilterUnmanagedByCategory(excludeCategories map[string]bool) 
 	var filtered []*resource.Resource
 	removed := 0
 	for _, r := range a.unmanaged {
-		key := r.ResourceType() + "." + r.ResourceId()
+		key := r.ResourceType() + "." + r.ResourceID()
 		cat := a.unmanagedCategories[key]
 		if !excludeCategories[cat] {
 			filtered = append(filtered, r)
@@ -368,7 +368,7 @@ func (a *Analysis) DriftIgnoreList(opts GenDriftIgnoreOptions) (int, string) {
 
 	addResources := func(res ...*resource.Resource) {
 		for _, r := range res {
-			list = append(list, fmt.Sprintf("%s.%s", r.ResourceType(), escapeKey(r.ResourceId())))
+			list = append(list, fmt.Sprintf("%s.%s", r.ResourceType(), escapeKey(r.ResourceID())))
 		}
 		resourceCount += len(res)
 	}

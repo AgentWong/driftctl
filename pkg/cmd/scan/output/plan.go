@@ -97,9 +97,9 @@ func listRsc(resources []*resource.Resource) []rsc {
 	var ret []rsc
 	for _, res := range resources {
 		r := rsc{
-			Address:         fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId()),
+			Address:         fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceID()),
 			Type:            res.ResourceType(),
-			Name:            res.ResourceId(),
+			Name:            res.ResourceID(),
 			AttributeValues: *res.Attributes(),
 		}
 		ret = append(ret, r)
@@ -117,9 +117,9 @@ func listRscChange(resources []*resource.Resource, action string) []rscChange {
 	var ret []rscChange
 	for _, res := range resources {
 		r := rscChange{
-			Address: fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId()),
+			Address: fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceID()),
 			Type:    res.ResourceType(),
-			Name:    res.ResourceId(),
+			Name:    res.ResourceID(),
 			Change: change{
 				Actions: []string{action},
 				After:   *res.Attributes(),
@@ -129,7 +129,6 @@ func listRscChange(resources []*resource.Resource, action string) []rscChange {
 			r.Change.Before = *res.Attributes()
 		}
 		ret = append(ret, r)
-
 	}
 	return ret
 }

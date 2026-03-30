@@ -42,10 +42,8 @@ func NewAwsS3BucketPublicAccessBlockReconciler() *AwsS3BucketPublicAccessBlockRe
 
 // Execute applies the AwsS3BucketPublicAccessBlockReconciler middleware.
 func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 	for _, res := range *remoteResources {
-
 		// Skip every resource that is not a bucket public access block
 		if res.ResourceType() != aws.AwsS3BucketPublicAccessBlockResourceType {
 			newRemoteResources = append(newRemoteResources, res)
@@ -62,7 +60,7 @@ func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourc
 
 		// Ignore unmanaged default public access blocks
 		if r.isDefaultPublicAccessBlock(res) && !isDefinedInIac {
-			logrus.WithField("id", res.ResourceId()).Debug("Ignored default aws_s3_bucket_public_access_block from remote")
+			logrus.WithField("id", res.ResourceID()).Debug("Ignored default aws_s3_bucket_public_access_block from remote")
 			continue
 		}
 

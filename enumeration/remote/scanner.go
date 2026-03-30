@@ -41,7 +41,7 @@ func (s *Scanner) Resources() ([]*resource.Resource, error) {
 		for _, res := range resources {
 			if res != nil {
 				logrus.WithFields(logrus.Fields{
-					"id":   res.ResourceId(),
+					"id":   res.ResourceID(),
 					"type": res.ResourceType(),
 				}).Debug("Found cloud resource")
 				allResources = append(allResources, res)

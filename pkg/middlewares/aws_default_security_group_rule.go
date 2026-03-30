@@ -46,7 +46,7 @@ func (m AwsDefaultSecurityGroupRule) Execute(remoteResources, resourcesFromState
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default unmanaged security group rule")
 		}
@@ -126,7 +126,7 @@ func isFromDefaultSecurityGroup(sgID *string, remoteResources *[]*resource.Resou
 		if remoteResource.ResourceType() != aws.AwsDefaultSecurityGroupResourceType {
 			continue
 		}
-		if *sgID == remoteResource.ResourceId() {
+		if *sgID == remoteResource.ResourceID() {
 			return true
 		}
 	}

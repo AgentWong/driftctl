@@ -21,31 +21,31 @@ func TestAwsConsoleApiGatewayGatewayResponse_Execute(t *testing.T) {
 			name: "console rest api gateway response is not ignored when managed by IaC",
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "rest-api",
+					ID:   "rest-api",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
-					Id:   "gtw-response",
+					ID:   "gtw-response",
 					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "rest-api",
+					ID:   "rest-api",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
-					Id:   "gtw-response",
+					ID:   "gtw-response",
 					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "rest-api",
+					ID:   "rest-api",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
-					Id:   "gtw-response",
+					ID:   "gtw-response",
 					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
@@ -54,23 +54,23 @@ func TestAwsConsoleApiGatewayGatewayResponse_Execute(t *testing.T) {
 			name: "console rest api gateway response is ignored when not managed by IaC",
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "rest-api",
+					ID:   "rest-api",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 				{
-					Id:   "gtw-response",
+					ID:   "gtw-response",
 					Type: aws.AwsAPIGatewayGatewayResponseResourceType,
 				},
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "rest-api",
+					ID:   "rest-api",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "rest-api",
+					ID:   "rest-api",
 					Type: aws.AwsAPIGatewayRestAPIResourceType,
 				},
 			},

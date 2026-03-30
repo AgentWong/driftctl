@@ -265,7 +265,7 @@ func (d DriftCTL) scan() (remoteResources []*resource.Resource, resourcesFromSta
 		if res.Attributes() != nil {
 			attrs = *res.Attributes()
 		}
-		normalizedRes := d.resourceFactory.CreateAbstractResource(res.ResourceType(), res.ResourceId(), attrs)
+		normalizedRes := d.resourceFactory.CreateAbstractResource(res.ResourceType(), res.ResourceID(), attrs)
 		normalizedRemoteResources = append(normalizedRemoteResources, normalizedRes)
 	}
 

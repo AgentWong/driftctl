@@ -16,7 +16,6 @@ func NewAwsDefaultAPIGatewayAccount() AwsDefaultAPIGatewayAccount {
 
 // Execute applies the AwsDefaultAPIGatewayAccount middleware.
 func (m AwsDefaultAPIGatewayAccount) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -43,7 +42,7 @@ func (m AwsDefaultAPIGatewayAccount) Execute(remoteResources, resourcesFromState
 
 		// Else, resource is not added to newRemoteResources slice, so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   remoteResource.ResourceId(),
+			"id":   remoteResource.ResourceID(),
 			"type": remoteResource.ResourceType(),
 		}).Debug("Ignoring default API gateway account as it is not managed by IaC")
 	}

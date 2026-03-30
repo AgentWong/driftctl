@@ -14,7 +14,6 @@ type StateEnumerator interface {
 
 // GetEnumerator returns the appropriate StateEnumerator for the given config.
 func GetEnumerator(config config.SupplierConfig, _ *backend.Options) (StateEnumerator, error) {
-
 	switch config.Backend {
 	case backend.BackendKeyFile:
 		return NewFileEnumerator(config), nil

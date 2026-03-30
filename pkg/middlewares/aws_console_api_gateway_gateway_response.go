@@ -44,7 +44,7 @@ func (m AwsConsoleAPIGatewayGatewayResponse) Execute(remoteResources, resourcesF
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   remoteResource.ResourceId(),
+			"id":   remoteResource.ResourceID(),
 			"type": remoteResource.ResourceType(),
 		}).Debug("Ignoring default api gateway response as it is not managed by IaC")
 	}

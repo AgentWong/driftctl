@@ -41,12 +41,12 @@ func (m AwsRDSClusterInstanceExpander) Execute(remoteResources, resourcesFromSta
 		var found bool
 		for _, remoteRes := range dbInstances {
 			// If the db instance's id matches the rds cluster instance's id, import it in the state
-			if remoteRes.ResourceId() == stateRes.ResourceId() {
+			if remoteRes.ResourceID() == stateRes.ResourceID() {
 				found = true
-				newDbInstance := m.resourceFactory.CreateAbstractResource(aws.AwsDbInstanceResourceType, remoteRes.ResourceId(), *remoteRes.Attributes())
+				newDbInstance := m.resourceFactory.CreateAbstractResource(aws.AwsDbInstanceResourceType, remoteRes.ResourceID(), *remoteRes.Attributes())
 				newResourcesFromState = append(newResourcesFromState, newDbInstance)
 				logrus.WithFields(logrus.Fields{
-					"id": newDbInstance.ResourceId(),
+					"id": newDbInstance.ResourceID(),
 				}).Debug("Created new db instance from RDS cluster instance")
 				break
 			}

@@ -57,7 +57,7 @@ func (m AwsAPIGatewayDomainNamesReconciler) Execute(remoteResources, resourcesFr
 		// Remove duplicates (e.g. same id, the opposite type)
 		isDuplicate := false
 		for _, managed := range managedDomainNames {
-			if managed.ResourceId() == unmanaged.ResourceId() {
+			if managed.ResourceID() == unmanaged.ResourceID() {
 				isDuplicate = true
 				break
 			}
