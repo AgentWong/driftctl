@@ -1,6 +1,6 @@
 [
  {
-  "Id": "developers",
+  "ID": "developers",
   "Type": "aws_iam_group",
   "Attrs": {
    "arn": "arn:aws:iam::533948124879:group/users/developers",

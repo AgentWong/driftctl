@@ -1,6 +1,6 @@
 [
  {
-  "Id": "loadbalancer2-20201113172254923500000004",
+  "ID": "loadbalancer2-20201113172254923500000004",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer2-20201113172254923500000004",
@@ -9,7 +9,7 @@
   }
  },
  {
-  "Id": "loadbalancer3-20201113172254986500000006",
+  "ID": "loadbalancer3-20201113172254986500000006",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer3-20201113172254986500000006",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "loadbalancer3-20201113172255118300000007",
+  "ID": "loadbalancer3-20201113172255118300000007",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer3-20201113172255118300000007",
@@ -27,7 +27,7 @@
   }
  },
  {
-  "Id": "loadbalancer-20201113172255158500000009",
+  "ID": "loadbalancer-20201113172255158500000009",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer-20201113172255158500000009",
@@ -36,7 +36,7 @@
   }
  },
  {
-  "Id": "loadbalancer-2020111317225517310000000a",
+  "ID": "loadbalancer-2020111317225517310000000a",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer-2020111317225517310000000a",
@@ -45,7 +45,7 @@
   }
  },
  {
-  "Id": "loadbalancer2-2020111317225587220000000b",
+  "ID": "loadbalancer2-2020111317225587220000000b",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer2-2020111317225587220000000b",
@@ -54,7 +54,7 @@
   }
  },
  {
-  "Id": "loadbalancer2-20201113172255122400000008",
+  "ID": "loadbalancer2-20201113172255122400000008",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer2-20201113172255122400000008",
@@ -63,7 +63,7 @@
   }
  },
  {
-  "Id": "loadbalancer-20201113172254928300000005",
+  "ID": "loadbalancer-20201113172254928300000005",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer-20201113172254928300000005",
@@ -72,7 +72,7 @@
   }
  },
  {
-  "Id": "loadbalancer3-2020111317225590250000000c",
+  "ID": "loadbalancer3-2020111317225590250000000c",
   "Type": "aws_iam_user_policy_attachment",
   "Attrs": {
    "id": "loadbalancer3-2020111317225590250000000c",

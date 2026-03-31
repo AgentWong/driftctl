@@ -1,6 +1,6 @@
 [
  {
-  "Id": "69vgd6-qa-bucket-001",
+  "ID": "69vgd6-qa-bucket-001",
   "Type": "aws_s3_bucket",
   "Attrs": {
    "acceleration_status": "",

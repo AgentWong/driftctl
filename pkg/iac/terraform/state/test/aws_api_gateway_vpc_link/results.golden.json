@@ -1,6 +1,6 @@
 [
  {
-  "Id": "ipu24n",
+  "ID": "ipu24n",
   "Type": "aws_api_gateway_vpc_link",
   "Attrs": {
    "arn": "arn:aws:apigateway:us-east-1::/vpclinks/ipu24n",

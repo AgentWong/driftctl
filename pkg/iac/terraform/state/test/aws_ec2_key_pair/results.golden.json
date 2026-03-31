@@ -1,6 +1,6 @@
 [
  {
-  "Id": "test",
+  "ID": "test",
   "Type": "aws_key_pair",
   "Attrs": {
    "arn": "arn:aws:ec2:eu-west-3:047081014315:key-pair/test",

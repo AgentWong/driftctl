@@ -1,6 +1,6 @@
 [
  {
-  "Id": "vryjzimtj1-foo-foo/GET",
+  "ID": "vryjzimtj1-foo-foo/GET",
   "Type": "aws_api_gateway_method_settings",
   "Attrs": {
    "id": "vryjzimtj1-foo-foo/GET",
@@ -24,7 +24,7 @@
   }
  },
  {
-  "Id": "vryjzimtj1-foo-*/*",
+  "ID": "vryjzimtj1-foo-*/*",
   "Type": "aws_api_gateway_method_settings",
   "Attrs": {
    "id": "vryjzimtj1-foo-*/*",

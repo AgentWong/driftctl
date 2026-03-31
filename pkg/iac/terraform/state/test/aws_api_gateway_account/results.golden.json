@@ -1,6 +1,6 @@
 [
  {
-  "Id": "api-gateway-account",
+  "ID": "api-gateway-account",
   "Type": "aws_api_gateway_account",
   "Attrs": {
    "cloudwatch_role_arn": "arn:aws:iam::047081014315:role/api_gateway_cloudwatch_global",

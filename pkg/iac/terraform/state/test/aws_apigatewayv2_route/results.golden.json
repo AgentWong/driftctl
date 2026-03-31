@@ -1,6 +1,6 @@
 [
  {
-  "Id": "dcab",
+  "ID": "dcab",
   "Type": "aws_apigatewayv2_route",
   "Attrs": {
    "api_id": "abcd",

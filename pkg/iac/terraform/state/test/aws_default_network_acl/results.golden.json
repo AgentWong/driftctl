@@ -1,6 +1,6 @@
 [
  {
-  "Id": "acl-e88ee595",
+  "ID": "acl-e88ee595",
   "Type": "aws_default_network_acl",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:929327065333:network-acl/acl-e88ee595",

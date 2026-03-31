@@ -1,6 +1,6 @@
 [
  {
-  "Id": "5d765f32-bfdc-4610-b6ab-f82db5d0601b",
+  "ID": "5d765f32-bfdc-4610-b6ab-f82db5d0601b",
   "Type": "aws_kms_key",
   "Attrs": {
    "arn": "arn:aws:kms:eu-west-3:047081014315:key/5d765f32-bfdc-4610-b6ab-f82db5d0601b",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "89d2c023-ea53-40a5-b20a-d84905c622d7",
+  "ID": "89d2c023-ea53-40a5-b20a-d84905c622d7",
   "Type": "aws_kms_key",
   "Attrs": {
    "arn": "arn:aws:kms:eu-west-3:047081014315:key/89d2c023-ea53-40a5-b20a-d84905c622d7",
@@ -33,7 +33,7 @@
   }
  },
  {
-  "Id": "8ee21d91-c000-428c-8032-235aac55da36",
+  "ID": "8ee21d91-c000-428c-8032-235aac55da36",
   "Type": "aws_kms_key",
   "Attrs": {
    "arn": "arn:aws:kms:eu-west-3:047081014315:key/8ee21d91-c000-428c-8032-235aac55da36",

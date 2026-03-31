@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path"
+	"sort"
 	"strings"
 	"testing"
 
@@ -269,6 +270,8 @@ func TestTerraformStateReader_AWS_Resources(t *testing.T) {
 				return
 			}
 			gotc := convert(got)
+			sortResources(gotc)
+			sortResources(want)
 			changelog, err := diff.Diff(gotc, want)
 			if err != nil {
 				panic(err)
@@ -294,6 +297,23 @@ func convert(got []*resource.Resource) []interface{} {
 	return want
 }
 
+// resourceKey extracts a sort key (Type+ID) from a JSON-unmarshalled resource map.
+func resourceKey(v interface{}) string {
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return ""
+	}
+	typ, _ := m["Type"].(string)
+	id, _ := m["ID"].(string)
+	return typ + "\x00" + id
+}
+
+func sortResources(s []interface{}) {
+	sort.SliceStable(s, func(i, j int) bool {
+		return resourceKey(s[i]) < resourceKey(s[j])
+	})
+}
+
 func TestTerraformStateReader_VersionSupported(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -313,7 +333,7 @@ func TestTerraformStateReader_VersionSupported(t *testing.T) {
 		{
 			name:      "should return invalid version error",
 			statePath: "testdata/v4/invalid_version.tfstate",
-			err:       errors.New("invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."), //nolint:revive // mirrors external Terraform error
+			err:       errors.New("Invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."), //nolint:revive // mirrors external Terraform error
 		},
 	}
 

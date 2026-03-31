@@ -67,7 +67,7 @@ func TestChainMiddlewareErrorShouldStopExecution(t *testing.T) {
 		t.Error("No error were reported")
 	}
 
-	if err.Error() != "Test error" {
+	if err.Error() != "test error" {
 		t.Error("Unknown error reported")
 	}
 

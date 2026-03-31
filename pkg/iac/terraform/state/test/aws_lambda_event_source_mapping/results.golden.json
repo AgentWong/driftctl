@@ -1,6 +1,6 @@
 [
  {
-  "Id": "13ff66f8-37eb-4ad6-a0a8-594fea72df4f",
+  "ID": "13ff66f8-37eb-4ad6-a0a8-594fea72df4f",
   "Type": "aws_lambda_event_source_mapping",
   "Attrs": {
    "batch_size": 1,
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "4ad7e2b3-79e9-4713-9d9d-5af2c01d9058",
+  "ID": "4ad7e2b3-79e9-4713-9d9d-5af2c01d9058",
   "Type": "aws_lambda_event_source_mapping",
   "Attrs": {
    "batch_size": 1,

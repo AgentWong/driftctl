@@ -1,6 +1,6 @@
 [
  {
-  "Id": "arn:aws:elasticloadbalancing:us-east-1:533948124879:loadbalancer/app/test-lb-tf/35be57d467ff22b9",
+  "ID": "arn:aws:elasticloadbalancing:us-east-1:533948124879:loadbalancer/app/test-lb-tf/35be57d467ff22b9",
   "Type": "aws_alb",
   "Attrs": {
    "access_logs": [

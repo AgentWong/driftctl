@@ -1,6 +1,6 @@
 [
  {
-  "Id": "tak8bq",
+  "ID": "tak8bq",
   "Type": "aws_api_gateway_request_validator",
   "Attrs": {
    "id": "tak8bq",
@@ -11,7 +11,7 @@
   }
  },
  {
-  "Id": "ywlcuf",
+  "ID": "ywlcuf",
   "Type": "aws_api_gateway_request_validator",
   "Attrs": {
    "id": "ywlcuf",

@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-03-31
+
+### Removed
+- **`scripts/` directory** — removed `build.sh` (goreleaser wrapper), `changelog.sh`, and `issue-tagging.sh`. The Makefile `build` target now uses `go build` directly; `dev` and `release` targets were consolidated into a single `build` target. Dockerfile updated to use `make build` instead of goreleaser.
+- **`sentry/` directory and all Sentry error reporting** — removed `sentry.go`, `sentry_test.go`, and all references in `main.go` (panic recovery, `CaptureException`, `flushSentry`), `pkg/cmd/driftctl.go` (`--send-crash-report` flag, `handleReporting`, `IsReportingEnabled`), and `enumeration/parallel/parallel_runner.go` (`sentry.CurrentHub().Recover`). Removed `github.com/getsentry/sentry-go` module dependency.
+- **`pkg/telemetry/` directory and all telemetry collection** — removed `telemetry.go`, `telemetry_test.go`, and all references in `pkg/cmd/scan.go` (telemetry import, `SendTelemetry` call), `pkg/cmd/driftctl.go` (`--disable-telemetry` flag), `pkg/driftctl.go` (`DisableTelemetry` option, all `TelemetryBucket` writes), `pkg/driftctl_test.go` (all `assertStore` callbacks), and `pkg/memstore/buckets.go` (`TelemetryBucket` constant).
+
+### Fixed
+- **Agent instructions — updated stale references** in `.github/agents/build-test-fix.md`: `make dev` → `make build` (3 occurrences) and provider version `v3.19.0` → `v6.38.0` to match current Makefile and provider configuration
+
+- **Test suite — fixed pre-existing test failures** across 7 packages:
+  - `enumeration/remote/resource_enumeration_error_handler.go` — made "access denied" string matching case-insensitive to catch both "AccessDenied" and "access denied" error patterns
+  - `pkg/driftctl_test.go` — updated JMESPath filter expressions from `Id==` to `ID==` to match the renamed `filtrableResource.ID` struct field
+  - `pkg/cmd/scan/output/testdata/` — updated 6 golden test data files to use "occurred" (correct spelling) matching the fix in `alerts.go`
+  - `pkg/filter/filter_engine_test.go` — updated expected error message from `syntaxError` to `SyntaxError` (library capitalization change)
+  - `pkg/iac/terraform/state/backend/http_reader_test.go` — updated expected error message from `get` to `Get` (Go net/http capitalization change)
+  - `pkg/iac/terraform/state/terraform_state_reader_test.go` — updated expected error message from `invalid` to `Invalid`; added sort-by-Type+ID before golden file comparison to handle non-deterministic resource ordering
+  - `pkg/iac/terraform/state/test/*/results.golden.json` — updated 100 golden files to use `"ID":` instead of `"Id":` matching the Resource struct field rename
+  - `pkg/middlewares/chain_middleware_test.go` — updated expected error message from `Test error` to `test error` matching the actual `errors.New()` value
+
 ## [1.0.0] - 2026-03-30
 
 ### Added

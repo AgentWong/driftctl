@@ -1,6 +1,6 @@
 [
  {
-  "Id": "xaappu",
+  "ID": "xaappu",
   "Type": "aws_apigatewayv2_authorizer",
   "Attrs": {
    "api_id": "bmyl5c6huh",

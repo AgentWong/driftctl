@@ -1,6 +1,6 @@
 [
  {
-  "Id": "agir-u7jce3lokk-z9ag20-GET-200",
+  "ID": "agir-u7jce3lokk-z9ag20-GET-200",
   "Type": "aws_api_gateway_integration_response",
   "Attrs": {
    "content_handling": "",

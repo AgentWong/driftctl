@@ -1,6 +1,6 @@
 [
  {
-  "Id": "Z1035360GLIB82T1EH2G",
+  "ID": "Z1035360GLIB82T1EH2G",
   "Type": "aws_route53_zone",
   "Attrs": {
    "comment": "Managed by Terraform",
@@ -17,7 +17,7 @@
   }
  },
  {
-  "Id": "Z10347383HV75H96J919W",
+  "ID": "Z10347383HV75H96J919W",
   "Type": "aws_route53_zone",
   "Attrs": {
    "comment": "Managed by Terraform",
@@ -34,7 +34,7 @@
   }
  },
  {
-  "Id": "Z1035360GLIB82T1EH2G_foo-0.com_NS",
+  "ID": "Z1035360GLIB82T1EH2G_foo-0.com_NS",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "foo-0.com",
@@ -51,7 +51,7 @@
   }
  },
  {
-  "Id": "Z1035360GLIB82T1EH2G_test0_A",
+  "ID": "Z1035360GLIB82T1EH2G_test0_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test0.foo-0.com",
@@ -65,7 +65,7 @@
   }
  },
  {
-  "Id": "Z1035360GLIB82T1EH2G_test1_A",
+  "ID": "Z1035360GLIB82T1EH2G_test1_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test1.foo-0.com",
@@ -79,7 +79,7 @@
   }
  },
  {
-  "Id": "Z1035360GLIB82T1EH2G_test2_A",
+  "ID": "Z1035360GLIB82T1EH2G_test2_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test2.foo-0.com",
@@ -93,7 +93,7 @@
   }
  },
  {
-  "Id": "Z1035360GLIB82T1EH2G_test3_A",
+  "ID": "Z1035360GLIB82T1EH2G_test3_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test3.foo-0.com",
@@ -107,7 +107,7 @@
   }
  },
  {
-  "Id": "Z10347383HV75H96J919W_test0_A",
+  "ID": "Z10347383HV75H96J919W_test0_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test0.foo-1.com",
@@ -121,7 +121,7 @@
   }
  },
  {
-  "Id": "Z10347383HV75H96J919W_test1_A",
+  "ID": "Z10347383HV75H96J919W_test1_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test1.foo-1.com",
@@ -135,7 +135,7 @@
   }
  },
  {
-  "Id": "Z10347383HV75H96J919W_test2_A",
+  "ID": "Z10347383HV75H96J919W_test2_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test2.foo-1.com",
@@ -149,7 +149,7 @@
   }
  },
  {
-  "Id": "Z10347383HV75H96J919W_test3_A",
+  "ID": "Z10347383HV75H96J919W_test3_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test3.foo-1.com",

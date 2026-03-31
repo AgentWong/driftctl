@@ -1,6 +1,6 @@
 [
  {
-  "Id": "bar",
+  "ID": "bar",
   "Type": "aws_ecr_repository",
   "Attrs": {
    "arn": "arn:aws:ecr:eu-west-3:726421854799:repository/bar",

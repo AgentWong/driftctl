@@ -1,6 +1,6 @@
 [
  {
-  "Id": "subnet-03258f7d55e1df8ed",
+  "ID": "subnet-03258f7d55e1df8ed",
   "Type": "aws_default_subnet",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:526954929923:subnet/subnet-03258f7d55e1df8ed",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "subnet-03a8928df96cbc112",
+  "ID": "subnet-03a8928df96cbc112",
   "Type": "aws_default_subnet",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:526954929923:subnet/subnet-03a8928df96cbc112",
@@ -36,7 +36,7 @@
   }
  },
  {
-  "Id": "subnet-00242cc446a0e7583",
+  "ID": "subnet-00242cc446a0e7583",
   "Type": "aws_default_subnet",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:526954929923:subnet/subnet-00242cc446a0e7583",
@@ -54,7 +54,7 @@
   }
  },
  {
-  "Id": "subnet-03c1a726f076cec6b",
+  "ID": "subnet-03c1a726f076cec6b",
   "Type": "aws_subnet",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:526954929923:subnet/subnet-03c1a726f076cec6b",
@@ -72,7 +72,7 @@
   }
  },
  {
-  "Id": "subnet-02fb51b19c891f0e9",
+  "ID": "subnet-02fb51b19c891f0e9",
   "Type": "aws_subnet",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:526954929923:subnet/subnet-02fb51b19c891f0e9",
@@ -90,7 +90,7 @@
   }
  },
  {
-  "Id": "subnet-09631aa1f17d607c4",
+  "ID": "subnet-09631aa1f17d607c4",
   "Type": "aws_subnet",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:526954929923:subnet/subnet-09631aa1f17d607c4",

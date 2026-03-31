@@ -1,6 +1,6 @@
 [
  {
-  "Id": "nat-0a5408508b19ef490",
+  "ID": "nat-0a5408508b19ef490",
   "Type": "aws_nat_gateway",
   "Attrs": {
    "allocation_id": "eipalloc-0f3e9fff457bb770b",

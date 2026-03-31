@@ -20,7 +20,7 @@ func TestFilterEngine_Run(t *testing.T) {
 		{
 			name:       "invalid expression (fail during expr compilation)",
 			expr:       "???",
-			compileErr: errors.New("syntaxError: Unknown char: '?'"),
+			compileErr: errors.New("SyntaxError: Unknown char: '?'"),
 		},
 		{
 			name: "filter on type",

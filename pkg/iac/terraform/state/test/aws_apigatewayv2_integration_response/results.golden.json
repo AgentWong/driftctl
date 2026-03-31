@@ -1,6 +1,6 @@
 [
  {
-  "Id": "sf67ti7",
+  "ID": "sf67ti7",
   "Type": "aws_apigatewayv2_integration_response",
   "Attrs": {
    "api_id": "yw28nwdf34",

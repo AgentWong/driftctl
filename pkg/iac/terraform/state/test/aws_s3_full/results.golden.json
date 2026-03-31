@@ -1,6 +1,6 @@
 [
  {
-  "Id": "bucket-martin-test-drift",
+  "ID": "bucket-martin-test-drift",
   "Type": "aws_s3_bucket",
   "Attrs": {
    "acceleration_status": "",
@@ -22,7 +22,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3",
+  "ID": "bucket-martin-test-drift3",
   "Type": "aws_s3_bucket",
   "Attrs": {
    "acceleration_status": "",
@@ -44,7 +44,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2",
+  "ID": "bucket-martin-test-drift2",
   "Type": "aws_s3_bucket",
   "Attrs": {
    "acceleration_status": "",
@@ -66,7 +66,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2:Analytics2_Bucket2",
+  "ID": "bucket-martin-test-drift2:Analytics2_Bucket2",
   "Type": "aws_s3_bucket_analytics_configuration",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -96,7 +96,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2:Analytics_Bucket2",
+  "ID": "bucket-martin-test-drift2:Analytics_Bucket2",
   "Type": "aws_s3_bucket_analytics_configuration",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -126,7 +126,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift:Analytics_Bucket1",
+  "ID": "bucket-martin-test-drift:Analytics_Bucket1",
   "Type": "aws_s3_bucket_analytics_configuration",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -156,7 +156,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3:Analytics_Bucket3",
+  "ID": "bucket-martin-test-drift3:Analytics_Bucket3",
   "Type": "aws_s3_bucket_analytics_configuration",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -186,7 +186,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift:Analytics2_Bucket1",
+  "ID": "bucket-martin-test-drift:Analytics2_Bucket1",
   "Type": "aws_s3_bucket_analytics_configuration",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -216,7 +216,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3:Analytics2_Bucket3",
+  "ID": "bucket-martin-test-drift3:Analytics2_Bucket3",
   "Type": "aws_s3_bucket_analytics_configuration",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -246,7 +246,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2:Inventory_Bucket2",
+  "ID": "bucket-martin-test-drift2:Inventory_Bucket2",
   "Type": "aws_s3_bucket_inventory",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -274,7 +274,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3:Inventory_Bucket3",
+  "ID": "bucket-martin-test-drift3:Inventory_Bucket3",
   "Type": "aws_s3_bucket_inventory",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -302,7 +302,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift:Inventory_Bucket1",
+  "ID": "bucket-martin-test-drift:Inventory_Bucket1",
   "Type": "aws_s3_bucket_inventory",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -330,7 +330,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift:Inventory2_Bucket1",
+  "ID": "bucket-martin-test-drift:Inventory2_Bucket1",
   "Type": "aws_s3_bucket_inventory",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -358,7 +358,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2:Inventory2_Bucket2",
+  "ID": "bucket-martin-test-drift2:Inventory2_Bucket2",
   "Type": "aws_s3_bucket_inventory",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -386,7 +386,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3:Inventory2_Bucket3",
+  "ID": "bucket-martin-test-drift3:Inventory2_Bucket3",
   "Type": "aws_s3_bucket_inventory",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -414,7 +414,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2:Metrics2_Bucket2",
+  "ID": "bucket-martin-test-drift2:Metrics2_Bucket2",
   "Type": "aws_s3_bucket_metric",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -423,7 +423,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2:Metrics_Bucket2",
+  "ID": "bucket-martin-test-drift2:Metrics_Bucket2",
   "Type": "aws_s3_bucket_metric",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -432,7 +432,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3:Metrics_Bucket3",
+  "ID": "bucket-martin-test-drift3:Metrics_Bucket3",
   "Type": "aws_s3_bucket_metric",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -441,7 +441,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3:Metrics2_Bucket3",
+  "ID": "bucket-martin-test-drift3:Metrics2_Bucket3",
   "Type": "aws_s3_bucket_metric",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -450,7 +450,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift:Metrics2_Bucket1",
+  "ID": "bucket-martin-test-drift:Metrics2_Bucket1",
   "Type": "aws_s3_bucket_metric",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -459,7 +459,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift:Metrics_Bucket1",
+  "ID": "bucket-martin-test-drift:Metrics_Bucket1",
   "Type": "aws_s3_bucket_metric",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -468,7 +468,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3",
+  "ID": "bucket-martin-test-drift3",
   "Type": "aws_s3_bucket_notification",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -496,7 +496,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift",
+  "ID": "bucket-martin-test-drift",
   "Type": "aws_s3_bucket_notification",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",
@@ -524,7 +524,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift2",
+  "ID": "bucket-martin-test-drift2",
   "Type": "aws_s3_bucket_policy",
   "Attrs": {
    "bucket": "bucket-martin-test-drift2",
@@ -533,7 +533,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift3",
+  "ID": "bucket-martin-test-drift3",
   "Type": "aws_s3_bucket_policy",
   "Attrs": {
    "bucket": "bucket-martin-test-drift3",
@@ -542,7 +542,7 @@
   }
  },
  {
-  "Id": "bucket-martin-test-drift",
+  "ID": "bucket-martin-test-drift",
   "Type": "aws_s3_bucket_policy",
   "Attrs": {
    "bucket": "bucket-martin-test-drift",

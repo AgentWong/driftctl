@@ -1,6 +1,6 @@
 [
  {
-  "Id": "ami-06668cf793e254604",
+  "ID": "ami-06668cf793e254604",
   "Type": "aws_ami",
   "Attrs": {
    "architecture": "x86_64",

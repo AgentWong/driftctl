@@ -1,6 +1,6 @@
 [
  {
-  "Id": "cluster-example",
+  "ID": "cluster-example",
   "Type": "aws_elasticache_cluster",
   "Attrs": {
    "arn": "arn:aws:elasticache:us-east-2:047081014315:cluster:cluster-example",

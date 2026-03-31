@@ -1,6 +1,6 @@
 [
  {
-  "Id": "i-0d3650a23f4e45dc0",
+  "ID": "i-0d3650a23f4e45dc0",
   "Type": "aws_instance",
   "Attrs": {
    "ami": "ami-0697b068b80d79421",

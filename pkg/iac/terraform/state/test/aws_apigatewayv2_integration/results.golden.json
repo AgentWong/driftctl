@@ -1,6 +1,6 @@
 [
  {
-  "Id": "fmezvlh",
+  "ID": "fmezvlh",
   "Type": "aws_apigatewayv2_integration",
   "Attrs": {
    "api_id": "yw28nwdf34",

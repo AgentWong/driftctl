@@ -1,6 +1,6 @@
 [
  {
-  "Id": "acl-01b7bc85a61d92e70",
+  "ID": "acl-01b7bc85a61d92e70",
   "Type": "aws_network_acl",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:929327065333:network-acl/acl-01b7bc85a61d92e70",
@@ -13,7 +13,7 @@
   }
  },
  {
-  "Id": "acl-069e079b416dd581e",
+  "ID": "acl-069e079b416dd581e",
   "Type": "aws_network_acl",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:929327065333:network-acl/acl-069e079b416dd581e",

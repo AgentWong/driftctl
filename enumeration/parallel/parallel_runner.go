@@ -5,7 +5,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
@@ -97,7 +96,6 @@ func (p *Runner) Run(runnable func() (interface{}, error)) {
 		// Some failed call to grpc plugin like getSchema trigger a panic
 		defer func() {
 			if r := recover(); r != nil {
-				sentry.CurrentHub().Recover(r)
 				p.Stop(errors.Errorf("A runner routine paniced: %s", r))
 			}
 		}()

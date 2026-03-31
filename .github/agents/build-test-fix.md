@@ -10,7 +10,7 @@ You are an iterative development agent for the driftctl Go CLI project. Your job
 ## Project Context
 
 - driftctl is a Go CLI that detects infrastructure drift by comparing Terraform state against AWS Config
-- The binary is built with `make dev` and outputs to `bin/driftctl`
+- The binary is built with `make build` and outputs to `bin/driftctl`
 - AWS credentials are loaded from `.env` via godotenv (AWS_PROFILE and AWS_REGION)
 - The CLI uses cobra framework; the main command is `scan`
 - This project is AWS-only; do not add Azure, GCP, or GitHub provider support
@@ -22,12 +22,12 @@ Follow this iterative loop:
 
 ### Step 1: Build
 
-Run `make dev` from the project root. If the build fails:
+Run `make build` from the project root. If the build fails:
 1. Read the full compiler output
 2. Identify the file(s) and line number(s) with errors
 3. Read the relevant source files to understand context
 4. Apply the minimal fix
-5. Rebuild with `make dev`
+5. Rebuild with `make build`
 6. Repeat until the build succeeds
 
 Do not proceed to Step 2 until the build succeeds.
@@ -64,7 +64,7 @@ For runtime errors, read the error output and `test-output/report.json`. Common 
 - **S3 BucketRegionError (301):** The S3 bucket is in a different region than `AWS_REGION`. Set `DCTL_S3_REGION=us-west-1` when running the scan.
 - **Terraform provider download failures:** check network access and `--config-dir`
 - **Resource enumeration errors:** check if the AWS Config recorder is enabled in the target region
-- **State deserialization errors ("Unable to decode resource from state"):** driftctl uses provider v3.19.0 schemas. State files written by newer provider versions may have new/changed attributes. The `convertInstance` fallback in `terraform_state_reader.go` handles most cases; check there if new decode errors appear.
+- **State deserialization errors ("Unable to decode resource from state"):** driftctl uses provider v6.38.0 schemas. State files written by newer provider versions may have new/changed attributes. The `convertInstance` fallback in `terraform_state_reader.go` handles most cases; check there if new decode errors appear.
 
 ### Step 3a: Parse JSON Report Selectively
 

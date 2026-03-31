@@ -1,6 +1,6 @@
 [
  {
-  "Id": "testtrailtrail",
+  "ID": "testtrailtrail",
   "Type": "aws_cloudtrail",
   "Attrs": {
    "arn": "arn:aws:cloudtrail:eu-west-2:526954929923:trail/testtrailtrail",

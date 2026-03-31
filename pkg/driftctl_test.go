@@ -18,7 +18,6 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 	"github.com/snyk/driftctl/test"
 	testresource "github.com/snyk/driftctl/test/resource"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -33,7 +32,6 @@ type TestCase struct {
 	stateResources  []*resource.Resource
 	remoteResources []*resource.Resource
 	assert          func(t *testing.T, result *test.ScanResult, err error)
-	assertStore     func(*testing.T, memstore.Store)
 	options         *pkg.ScanOptions
 }
 
@@ -100,9 +98,6 @@ func runTest(t *testing.T, cases TestCases) {
 			analysis, err := driftctl.Run()
 
 			c.assert(t, test.NewScanResult(t, analysis), err)
-			if c.assertStore != nil {
-				c.assertStore(t, store)
-			}
 			scanProgress.AssertExpectations(t)
 		})
 	}
@@ -117,12 +112,6 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.NotZero(result.Duration)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
-			},
-			assertStore: func(_ *testing.T, store memstore.Store) {
-				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
-				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
 		},
 		{
@@ -149,12 +138,6 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				result.AssertInfrastructureIsInSync()
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
-			assertStore: func(_ *testing.T, store memstore.Store) {
-				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
-				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
-			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
 				return &pkg.ScanOptions{}
 			}(t),
@@ -169,12 +152,6 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				result.AssertDeletedCount(1)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
-			assertStore: func(t *testing.T, store memstore.Store) {
-				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
-				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
-			},
 		},
 		{
 			name:           "we should have unmanaged resource",
@@ -184,11 +161,6 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 			},
 			assert: func(_ *testing.T, result *test.ScanResult, _ error) {
 				result.AssertUnmanagedCount(1)
-			},
-			assertStore: func(t *testing.T, store memstore.Store) {
-				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
 			},
 		},
 		{
@@ -257,12 +229,6 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				result.AssertUnmanagedCount(2)
 				result.AssertDeletedCount(0)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
-			},
-			assertStore: func(t *testing.T, store memstore.Store) {
-				assert.Equal(t, 4, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 2, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
-				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
 				return &pkg.ScanOptions{
@@ -336,12 +302,6 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				result.AssertUnmanagedCount(4)
 				result.AssertDeletedCount(0)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
-			},
-			assertStore: func(t *testing.T, store memstore.Store) {
-				assert.Equal(t, 6, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 2, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
-				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
 				return &pkg.ScanOptions{
@@ -417,14 +377,8 @@ func TestDriftctlRun_BasicBehavior(t *testing.T) {
 				result.AssertDeletedCount(0)
 				result.Equal(uint(2), result.Summary().TotalIaCSourceCount)
 			},
-			assertStore: func(t *testing.T, store memstore.Store) {
-				assert.Equal(t, 1, store.Bucket(memstore.TelemetryBucket).Get("total_resources"))
-				assert.Equal(t, 0, store.Bucket(memstore.TelemetryBucket).Get("total_managed"))
-				assert.Equal(t, uint(0), store.Bucket(memstore.TelemetryBucket).Get("duration"))
-				assert.Equal(t, uint(2), store.Bucket(memstore.TelemetryBucket).Get("iac_source_count"))
-			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
-				filterStr := "Id=='role-test-1'"
+				filterStr := "ID=='role-test-1'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
 					t.Fatalf("Unable to build filter expression: %s\n%s", filterStr, err)
@@ -492,7 +446,7 @@ func TestDriftctlRun_BasicFilter(t *testing.T) {
 				result.AssertResourceUnmanaged("res2", "filtered")
 			},
 			options: func(_ *testing.T) *pkg.ScanOptions {
-				filterStr := "Id=='res2'"
+				filterStr := "ID=='res2'"
 				f, err := filter.BuildExpression(filterStr)
 				if err != nil {
 					t.Fatalf("Unable to build filter expression: %s\n%s", filterStr, err)

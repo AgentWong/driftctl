@@ -1,6 +1,6 @@
 [
  {
-  "Id": "Z09368953G729AFEX5048",
+  "ID": "Z09368953G729AFEX5048",
   "Type": "aws_route53_zone",
   "Attrs": {
    "comment": "Managed by Terraform",
@@ -17,7 +17,7 @@
   }
  },
  {
-  "Id": "Z09368953G729AFEX5048_elie.ski_NS",
+  "ID": "Z09368953G729AFEX5048_elie.ski_NS",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "elie.ski",
@@ -34,7 +34,7 @@
   }
  },
  {
-  "Id": "Z09368953G729AFEX5048_test_A",
+  "ID": "Z09368953G729AFEX5048_test_A",
   "Type": "aws_route53_record",
   "Attrs": {
    "fqdn": "test.elie.ski",

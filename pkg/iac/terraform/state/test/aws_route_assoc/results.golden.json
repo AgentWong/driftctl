@@ -1,6 +1,6 @@
 [
  {
-  "Id": "rtbassoc-0a79ccacfceb4944b",
+  "ID": "rtbassoc-0a79ccacfceb4944b",
   "Type": "aws_route_table_association",
   "Attrs": {
    "gateway_id": "igw-0238f6e09185ac954",
@@ -9,7 +9,7 @@
   }
  },
  {
-  "Id": "rtbassoc-01957791b2cfe6ea4",
+  "ID": "rtbassoc-01957791b2cfe6ea4",
   "Type": "aws_route_table_association",
   "Attrs": {
    "id": "rtbassoc-01957791b2cfe6ea4",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "rtbassoc-0809598f92dbec03b",
+  "ID": "rtbassoc-0809598f92dbec03b",
   "Type": "aws_route_table_association",
   "Attrs": {
    "id": "rtbassoc-0809598f92dbec03b",
@@ -27,7 +27,7 @@
   }
  },
  {
-  "Id": "rtbassoc-0b4f97ea57490e213",
+  "ID": "rtbassoc-0b4f97ea57490e213",
   "Type": "aws_route_table_association",
   "Attrs": {
    "id": "rtbassoc-0b4f97ea57490e213",

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "https://sqs.eu-west-3.amazonaws.com/047081014315/bar.fifo",
+  "ID": "https://sqs.eu-west-3.amazonaws.com/047081014315/bar.fifo",
   "Type": "aws_sqs_queue_policy",
   "Attrs": {
    "id": "https://sqs.eu-west-3.amazonaws.com/047081014315/bar.fifo",

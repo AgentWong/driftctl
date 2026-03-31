@@ -1,6 +1,6 @@
 [
  {
-  "Id": "terraform-20201015115018309600000001",
+  "ID": "terraform-20201015115018309600000001",
   "Type": "aws_db_instance",
   "Attrs": {
    "address": "terraform-20201015115018309600000001.c4j6qwp34sb1.eu-west-3.rds.amazonaws.com",

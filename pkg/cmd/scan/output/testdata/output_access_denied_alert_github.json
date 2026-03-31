@@ -17,10 +17,10 @@
 	"alerts": {
 		"": [
 			{
-				"message": "An error occured listing github_team: listing github_team is forbidden: dummy error"
+				"message": "An error occurred listing github_team: listing github_team is forbidden: dummy error"
 			},
 			{
-				"message": "An error occured listing github_team_membership: listing github_team is forbidden: dummy error"
+				"message": "An error occurred listing github_team_membership: listing github_team is forbidden: dummy error"
 			}
 		]
 	},

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "arn:aws:sns:us-east-1:526954929923:my-topic-with-policy",
+  "ID": "arn:aws:sns:us-east-1:526954929923:my-topic-with-policy",
   "Type": "aws_sns_topic_policy",
   "Attrs": {
    "arn": "arn:aws:sns:us-east-1:526954929923:my-topic-with-policy",
@@ -9,7 +9,7 @@
   }
  },
  {
-  "Id": "arn:aws:sns:us-east-1:526954929923:my-topic-with-policy2",
+  "ID": "arn:aws:sns:us-east-1:526954929923:my-topic-with-policy2",
   "Type": "aws_sns_topic_policy",
   "Attrs": {
    "arn": "arn:aws:sns:us-east-1:526954929923:my-topic-with-policy2",

@@ -38,7 +38,6 @@ type ScanOptions struct {
 	Quiet             bool
 	BackendOptions    *backend.Options
 	StrictMode        bool
-	DisableTelemetry  bool
 	ProviderVersion   string
 	ConfigDir         string
 	DriftignorePath   string
@@ -178,11 +177,6 @@ func (d DriftCTL) Run() (*analyser.Analysis, error) {
 	analysis.Duration = time.Since(start)
 	analysis.Date = time.Now()
 
-	d.store.Bucket(memstore.TelemetryBucket).Set("total_resources", analysis.Summary().TotalResources)
-	d.store.Bucket(memstore.TelemetryBucket).Set("total_managed", analysis.Summary().TotalManaged)
-	d.store.Bucket(memstore.TelemetryBucket).Set("duration", uint(analysis.Duration.Seconds()+0.5))
-	d.store.Bucket(memstore.TelemetryBucket).Set("iac_source_count", d.iacSupplier.SourceCount())
-
 	return &analysis, nil
 }
 
@@ -216,10 +210,6 @@ func (d DriftCTL) runPlanMode(start time.Time) (*analyser.Analysis, error) {
 
 	analysis.Duration = time.Since(start)
 	analysis.Date = time.Now()
-
-	d.store.Bucket(memstore.TelemetryBucket).Set("total_resources", analysis.Summary().TotalResources)
-	d.store.Bucket(memstore.TelemetryBucket).Set("total_managed", analysis.Summary().TotalManaged)
-	d.store.Bucket(memstore.TelemetryBucket).Set("duration", uint(analysis.Duration.Seconds()+0.5))
 
 	return analysis, nil
 }

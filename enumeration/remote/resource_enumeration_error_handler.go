@@ -38,9 +38,10 @@ func HandleResourceEnumerationError(err error, alerter alerter.Interface) error 
 		}
 	}
 
-	// This handles access denied errors like the following:
+	// handles access denied errors in various message formats, e.g.:
 	// aws_s3_bucket_policy: AccessDenied: Error listing bucket policy <policy_name>
-	if strings.Contains(rootCause.Error(), "AccessDenied") {
+	lowerMsg := strings.ToLower(rootCause.Error())
+	if strings.Contains(lowerMsg, "accessdenied") || strings.Contains(lowerMsg, "access denied") {
 		alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
 		return nil
 	}

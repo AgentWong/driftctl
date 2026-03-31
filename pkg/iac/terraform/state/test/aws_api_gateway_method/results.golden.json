@@ -1,6 +1,6 @@
 [
  {
-  "Id": "agm-vryjzimtj1-hl7ksq-GET",
+  "ID": "agm-vryjzimtj1-hl7ksq-GET",
   "Type": "aws_api_gateway_method",
   "Attrs": {
    "api_key_required": false,

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "example-driftctl.com/foo",
+  "ID": "example-driftctl.com/foo",
   "Type": "aws_api_gateway_base_path_mapping",
   "Attrs": {
    "api_id": "zetudukz30",
@@ -11,7 +11,7 @@
   }
  },
  {
-  "Id": "example-driftctl.com/",
+  "ID": "example-driftctl.com/",
   "Type": "aws_api_gateway_base_path_mapping",
   "Attrs": {
    "api_id": "zetudukz30",

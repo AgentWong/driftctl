@@ -1,33 +1,3 @@
-<p align="center">
-  <img width="200" src="https://docs.driftctl.com/img/driftctl_dark.svg" alt="driftctl">
-</p>
-
-<p align="center">
-  <img src="https://circleci.com/gh/snyk/driftctl.svg?style=shield"/>
-  <img src="https://goreportcard.com/badge/github.com/snyk/driftctl"/>
-  <img src="https://img.shields.io/github/license/snyk/driftctl">
-  <img src="https://img.shields.io/github/v/release/snyk/driftctl">
-  <img src="https://img.shields.io/github/go-mod/go-version/snyk/driftctl">
-  <img src="https://img.shields.io/github/downloads/snyk/driftctl/total.svg"/>
-  <img src="https://img.shields.io/docker/pulls/snyk/driftctl"/>
-  <img src="https://img.shields.io/docker/image-size/snyk/driftctl"/>
-  <a href="https://discord.gg/NMCBxtD7Nd">
-    <img src="https://img.shields.io/discord/783720783469871124?color=%237289da&label=discord&logo=discord"/>
-  </a>
-</p>
-
-<p align="center">
-  Detect infrastructure drift and unmanaged AWS resources using AWS Config and Terraform.<br>
-  <strong>IaC:</strong> Terraform. <strong>Cloud provider:</strong> AWS.<br>
-</p>
-
-<details>
-  <summary>Packaging status</summary>
-  <a href="https://repology.org/project/driftctl/versions">
-    <img src="https://repology.org/badge/vertical-allrepos/driftctl.svg" alt="Packaging status">
-  </a>
-</details>
-
 ## Why driftctl?
 
 Infrastructure drift is a blind spot and a source of potential security issues.
@@ -59,6 +29,59 @@ Resources are automatically categorized to reduce false positives:
 - Allow users to **ignore** resources via `.driftignore`
 - **132 AWS resource types** supported via AWS Config mapping
 
+## Directory Structure
+
+```
+driftctl/
+├── bin/                        # Compiled binary
+├── build/                      # Build version metadata
+├── docs/                       # Developer guides (architecture, testing, adding resources)
+├── logger/                     # Logging setup and formatters
+├── mocks/                      # Auto-generated mock interfaces
+├── test/                       # Test utilities, fixtures, and acceptance tests
+│   ├── acceptance/             #   End-to-end acceptance tests
+│   ├── goldenfile/             #   Golden file test helpers
+│   ├── remote/                 #   Remote resource test fixtures
+│   └── terraform/              #   Terraform state test fixtures
+├── test-output/                # Test result reports (JSON, HTML)
+│
+├── enumeration/                # Resource discovery from AWS and Terraform state
+│   ├── alerter/                #   Alert collection and reporting
+│   ├── diagnostic/             #   Diagnostic information gathering
+│   ├── parallel/               #   Parallel enumeration runner
+│   ├── resource/               #   Resource abstraction and AWS type definitions
+│   │   └── aws/                #     100+ AWS resource type definitions
+│   ├── remote/                 #   Cloud provider enumeration
+│   │   ├── aws/                #     AWS Config API enumerator and resource mapping
+│   │   │   ├── client/         #       AWS SDK client setup
+│   │   │   └── repository/     #       CloudFormation and Config resource repositories
+│   │   ├── cache/              #     Enumeration result caching
+│   │   └── common/             #     Shared enumeration interfaces
+│   └── terraform/              #   Terraform provider management, state reading, schemas
+│
+└── pkg/                        # Core application logic
+    ├── cmd/                    #   CLI commands (root, scan, completion, version)
+    │   └── scan/               #     Scan command and output formatters (console, JSON, HTML)
+    │       └── output/         #       Console, JSON, and HTML report renderers
+    ├── analyser/               #   Drift analysis and Terraform plan comparison
+    ├── categorizer/            #   Resource categorization (CloudFormation, defaults, service-linked)
+    ├── filter/                 #   Resource filtering and .driftignore parsing
+    ├── middlewares/             #   80+ AWS resource normalizers and reconcilers
+    ├── resource/               #   Resource type constants, factories, and schemas
+    │   └── aws/                #     AWS resource type definitions
+    ├── iac/                    #   Infrastructure-as-Code state supplier and Terraform handling
+    │   └── terraform/          #     Terraform-specific IaC integration
+    ├── terraform/              #   Terraform plan execution and HCL parsing
+    ├── config/                 #   Configuration file parsing
+    ├── memstore/               #   In-memory resource store (buckets)
+    ├── helpers/                #   Utility functions (hashing, JSON normalization)
+    ├── http/                   #   HTTP client configuration
+    ├── output/                 #   Progress reporting and output printer
+    └── version/                #   Version constant
+```
+
+**Key flow:** `pkg/cmd/scan/` orchestrates the scan → `enumeration/` discovers resources from AWS Config and Terraform state → `pkg/middlewares/` normalizes resources → `pkg/analyser/` compares them → `pkg/categorizer/` classifies drift → `pkg/cmd/scan/output/` renders the report.
+
 ## Quick start
 
 ```shell
@@ -71,26 +94,3 @@ driftctl scan --mode plan --terraform-dir /path/to/terraform
 # Exclude false positives by category
 driftctl scan --exclude-category cloudformation_managed,default_resources,service_linked
 ```
-
-## Links
-
-**[Documentation](https://docs.driftctl.com)**
-
-**[Installation](https://docs.driftctl.com/installation)**
-
-**[Discord](https://discord.gg/7zHQ8r2PgP)**
-
-## Contribute
-
-To learn more about compiling driftctl and contributing, please refer to the [contribution guidelines](.github/CONTRIBUTING.md) and the [contributing guide](docs/README.md) for technical details.
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification and is brought to you by these [awesome contributors](CONTRIBUTORS.md).
-
-Build with ❤️️ from 🇫🇷 🇬🇧 🇯🇵 🇬🇷 🇸🇪 🇺🇸 🇷🇪 🇨🇦 🇮🇱 🇩🇪
-
-## Security notice
-
-All Terraform state and Terraform files in this repository are for unit test
-purposes only. No running code attempts to access these resources (except to
-create and destroy them, in the case of acceptance tests). They are just opaque
-strings.

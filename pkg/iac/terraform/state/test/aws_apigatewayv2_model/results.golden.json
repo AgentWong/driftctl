@@ -1,6 +1,6 @@
 [
  {
-  "Id": "vdw6up",
+  "ID": "vdw6up",
   "Type": "aws_apigatewayv2_model",
   "Attrs": {
    "api_id": "ci51xtkpsg",

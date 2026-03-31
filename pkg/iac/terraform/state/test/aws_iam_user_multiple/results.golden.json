@@ -1,6 +1,6 @@
 [
  {
-  "Id": "test-driftctl-0",
+  "ID": "test-driftctl-0",
   "Type": "aws_iam_user",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:user/test/test-driftctl-0",
@@ -14,7 +14,7 @@
   }
  },
  {
-  "Id": "test-driftctl-1",
+  "ID": "test-driftctl-1",
   "Type": "aws_iam_user",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:user/test/test-driftctl-1",
@@ -28,7 +28,7 @@
   }
  },
  {
-  "Id": "test-driftctl-2",
+  "ID": "test-driftctl-2",
   "Type": "aws_iam_user",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:user/test/test-driftctl-2",

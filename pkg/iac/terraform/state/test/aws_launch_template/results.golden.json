@@ -1,6 +1,6 @@
 [
  {
-  "Id": "lt-0ed993d09ce6afc67",
+  "ID": "lt-0ed993d09ce6afc67",
   "Type": "aws_launch_template",
   "Attrs": {
    "block_device_mappings": [

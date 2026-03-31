@@ -1,6 +1,6 @@
 [
  {
-  "Id": "b8r351",
+  "ID": "b8r351",
   "Type": "aws_apigatewayv2_vpc_link",
   "Attrs": {
    "arn": "arn:aws:apigateway:us-east-2::/vpclinks/b8r351",
