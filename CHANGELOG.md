@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-04-01
+
+### Added
+- **Terraform plan-based drift detection** — new parallel plan runner that discovers root modules and detects attribute-level drift using `terraform plan` output rather than state-file comparison.
+  - `pkg/terraform/plan/discovery.go` — recursively walks directories to find Terraform root modules (identified by a `backend` block in any `.tf` file); skips `.terraform/`, `.git/`, and other hidden directories
+  - `pkg/terraform/plan/runner.go` — split into `Init()`, `RunPlanOnly()`, and `RunPlan()` convenience wrapper; passes `-lock=false` so ReadOnly credentials are sufficient (no `s3:PutObject` required for state locking)
+  - `pkg/terraform/plan/multi_runner.go` — two-phase execution: sequential `terraform init` (prevents concurrent SSO token cache rename races on macOS) followed by parallel `terraform plan` across all successfully initialised modules
+  - `pkg/analyser/analysis.go` — added `Merge(*Analysis)` to combine results from multiple root modules into a single aggregated report
+  - `cmd/plantest/main.go` — test driver: loads `.env` for AWS credentials, discovers modules under provided directories, runs the parallel planner, merges all results into one `Analysis`, and writes timestamped HTML and JSON reports to `test-output/`
+
 ## [1.0.0] - 2026-03-31
 
 ### Removed

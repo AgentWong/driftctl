@@ -360,6 +360,23 @@ func (a *Analysis) SortResources() {
 	a.deleted = resource.Sort(a.deleted)
 }
 
+// Merge combines another Analysis into this one, accumulating all resource lists
+// and recalculating the summary. Duration and Date are taken from the receiver.
+func (a *Analysis) Merge(other *Analysis) {
+	if other == nil {
+		return
+	}
+	a.AddManaged(other.managed...)
+	a.AddUnmanaged(other.unmanaged...)
+	a.AddDeleted(other.deleted...)
+	for _, d := range other.drifted {
+		a.AddDrifted(d)
+	}
+	// merge unsupported (no public adder, so append directly)
+	a.unsupported = append(a.unsupported, other.unsupported...)
+	a.summary.TotalUnsupported += other.summary.TotalUnsupported
+}
+
 // DriftIgnoreList builds a .driftignore file from the analysis results.
 func (a *Analysis) DriftIgnoreList(opts GenDriftIgnoreOptions) (int, string) {
 	var list []string

@@ -37,6 +37,8 @@
 .ai_references
 .env
 *.tfvars
+*.tfplan
+plantest
 
 # Integration test output (HTML/JSON reports)
 /test-output/*
