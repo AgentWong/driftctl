@@ -10,13 +10,17 @@ import (
 type PlanAnalyzer struct {
 	planResults     []plan.DriftResult
 	configResources []*resource.Resource
+	sourceDir       string // Terraform root module directory, stamped onto each resource as its IaC source
 }
 
 // NewPlanAnalyzer creates a PlanAnalyzer from plan results and config resources.
-func NewPlanAnalyzer(planResults []plan.DriftResult, configResources []*resource.Resource) *PlanAnalyzer {
+// sourceDir is the Terraform root module directory; it is recorded as the IaC
+// source on every resource so reports can show which module each resource came from.
+func NewPlanAnalyzer(planResults []plan.DriftResult, configResources []*resource.Resource, sourceDir string) *PlanAnalyzer {
 	return &PlanAnalyzer{
 		planResults:     planResults,
 		configResources: configResources,
+		sourceDir:       sourceDir,
 	}
 }
 
@@ -32,16 +36,22 @@ func (a *PlanAnalyzer) Analyze() (*Analysis, error) {
 			planResourceIDs[pr.Type+"."+pr.ID] = true
 		}
 
+		res := &resource.Resource{
+			Type:   pr.Type,
+			ID:     pr.ID,
+			Source: resource.NewTerraformStateSource(a.sourceDir, "", pr.Address),
+		}
+
 		switch pr.Action {
 		case plan.ActionUpdate:
 			analysis.AddDrifted(&DriftedResource{
-				Res:              &resource.Resource{Type: pr.Type, ID: pr.ID},
+				Res:              res,
 				AttributeChanges: convertChanges(pr.AttributeChanges),
 			})
 		case plan.ActionDelete:
-			analysis.AddDeleted(&resource.Resource{Type: pr.Type, ID: pr.ID})
+			analysis.AddDeleted(res)
 		case plan.ActionCreate, plan.ActionNoOp, plan.ActionRead:
-			analysis.AddManaged(&resource.Resource{Type: pr.Type, ID: pr.ID})
+			analysis.AddManaged(res)
 		}
 	}
 

@@ -63,7 +63,9 @@
         {{end}}
     </section>
     <main>
-        {{ if not .IsSync }}
+        {{ if .IsSync }}
+        <p class="congrats">Your infrastructure is in sync.</p>
+        {{ end }}
         <form role="search">
             <label for="search" class="visuallyhidden">Search resources by id or name:</label>
             <input type="search" id="search" name="search" placeholder="Search resources by id or name...">
@@ -343,9 +345,6 @@
                 {{end}}
             </div>
         </div>
-        {{else}}
-        <h1 class="congrats">Congrats! Your infrastructure is in sync</h1>
-        {{end}}
     </main>
 </div>
 <script>

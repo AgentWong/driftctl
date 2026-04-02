@@ -202,7 +202,7 @@ func (d DriftCTL) runPlanMode(start time.Time) (*analyser.Analysis, error) {
 		return nil, err
 	}
 
-	pa := analyser.NewPlanAnalyzer(driftResults, remoteResources)
+	pa := analyser.NewPlanAnalyzer(driftResults, remoteResources, d.opts.TerraformDir)
 	analysis, err := pa.Analyze()
 	if err != nil {
 		return nil, err
