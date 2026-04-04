@@ -19,7 +19,7 @@ If the build fails, read the compiler errors, fix the source files, and rebuild.
 
 ```bash
 ./bin/driftctl scan \
-  --from tfstate+s3://terraform-state-07027b6d-e4ba-4f0a-abcf-1520f93ebd4d//** \
+  --from 'tfstate+s3://terraform-state-07027b6d-e4ba-4f0a-abcf-1520f93ebd4d//**' \
   --output console:// \
   --output json://test-output/report.json \
   --output html://test-output/report.html
