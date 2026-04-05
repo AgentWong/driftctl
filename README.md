@@ -5,7 +5,35 @@ Drift can have multiple causes: from team members creating or updating infrastru
 
 You can't efficiently improve what you don't track. We track coverage for unit tests, why not infrastructure as code coverage?
 
-Spot discrepancies as they happen: driftctl is a free and open-source CLI that warns of infrastructure drifts and fills in the missing piece in your DevSecOps toolbox.
+This is a fork of [snyk/driftctl](https://github.com/snyk/driftctl) with three major improvements over the original:
+
+### Shortcomings of the original tool
+
+The original `snyk/driftctl` had fundamental limitations that made it unreliable in practice:
+
+1. **Did not actually detect configuration drift.** Despite the name, the original tool compared Terraform state against live AWS resources — it never ran `terraform plan`. This means it could not detect attribute-level drift (e.g. a security group rule quietly changed outside Terraform), which is the most common and dangerous form of drift.
+
+2. **107 separate AWS API enumerators — high maintenance, high rate-limit risk.** The original tool made individual API calls for each supported resource type across 107 separate enumerators. This created a significant ongoing maintenance burden (each new AWS service or API change required a new enumerator) and real risk of hitting API rate limits in accounts with many resources. When AWS deprecated or changed an API, the tool would silently miss resources.
+
+3. **No CloudFormation awareness — most resources showed as "Unmanaged".** In accounts that use AWS CloudFormation (or CDK), nearly every CloudFormation-deployed resource appeared as "Unmanaged" because the tool had no concept of infrastructure managed outside Terraform. The resulting reports were so noisy they were effectively unusable. See [docs/examples/old-report.html](docs/examples/old-report.html) for an example of what the original tool produced.
+
+### What this fork does differently
+
+1. **True drift detection via `terraform-exec`.** Plan mode wraps `terraform plan` using the [`terraform-exec`](https://github.com/hashicorp/terraform-exec) library. There is simply no better tool for detecting Terraform drift than Terraform itself — it understands provider schemas, resource dependencies, and the full configuration model. See [docs/examples/plan-report.html](docs/examples/plan-report.html) for an example plan-mode report.
+
+2. **Single AWS Config API call replaces 107 enumerators.** All resource discovery now goes through the [AWS Config Advanced Query API](https://docs.aws.amazon.com/config/latest/developerguide/querying-AWS-resources.html), covering 132 resource type mappings in a single SQL-style query. This dramatically reduces maintenance burden and eliminates rate-limiting risk. See [docs/examples/report.html](docs/examples/report.html) for an example inventory-mode report.
+
+3. **CloudFormation-aware categorization.** Resources managed by CloudFormation stacks are detected via the CloudFormation API (`ListStacks` + `ListStackResources`) and placed in their own category rather than counting as "Unmanaged". Default AWS-created resources (default event buses, SSO reserved roles, default KMS aliases) and service-linked roles are similarly categorized. This makes the unmanaged count meaningful rather than noise-dominated.
+
+The tool runs with standard `ReadOnlyAccess` IAM permissions — no write access or state locking required.
+
+## Example reports
+
+| Report | Description |
+|--------|-------------|
+| [plan-report.html](docs/examples/plan-report.html) | Plan mode — `terraform plan`-based scan; this example shows a clean result (infrastructure in sync, no drift detected) |
+| [report.html](docs/examples/report.html) | Inventory mode — AWS Config-based resource discovery |
+| [old-report.html](docs/examples/old-report.html) | Legacy tool output — majority of resources shown as Unmanaged |
 
 ## How it works
 
