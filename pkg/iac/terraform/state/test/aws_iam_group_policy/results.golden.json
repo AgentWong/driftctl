@@ -1,6 +1,6 @@
 [
  {
-  "Id": "developers:my_developer_policy",
+  "ID": "developers:my_developer_policy",
   "Type": "aws_iam_group_policy",
   "Attrs": {
    "group": "developers",

@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsSnsTopicResourceType is the Terraform resource type for SNS topics.
 const AwsSnsTopicResourceType = "aws_sns_topic"
 
 func initSnsTopicMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
@@ -21,10 +22,10 @@ func initSnsTopicMetaData(resourceSchemaRepository dctlresource.SchemaRepository
 	})
 	resourceSchemaRepository.UpdateSchema(AwsSnsTopicResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"delivery_policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 		"policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 	resourceSchemaRepository.SetHumanReadableAttributesFunc(AwsSnsTopicResourceType, func(res *resource.Resource) map[string]string {

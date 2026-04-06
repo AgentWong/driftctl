@@ -1,6 +1,6 @@
 [
  {
-  "Id": "f02opk",
+  "ID": "f02opk",
   "Type": "aws_apigatewayv2_api_mapping",
   "Attrs": {
    "api_id": "wbachnbphj",

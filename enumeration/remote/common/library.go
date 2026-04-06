@@ -1,28 +1,42 @@
+// Package common provides shared types and helpers for remote resource enumeration.
 package common
 
 import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
-type Enumerator interface {
-	SupportedType() resource.ResourceType
-	Enumerate() ([]*resource.Resource, error)
+// EnumerationFilter is a local interface that mirrors enumeration.Filter,
+// avoiding a circular import (common -> enumeration -> ... -> common).
+// enumeration.Filter satisfies this interface via structural typing.
+type EnumerationFilter interface {
+	IsTypeIgnored(ty resource.Type) bool
+	IsResourceIgnored(res *resource.Resource) bool
 }
 
+// BulkEnumerator discovers multiple resource types in a single API call.
+type BulkEnumerator interface {
+	SupportedTypes() []resource.Type
+	Enumerate(filter EnumerationFilter) ([]*resource.Resource, error)
+}
+
+// RemoteLibrary holds the registered bulk enumerators.
 type RemoteLibrary struct {
-	enumerators []Enumerator
+	bulkEnumerators []BulkEnumerator
 }
 
+// NewRemoteLibrary creates an empty RemoteLibrary.
 func NewRemoteLibrary() *RemoteLibrary {
 	return &RemoteLibrary{
-		make([]Enumerator, 0),
+		bulkEnumerators: make([]BulkEnumerator, 0),
 	}
 }
 
-func (r *RemoteLibrary) AddEnumerator(enumerator Enumerator) {
-	r.enumerators = append(r.enumerators, enumerator)
+// AddBulkEnumerator registers a bulk enumerator.
+func (r *RemoteLibrary) AddBulkEnumerator(b BulkEnumerator) {
+	r.bulkEnumerators = append(r.bulkEnumerators, b)
 }
 
-func (r *RemoteLibrary) Enumerators() []Enumerator {
-	return r.enumerators
+// GetBulkEnumerators returns all registered bulk enumerators.
+func (r *RemoteLibrary) GetBulkEnumerators() []BulkEnumerator {
+	return r.bulkEnumerators
 }

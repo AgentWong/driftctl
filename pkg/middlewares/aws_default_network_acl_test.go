@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -21,33 +21,33 @@ func TestAwsDefaultNetworkACL_Execute(t *testing.T) {
 			"default network ACL is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
@@ -56,24 +56,24 @@ func TestAwsDefaultNetworkACL_Execute(t *testing.T) {
 			"default network acl is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl",
+					ID:   "default-acl",
 					Type: aws.AwsDefaultNetworkACLResourceType,
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLResourceType,
 				},
 			},
@@ -92,7 +92,7 @@ func TestAwsDefaultNetworkACL_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

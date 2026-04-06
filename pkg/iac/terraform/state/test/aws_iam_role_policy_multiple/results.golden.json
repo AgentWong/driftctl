@@ -1,6 +1,6 @@
 [
  {
-  "Id": "test_role_0:policy-role0-0",
+  "ID": "test_role_0:policy-role0-0",
   "Type": "aws_iam_role_policy",
   "Attrs": {
    "id": "test_role_0:policy-role0-0",
@@ -10,7 +10,7 @@
   }
  },
  {
-  "Id": "test_role_0:policy-role0-1",
+  "ID": "test_role_0:policy-role0-1",
   "Type": "aws_iam_role_policy",
   "Attrs": {
    "id": "test_role_0:policy-role0-1",
@@ -20,7 +20,7 @@
   }
  },
  {
-  "Id": "test_role_0:policy-role0-2",
+  "ID": "test_role_0:policy-role0-2",
   "Type": "aws_iam_role_policy",
   "Attrs": {
    "id": "test_role_0:policy-role0-2",
@@ -30,7 +30,7 @@
   }
  },
  {
-  "Id": "test_role_1:policy-role1-0",
+  "ID": "test_role_1:policy-role1-0",
   "Type": "aws_iam_role_policy",
   "Attrs": {
    "id": "test_role_1:policy-role1-0",
@@ -40,7 +40,7 @@
   }
  },
  {
-  "Id": "test_role_1:policy-role1-1",
+  "ID": "test_role_1:policy-role1-1",
   "Type": "aws_iam_role_policy",
   "Attrs": {
    "id": "test_role_1:policy-role1-1",
@@ -50,7 +50,7 @@
   }
  },
  {
-  "Id": "test_role_1:policy-role1-2",
+  "ID": "test_role_1:policy-role1-2",
   "Type": "aws_iam_role_policy",
   "Attrs": {
    "id": "test_role_1:policy-role1-2",

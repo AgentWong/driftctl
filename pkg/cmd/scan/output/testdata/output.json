@@ -4,6 +4,10 @@
 		"total_unmanaged": 2,
 		"total_missing": 2,
 		"total_managed": 2,
+		"total_drifted": 0,
+		"total_unsupported": 0,
+		"total_cloudformation_managed": 0,
+		"total_default_resources": 0,
 		"total_iac_source_count": 3
 	},
 	"managed": [
@@ -41,6 +45,7 @@
 			"type": "aws_deleted_resource"
 		}
 	],
+	"drifted": null,
 	"coverage": 33,
 	"alerts": null,
 	"provider_name": "AWS",

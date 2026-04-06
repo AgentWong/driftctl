@@ -1,6 +1,6 @@
 [
  {
-  "Id": "bar",
+  "ID": "bar",
   "Type": "aws_ecr_repository_policy",
   "Attrs": {
    "id": "bar",

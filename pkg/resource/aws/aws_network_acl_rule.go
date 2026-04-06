@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/snyk/driftctl/enumeration/resource"
+	"github.com/snyk/driftctl/pkg/helpers"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsNetworkACLRuleResourceType is the Terraform resource type for network ACL rules.
 const AwsNetworkACLRuleResourceType = "aws_network_acl_rule"
 
 var protocolsNumbers = map[string]int{
@@ -193,19 +194,18 @@ func initAwsNetworkACLRuleMetaData(resourceSchemaRepository dctlresource.SchemaR
 		// While reading remote we always got protocol as a number.
 		// We cannot predict how the user decided to write the protocol on IaC side.
 		// This workaround is mandatory to harmonize resources ID
-		res.Id = CreateNetworkACLRuleID(
+		res.ID = CreateNetworkACLRuleID(
 			*res.Attrs.GetString("network_acl_id"),
 			(*res.Attrs)["rule_number"].(int64),
 			*res.Attrs.GetBool("egress"),
 			*res.Attrs.GetString("protocol"),
 		)
-		_ = res.Attrs.SafeSet([]string{"id"}, res.Id)
+		_ = res.Attrs.SafeSet([]string{"id"}, res.ID)
 
 		res.Attrs.DeleteIfDefault("cidr_block")
 		res.Attrs.DeleteIfDefault("ipv6_cidr_block")
 	})
 	resourceSchemaRepository.SetHumanReadableAttributesFunc(AwsNetworkACLRuleResourceType, func(res *resource.Resource) map[string]string {
-
 		ruleNumber := strconv.FormatInt((*res.Attrs)["rule_number"].(int64), 10)
 		if ruleNumber == "32767" {
 			ruleNumber = "*"
@@ -243,11 +243,12 @@ func initAwsNetworkACLRuleMetaData(resourceSchemaRepository dctlresource.SchemaR
 	})
 }
 
-func CreateNetworkACLRuleID(networkAclId string, ruleNumber int64, egress bool, protocol string) string {
+// CreateNetworkACLRuleID computes the synthetic network ACL rule ID.
+func CreateNetworkACLRuleID(networkACLID string, ruleNumber int64, egress bool, protocol string) string {
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%s-", networkAclId))
-	buf.WriteString(fmt.Sprintf("%d-", ruleNumber))
-	buf.WriteString(fmt.Sprintf("%t-", egress))
-	buf.WriteString(fmt.Sprintf("%s-", protocol))
-	return fmt.Sprintf("nacl-%d", hashcode.String(buf.String()))
+	fmt.Fprintf(&buf, "%s-", networkACLID)
+	fmt.Fprintf(&buf, "%d-", ruleNumber)
+	fmt.Fprintf(&buf, "%t-", egress)
+	fmt.Fprintf(&buf, "%s-", protocol)
+	return fmt.Sprintf("nacl-%d", helpers.HashcodeString(buf.String()))
 }

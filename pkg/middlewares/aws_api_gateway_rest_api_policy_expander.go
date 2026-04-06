@@ -6,29 +6,31 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Explodes policy found in aws_api_gateway_rest_api.policy from state resources to dedicated resources
-type AwsApiGatewayRestApiPolicyExpander struct {
-	resourceFactory resource.ResourceFactory
+// AwsAPIGatewayRestAPIPolicyExpander explodes policy found in aws_api_gateway_rest_api.policy from state resources to dedicated resources
+type AwsAPIGatewayRestAPIPolicyExpander struct {
+	resourceFactory resource.Factory
 }
 
-func NewAwsApiGatewayRestApiPolicyExpander(resourceFactory resource.ResourceFactory) AwsApiGatewayRestApiPolicyExpander {
-	return AwsApiGatewayRestApiPolicyExpander{
+// NewAwsAPIGatewayRestAPIPolicyExpander creates a AwsAPIGatewayRestAPIPolicyExpander.
+func NewAwsAPIGatewayRestAPIPolicyExpander(resourceFactory resource.Factory) AwsAPIGatewayRestAPIPolicyExpander {
+	return AwsAPIGatewayRestAPIPolicyExpander{
 		resourceFactory: resourceFactory,
 	}
 }
 
-func (m AwsApiGatewayRestApiPolicyExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsAPIGatewayRestAPIPolicyExpander middleware.
+func (m AwsAPIGatewayRestAPIPolicyExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
 	newList := make([]*resource.Resource, 0)
 	for _, res := range *resourcesFromState {
 		// Ignore all resources other than api_gateway_rest_api
-		if res.ResourceType() != aws.AwsApiGatewayRestApiResourceType {
+		if res.ResourceType() != aws.AwsAPIGatewayRestAPIResourceType {
 			newList = append(newList, res)
 			continue
 		}
 
 		newList = append(newList, res)
 
-		if hasRestApiPolicyAttached(res.ResourceId(), resourcesFromState) {
+		if hasRestAPIPolicyAttached(res.ResourceID(), resourcesFromState) {
 			res.Attrs.SafeDelete([]string{"policy"})
 			continue
 		}
@@ -42,23 +44,23 @@ func (m AwsApiGatewayRestApiPolicyExpander) Execute(_, resourcesFromState *[]*re
 	return nil
 }
 
-func (m *AwsApiGatewayRestApiPolicyExpander) handlePolicy(api *resource.Resource, results *[]*resource.Resource) error {
+func (m *AwsAPIGatewayRestAPIPolicyExpander) handlePolicy(api *resource.Resource, results *[]*resource.Resource) error {
 	policy, exist := api.Attrs.Get("policy")
 	if !exist || policy == nil || policy == "" {
 		return nil
 	}
 
 	data := map[string]interface{}{
-		"id":          api.ResourceId(),
-		"rest_api_id": api.ResourceId(),
+		"id":          api.ResourceID(),
+		"rest_api_id": api.ResourceID(),
 		"policy":      policy,
 	}
 
-	newPolicy := m.resourceFactory.CreateAbstractResource(aws.AwsApiGatewayRestApiPolicyResourceType, api.ResourceId(), data)
+	newPolicy := m.resourceFactory.CreateAbstractResource(aws.AwsAPIGatewayRestAPIPolicyResourceType, api.ResourceID(), data)
 
 	*results = append(*results, newPolicy)
 	logrus.WithFields(logrus.Fields{
-		"id": newPolicy.ResourceId(),
+		"id": newPolicy.ResourceID(),
 	}).Debug("Created new policy from api gateway rest api")
 
 	api.Attrs.SafeDelete([]string{"policy"})
@@ -68,11 +70,11 @@ func (m *AwsApiGatewayRestApiPolicyExpander) handlePolicy(api *resource.Resource
 // Return true if the rest api has a aws_api_gateway_rest_api_policy resource attached to itself.
 // It is mandatory since it's possible to have a aws_api_gateway_rest_api with an inline policy
 // AND a aws_api_gateway_rest_api_policy resource at the same time. At the end, on the AWS console,
-// the aws_api_gateway_rest_api_policy will be used.
-func hasRestApiPolicyAttached(api string, resourcesFromState *[]*resource.Resource) bool {
+// hasRestAPIPolicyAttached the aws_api_gateway_rest_api_policy will be used.
+func hasRestAPIPolicyAttached(api string, resourcesFromState *[]*resource.Resource) bool {
 	for _, res := range *resourcesFromState {
-		if res.ResourceType() == aws.AwsApiGatewayRestApiPolicyResourceType &&
-			res.ResourceId() == api {
+		if res.ResourceType() == aws.AwsAPIGatewayRestAPIPolicyResourceType &&
+			res.ResourceID() == api {
 			return true
 		}
 	}

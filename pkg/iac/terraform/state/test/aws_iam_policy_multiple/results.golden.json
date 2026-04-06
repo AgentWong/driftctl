@@ -1,6 +1,6 @@
 [
  {
-  "Id": "arn:aws:iam::929327065333:policy/policy-0",
+  "ID": "arn:aws:iam::929327065333:policy/policy-0",
   "Type": "aws_iam_policy",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:policy/policy-0",
@@ -12,7 +12,7 @@
   }
  },
  {
-  "Id": "arn:aws:iam::929327065333:policy/policy-1",
+  "ID": "arn:aws:iam::929327065333:policy/policy-1",
   "Type": "aws_iam_policy",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:policy/policy-1",
@@ -24,7 +24,7 @@
   }
  },
  {
-  "Id": "arn:aws:iam::929327065333:policy/policy-2",
+  "ID": "arn:aws:iam::929327065333:policy/policy-2",
   "Type": "aws_iam_policy",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:policy/policy-2",

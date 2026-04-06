@@ -1,6 +1,6 @@
 [
  {
-  "Id": "elie-dev-driftctl",
+  "ID": "elie-dev-driftctl",
   "Type": "aws_s3_bucket_public_access_block",
   "Attrs": {
    "block_public_acls": true,

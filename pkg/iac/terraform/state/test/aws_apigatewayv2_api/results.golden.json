@@ -1,6 +1,6 @@
 [
  {
-  "Id": "f5vdrg12tk",
+  "ID": "f5vdrg12tk",
   "Type": "aws_apigatewayv2_api",
   "Attrs": {
    "api_endpoint": "wss://f5vdrg12tk.execute-api.us-east-2.amazonaws.com",

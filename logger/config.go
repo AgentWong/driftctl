@@ -1,3 +1,4 @@
+// Package logger configures and provides structured application logging.
 package logger
 
 import (
@@ -7,7 +8,6 @@ import (
 )
 
 func getConfig() Config {
-
 	config := Config{
 		Level:        logrus.WarnLevel,
 		ReportCaller: false,

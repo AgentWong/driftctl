@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
@@ -35,7 +35,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"jean"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "jean-arn",
+					ID:   "jean-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -47,7 +47,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"paul"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "paul-arn",
+					ID:   "paul-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -59,7 +59,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"pierre"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "pierre-arn",
+					ID:   "pierre-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -71,7 +71,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"jean"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "jean-thisisarn",
+					ID:   "jean-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -83,7 +83,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"paul"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "paul-thisisarn",
+					ID:   "paul-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -95,7 +95,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"jacques"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "jacques-thisisarn",
+					ID:   "jacques-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -107,7 +107,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"users":      []interface{}{"jean"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "jean-fromstatearn",
+					ID:   "jean-fromstatearn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 			},
@@ -117,7 +117,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "wrongId",
+						ID:   "wrongId",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "arn",
@@ -125,7 +125,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:   "wrongId2",
+						ID:   "wrongId2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "thisisarn",
@@ -135,7 +135,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "wrongId",
+						ID:   "wrongId",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "fromstatearn",
@@ -150,33 +150,33 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "jean-arn",
+						ID:   "jean-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "paul-arn",
+						ID:   "paul-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "pierre-arn",
+						ID:   "pierre-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "jean-thisisarn",
+						ID:   "jean-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "paul-thisisarn",
+						ID:   "paul-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "jacques-thisisarn",
+						ID:   "jacques-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "jean-fromstatearn",
+						ID:   "jean-fromstatearn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 				},
@@ -195,7 +195,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"role1"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "role1-arn",
+					ID:   "role1-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -207,7 +207,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"role2"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "role2-arn",
+					ID:   "role2-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -219,7 +219,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"pierre"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "pierre-arn",
+					ID:   "pierre-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -231,7 +231,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"role1"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "role1-thisisarn",
+					ID:   "role1-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -243,7 +243,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"role2"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "role2-thisisarn",
+					ID:   "role2-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -255,7 +255,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"role3"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "role3-thisisarn",
+					ID:   "role3-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -267,7 +267,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"roles":      []interface{}{"role1"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "role1-fromstatearn",
+					ID:   "role1-fromstatearn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 			},
@@ -277,7 +277,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "wrongId",
+						ID:   "wrongId",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "arn",
@@ -285,7 +285,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:   "wrongId2",
+						ID:   "wrongId2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "thisisarn",
@@ -295,7 +295,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "wrongId",
+						ID:   "wrongId",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "fromstatearn",
@@ -310,33 +310,33 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "role1-arn",
+						ID:   "role1-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "role2-arn",
+						ID:   "role2-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "pierre-arn",
+						ID:   "pierre-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "role1-thisisarn",
+						ID:   "role1-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "role2-thisisarn",
+						ID:   "role2-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "role3-thisisarn",
+						ID:   "role3-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "role1-fromstatearn",
+						ID:   "role1-fromstatearn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 				},
@@ -355,7 +355,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"group1"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "group1-arn",
+					ID:   "group1-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -367,7 +367,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"group2"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "group2-arn",
+					ID:   "group2-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -379,7 +379,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"foobar"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "foobar-arn",
+					ID:   "foobar-arn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -391,7 +391,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"group1"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "group1-thisisarn",
+					ID:   "group1-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -403,7 +403,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"group2"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "group2-thisisarn",
+					ID:   "group2-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -415,7 +415,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"group3"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "group3-thisisarn",
+					ID:   "group3-thisisarn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 				factory.On(
@@ -427,7 +427,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						"groups":     []interface{}{"group1"},
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "group1-fromstatearn",
+					ID:   "group1-fromstatearn",
 					Type: aws.AwsIamPolicyAttachmentResourceType,
 				})
 			},
@@ -437,7 +437,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "wrongId",
+						ID:   "wrongId",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "arn",
@@ -445,7 +445,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 						},
 					},
 					{
-						Id:   "wrongId2",
+						ID:   "wrongId2",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "thisisarn",
@@ -455,7 +455,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "wrongId",
+						ID:   "wrongId",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 						Attrs: &resource.Attributes{
 							"policy_arn": "fromstatearn",
@@ -470,33 +470,33 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}{
 				RemoteResources: &[]*resource.Resource{
 					{
-						Id:   "group1-arn",
+						ID:   "group1-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "group2-arn",
+						ID:   "group2-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "foobar-arn",
+						ID:   "foobar-arn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "group1-thisisarn",
+						ID:   "group1-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "group2-thisisarn",
+						ID:   "group2-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 					{
-						Id:   "group3-thisisarn",
+						ID:   "group3-thisisarn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 				},
 				ResourcesFromState: &[]*resource.Resource{
 					{
-						Id:   "group1-fromstatearn",
+						ID:   "group1-fromstatearn",
 						Type: aws.AwsIamPolicyAttachmentResourceType,
 					},
 				},
@@ -506,7 +506,6 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			factory := &dctlresource.MockResourceFactory{}
 			if tt.mocks != nil {
 				tt.mocks(factory)
@@ -522,7 +521,7 @@ func TestIamPolicyAttachmentExpander_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

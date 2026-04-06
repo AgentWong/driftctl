@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"os"
 	"path"
+	"sort"
 	"strings"
 	"testing"
 
 	"github.com/snyk/driftctl/enumeration/remote/aws"
-	"github.com/snyk/driftctl/enumeration/remote/azurerm"
-	"github.com/snyk/driftctl/enumeration/remote/github"
-	"github.com/snyk/driftctl/enumeration/remote/google"
 	"github.com/snyk/driftctl/enumeration/terraform"
 
 	"github.com/pkg/errors"
@@ -18,12 +16,8 @@ import (
 	"github.com/snyk/driftctl/pkg/output"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 	resourceaws "github.com/snyk/driftctl/pkg/resource/aws"
-	resourceazure "github.com/snyk/driftctl/pkg/resource/azurerm"
-	resourcegithub "github.com/snyk/driftctl/pkg/resource/github"
-	resourcegoogle "github.com/snyk/driftctl/pkg/resource/google"
 	testresource "github.com/snyk/driftctl/test/resource"
 
-	terraform2 "github.com/snyk/driftctl/test/terraform"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/snyk/driftctl/enumeration/resource"
@@ -220,14 +214,14 @@ func TestTerraformStateReader_AWS_Resources(t *testing.T) {
 
 			shouldUpdate := tt.dirName == *goldenfile.Update
 
-			var realProvider *aws.AWSTerraformProvider
+			var realProvider *aws.TerraformProvider
 			if tt.providerVersion == "" {
 				tt.providerVersion = "3.19.0"
 			}
 
 			if shouldUpdate {
 				var err error
-				realProvider, err = aws.NewAWSTerraformProvider(tt.providerVersion, progress, os.TempDir())
+				realProvider, err = aws.NewTerraformProvider(tt.providerVersion, progress, os.TempDir())
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -276,293 +270,9 @@ func TestTerraformStateReader_AWS_Resources(t *testing.T) {
 				return
 			}
 			gotc := convert(got)
+			sortResources(gotc)
+			sortResources(want)
 			changelog, err := diff.Diff(gotc, want)
-			if err != nil {
-				panic(err)
-			}
-			if len(changelog) > 0 {
-				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), change.From, change.To)
-				}
-			}
-		})
-	}
-}
-
-func TestTerraformStateReader_Github_Resources(t *testing.T) {
-	tests := []struct {
-		name    string
-		dirName string
-		wantErr bool
-	}{
-		{name: "github repository", dirName: "github_repository", wantErr: false},
-		{name: "github team", dirName: "github_team", wantErr: false},
-		{name: "github membership", dirName: "github_membership", wantErr: false},
-		{name: "github team membership", dirName: "github_team_membership", wantErr: false},
-		{name: "github branch protection", dirName: "github_branch_protection", wantErr: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			progress := &output.MockProgress{}
-			progress.On("Inc").Return().Times(1)
-			progress.On("Stop").Return().Times(1)
-
-			shouldUpdate := tt.dirName == *goldenfile.Update
-
-			var realProvider *github.GithubTerraformProvider
-
-			if shouldUpdate {
-				var err error
-				realProvider, err = github.NewGithubTerraformProvider("", progress, os.TempDir())
-				if err != nil {
-					t.Fatal(err)
-				}
-				err = realProvider.Init()
-				if err != nil {
-					t.Fatal(err)
-				}
-			}
-
-			version := "4.4.0"
-
-			provider := mocks.NewMockedGoldenTFProvider(tt.dirName, terraform.GITHUB, version, realProvider, shouldUpdate)
-			library := terraform.NewProviderLibrary()
-			library.AddProvider(terraform.GITHUB, provider)
-
-			repo := testresource.InitFakeSchemaRepository(terraform.GITHUB, version)
-			resourcegithub.InitResourcesMetadata(repo)
-			factory := dctlresource.NewDriftctlResourceFactory(repo)
-
-			r := &TerraformStateReader{
-				config: config.SupplierConfig{
-					Path: path.Join(goldenfile.GoldenFilePath, tt.dirName, "terraform.tfstate"),
-				},
-				library:      library,
-				progress:     progress,
-				deserializer: resource.NewDeserializer(factory),
-			}
-
-			got, err := r.Resources()
-			resGoldenName := goldenfile.ResultsFilename
-			if shouldUpdate {
-				unm, err := json.Marshal(got)
-				if err != nil {
-					panic(err)
-				}
-				goldenfile.WriteFile(tt.dirName, unm, resGoldenName)
-			}
-
-			file := goldenfile.ReadFile(tt.dirName, resGoldenName)
-			var want []interface{}
-			if err := json.Unmarshal(file, &want); err != nil {
-				panic(err)
-			}
-
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Resources() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			changelog, err := diff.Diff(convert(got), want)
-			if err != nil {
-				panic(err)
-			}
-			if len(changelog) > 0 {
-				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), change.From, change.To)
-				}
-			}
-		})
-	}
-}
-
-func TestTerraformStateReader_Google_Resources(t *testing.T) {
-	tests := []struct {
-		name    string
-		dirName string
-		wantErr bool
-	}{
-		{name: "compute firewall", dirName: "google_compute_firewall", wantErr: false},
-		{name: "compute router", dirName: "google_compute_router", wantErr: false},
-		{name: "compute instance", dirName: "google_compute_instance", wantErr: false},
-		{name: "Bucket IAM Bindings", dirName: "google_bucket_iam_binding", wantErr: false},
-		{name: "Bucket IAM members", dirName: "google_bucket_iam_member", wantErr: false},
-		{name: "Bucket IAM Policy", dirName: "google_bucket_iam_policy", wantErr: false},
-		{name: "DNS managed zone", dirName: "google_dns_managed_zone", wantErr: false},
-		{name: "bigquery dataset", dirName: "google_bigquery_dataset", wantErr: false},
-		{name: "bigquery table", dirName: "google_bigquery_table", wantErr: false},
-		{name: "compute address", dirName: "google_compute_address", wantErr: false},
-		{name: "compute global address", dirName: "google_compute_global_address", wantErr: false},
-		{name: "cloudfunctions function", dirName: "google_cloudfunctions_function", wantErr: false},
-		{name: "compute subnetwork", dirName: "google_compute_subnetwork", wantErr: false},
-		{name: "compute disk", dirName: "google_compute_disk", wantErr: false},
-		{name: "compute image", dirName: "google_compute_image", wantErr: false},
-		{name: "bigtable instance", dirName: "google_bigtable_instance", wantErr: false},
-		{name: "bigtable table", dirName: "google_bigtable_table", wantErr: false},
-		{name: "sql database instance", dirName: "google_sql_database_instance", wantErr: false},
-		{name: "health check", dirName: "google_compute_health_check", wantErr: false},
-		{name: "cloudrun service", dirName: "google_cloudrun_service", wantErr: false},
-		{name: "compute node group", dirName: "google_compute_node_group", wantErr: false},
-		{name: "compute forwarding rule", dirName: "google_compute_forwarding_rule", wantErr: false},
-		{name: "compute instance group manager", dirName: "google_compute_instance_group_manager", wantErr: false},
-		{name: "compute global forwarding rule", dirName: "google_compute_global_forwarding_rule", wantErr: false},
-		{name: "compute ssl certificate", dirName: "google_compute_ssl_certificate", wantErr: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			progress := &output.MockProgress{}
-			progress.On("Inc").Return().Times(1)
-			progress.On("Stop").Return().Times(1)
-
-			shouldUpdate := tt.dirName == *goldenfile.Update
-
-			var realProvider *google.GCPTerraformProvider
-			providerVersion := "3.78.0"
-			var err error
-			realProvider, err = google.NewGCPTerraformProvider(providerVersion, progress, os.TempDir())
-			if err != nil {
-				t.Fatal(err)
-			}
-			provider := terraform2.NewFakeTerraformProvider(realProvider)
-
-			if shouldUpdate {
-				err = realProvider.Init()
-				if err != nil {
-					t.Fatal(err)
-				}
-				provider.ShouldUpdate()
-			}
-
-			library := terraform.NewProviderLibrary()
-			library.AddProvider(terraform.GOOGLE, provider)
-
-			repo := testresource.InitFakeSchemaRepository(terraform.GOOGLE, providerVersion)
-			resourcegoogle.InitResourcesMetadata(repo)
-			factory := dctlresource.NewDriftctlResourceFactory(repo)
-
-			r := &TerraformStateReader{
-				config: config.SupplierConfig{
-					Path: path.Join(goldenfile.GoldenFilePath, tt.dirName, "terraform.tfstate"),
-				},
-				library:      library,
-				progress:     progress,
-				deserializer: resource.NewDeserializer(factory),
-			}
-
-			got, err := r.Resources()
-			resGoldenName := goldenfile.ResultsFilename
-			if shouldUpdate {
-				unm, err := json.Marshal(got)
-				if err != nil {
-					panic(err)
-				}
-				goldenfile.WriteFile(tt.dirName, unm, resGoldenName)
-			}
-
-			file := goldenfile.ReadFile(tt.dirName, resGoldenName)
-			var want []interface{}
-			if err := json.Unmarshal(file, &want); err != nil {
-				panic(err)
-			}
-
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Resources() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			changelog, err := diff.Diff(convert(got), want)
-			if err != nil {
-				panic(err)
-			}
-			if len(changelog) > 0 {
-				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), change.From, change.To)
-				}
-			}
-		})
-	}
-}
-
-func TestTerraformStateReader_Azure_Resources(t *testing.T) {
-	tests := []struct {
-		name    string
-		dirName string
-		wantErr bool
-	}{
-		{name: "network security group", dirName: "azurerm_network_security_group", wantErr: false},
-		{name: "load balancers", dirName: "azurerm_lb", wantErr: false},
-		{name: "private dns zone", dirName: "azurerm_private_dns_zone", wantErr: false},
-		{name: "private dns a record", dirName: "azurerm_private_dns_a_record", wantErr: false},
-		{name: "private dns aaaa record", dirName: "azurerm_private_dns_aaaa_record", wantErr: false},
-		{name: "private dns cname record", dirName: "azurerm_private_dns_cname_record", wantErr: false},
-		{name: "private dns ptr record", dirName: "azurerm_private_dns_ptr_record", wantErr: false},
-		{name: "private dns mx record", dirName: "azurerm_private_dns_mx_record", wantErr: false},
-		{name: "private dns srv record", dirName: "azurerm_private_dns_srv_record", wantErr: false},
-		{name: "private dns txt record", dirName: "azurerm_private_dns_txt_record", wantErr: false},
-		{name: "images", dirName: "azurerm_image", wantErr: false},
-		{name: "ssh public key", dirName: "azurerm_ssh_public_key", wantErr: false},
-		{name: "load balancer rule", dirName: "azurerm_lb_rule", wantErr: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			progress := &output.MockProgress{}
-			progress.On("Inc").Return().Times(1)
-			progress.On("Stop").Return().Times(1)
-
-			shouldUpdate := tt.dirName == *goldenfile.Update
-
-			var realProvider *azurerm.AzureTerraformProvider
-			providerVersion := "2.71.0"
-			var err error
-			realProvider, err = azurerm.NewAzureTerraformProvider(providerVersion, progress, os.TempDir())
-			if err != nil {
-				t.Fatal(err)
-			}
-			provider := terraform2.NewFakeTerraformProvider(realProvider)
-
-			if shouldUpdate {
-				err = realProvider.Init()
-				if err != nil {
-					t.Fatal(err)
-				}
-				provider.ShouldUpdate()
-			}
-
-			library := terraform.NewProviderLibrary()
-			library.AddProvider(terraform.AZURE, provider)
-
-			repo := testresource.InitFakeSchemaRepository(terraform.AZURE, providerVersion)
-			resourceazure.InitResourcesMetadata(repo)
-			factory := dctlresource.NewDriftctlResourceFactory(repo)
-
-			r := &TerraformStateReader{
-				config: config.SupplierConfig{
-					Path: path.Join(goldenfile.GoldenFilePath, tt.dirName, "terraform.tfstate"),
-				},
-				library:      library,
-				progress:     progress,
-				deserializer: resource.NewDeserializer(factory),
-			}
-
-			got, err := r.Resources()
-			resGoldenName := goldenfile.ResultsFilename
-			if shouldUpdate {
-				unm, err := json.Marshal(got)
-				if err != nil {
-					panic(err)
-				}
-				goldenfile.WriteFile(tt.dirName, unm, resGoldenName)
-			}
-
-			file := goldenfile.ReadFile(tt.dirName, resGoldenName)
-			var want []interface{}
-			if err := json.Unmarshal(file, &want); err != nil {
-				panic(err)
-			}
-
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Resources() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			changelog, err := diff.Diff(convert(got), want)
 			if err != nil {
 				panic(err)
 			}
@@ -587,6 +297,23 @@ func convert(got []*resource.Resource) []interface{} {
 	return want
 }
 
+// resourceKey extracts a sort key (Type+ID) from a JSON-unmarshalled resource map.
+func resourceKey(v interface{}) string {
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return ""
+	}
+	typ, _ := m["Type"].(string)
+	id, _ := m["ID"].(string)
+	return typ + "\x00" + id
+}
+
+func sortResources(s []interface{}) {
+	sort.SliceStable(s, func(i, j int) bool {
+		return resourceKey(s[i]) < resourceKey(s[j])
+	})
+}
+
 func TestTerraformStateReader_VersionSupported(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -606,7 +333,7 @@ func TestTerraformStateReader_VersionSupported(t *testing.T) {
 		{
 			name:      "should return invalid version error",
 			statePath: "testdata/v4/invalid_version.tfstate",
-			err:       errors.New("Invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."),
+			err:       errors.New("Invalid Terraform version string: State file claims to have been written by Terraform version \"invalid\", which is not a valid version string."), //nolint:revive // mirrors external Terraform error
 		},
 	}
 
@@ -635,7 +362,7 @@ func TestTerraformStateReader_WithIgnoredResource(t *testing.T) {
 	library.AddProvider(terraform.AWS, provider)
 
 	filter := &filter.MockFilter{}
-	filter.On("IsTypeIgnored", resource.ResourceType("aws_s3_bucket")).Return(true)
+	filter.On("IsTypeIgnored", resource.Type("aws_s3_bucket")).Return(true)
 
 	r := &TerraformStateReader{
 		config: config.SupplierConfig{

@@ -10,6 +10,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
+// Glob returns file paths matching the given pattern, supporting ** for recursive matching.
 func Glob(pattern string) ([]string, error) {
 	if !strings.Contains(pattern, "**") {
 		return filepath.Glob(pattern)

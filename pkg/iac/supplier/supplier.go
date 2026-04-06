@@ -23,6 +23,7 @@ var supportedSuppliers = []string{
 	state.TerraformStateReaderSupplier,
 }
 
+// IsSupplierSupported checks whether the given supplier key is supported.
 func IsSupplierSupported(supplierKey string) bool {
 	for _, s := range supportedSuppliers {
 		if s == supplierKey {
@@ -32,14 +33,14 @@ func IsSupplierSupported(supplierKey string) bool {
 	return false
 }
 
+// GetIACSupplier creates an IaC supplier chain from the given configs.
 func GetIACSupplier(configs []config.SupplierConfig,
 	library *terraform.ProviderLibrary,
 	backendOpts *backend.Options,
 	progress output.Progress,
 	alerter *alerter.Alerter,
-	factory resource.ResourceFactory,
+	factory resource.Factory,
 	filter filter.Filter) (resource2.IaCSupplier, error) {
-
 	chainSupplier := NewIacChainSupplier()
 	for _, config := range configs {
 		if !IsSupplierSupported(config.Key) {
@@ -72,10 +73,12 @@ func GetIACSupplier(configs []config.SupplierConfig,
 	return chainSupplier, nil
 }
 
+// GetSupportedSuppliers returns the list of supported supplier keys.
 func GetSupportedSuppliers() []string {
 	return supportedSuppliers
 }
 
+// GetSupportedSchemes returns all supported URI schemes for state discovery.
 func GetSupportedSchemes() []string {
 	schemes := []string{
 		"tfstate://",

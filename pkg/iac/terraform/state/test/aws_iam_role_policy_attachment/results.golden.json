@@ -1,6 +1,6 @@
 [
  {
-  "Id": "test-role2-20201118162909011200000002",
+  "ID": "test-role2-20201118162909011200000002",
   "Type": "aws_iam_role_policy_attachment",
   "Attrs": {
    "id": "test-role2-20201118162909011200000002",
@@ -9,7 +9,7 @@
   }
  },
  {
-  "Id": "test-role-20201118162849968800000001",
+  "ID": "test-role-20201118162849968800000001",
   "Type": "aws_iam_role_policy_attachment",
   "Attrs": {
    "id": "test-role-20201118162849968800000001",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "test-role-20201118162849994600000002",
+  "ID": "test-role-20201118162849994600000002",
   "Type": "aws_iam_role_policy_attachment",
   "Attrs": {
    "id": "test-role-20201118162849994600000002",
@@ -27,7 +27,7 @@
   }
  },
  {
-  "Id": "test-role2-20201118162908999800000001",
+  "ID": "test-role2-20201118162908999800000001",
   "Type": "aws_iam_role_policy_attachment",
   "Attrs": {
    "id": "test-role2-20201118162908999800000001",

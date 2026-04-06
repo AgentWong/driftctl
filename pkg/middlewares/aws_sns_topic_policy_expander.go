@@ -8,21 +8,22 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Explodes policy found in aws_sns_topic from state resources to aws_sns_topic_policy resources
+// AwsSNSTopicPolicyExpander explodes policy found in aws_sns_topic from state resources to aws_sns_topic_policy resources
 type AwsSNSTopicPolicyExpander struct {
-	resourceFactory          resource.ResourceFactory
+	resourceFactory          resource.Factory
 	resourceSchemaRepository dctlresource.SchemaRepositoryInterface
 }
 
-func NewAwsSNSTopicPolicyExpander(resourceFactory resource.ResourceFactory, resourceSchemaRepository dctlresource.SchemaRepositoryInterface) AwsSNSTopicPolicyExpander {
+// NewAwsSNSTopicPolicyExpander creates a AwsSNSTopicPolicyExpander.
+func NewAwsSNSTopicPolicyExpander(resourceFactory resource.Factory, resourceSchemaRepository dctlresource.SchemaRepositoryInterface) AwsSNSTopicPolicyExpander {
 	return AwsSNSTopicPolicyExpander{
 		resourceFactory,
 		resourceSchemaRepository,
 	}
 }
 
+// Execute applies the AwsSNSTopicPolicyExpander middleware.
 func (m AwsSNSTopicPolicyExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	for _, res := range *remoteResources {
 		if res.ResourceType() != aws.AwsSnsTopicResourceType {
 			continue
@@ -62,20 +63,20 @@ func (m *AwsSNSTopicPolicyExpander) splitPolicy(topic *resource.Resource, result
 
 	arn, exist := topic.Attrs.Get("arn")
 	if !exist || arn == "" {
-		return errors.Errorf("No arn found for resource %s (%s)", topic.Id, topic.Type)
+		return errors.Errorf("No arn found for resource %s (%s)", topic.ID, topic.Type)
 	}
 
 	data := map[string]interface{}{
 		"arn":    arn,
-		"id":     topic.Id,
+		"id":     topic.ID,
 		"policy": policy,
 	}
 
-	newPolicy := m.resourceFactory.CreateAbstractResource("aws_sns_topic_policy", topic.Id, data)
+	newPolicy := m.resourceFactory.CreateAbstractResource("aws_sns_topic_policy", topic.ID, data)
 
 	*results = append(*results, newPolicy)
 	logrus.WithFields(logrus.Fields{
-		"id": newPolicy.ResourceId(),
+		"id": newPolicy.ResourceID(),
 	}).Debug("Created new policy from sns_topic")
 
 	topic.Attrs.SafeDelete([]string{"policy"})
@@ -85,7 +86,7 @@ func (m *AwsSNSTopicPolicyExpander) splitPolicy(topic *resource.Resource, result
 func (m *AwsSNSTopicPolicyExpander) hasPolicyAttached(topic *resource.Resource, resourcesFromState *[]*resource.Resource) bool {
 	for _, res := range *resourcesFromState {
 		if res.ResourceType() == aws.AwsSnsTopicPolicyResourceType &&
-			res.ResourceId() == topic.Id {
+			res.ResourceID() == topic.ID {
 			return true
 		}
 	}

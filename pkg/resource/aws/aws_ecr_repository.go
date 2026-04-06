@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsEcrRepositoryResourceType is the Terraform resource type for AWS ECR repositories.
 const AwsEcrRepositoryResourceType = "aws_ecr_repository"
 
 func initAwsEcrRepositoryMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

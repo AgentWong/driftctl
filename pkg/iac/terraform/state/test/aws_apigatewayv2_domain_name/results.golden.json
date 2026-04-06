@@ -1,6 +1,6 @@
 [
  {
-  "Id": "driftctl.example.com",
+  "ID": "driftctl.example.com",
   "Type": "aws_apigatewayv2_domain_name",
   "Attrs": {
    "api_mapping_selection_expression": "$request.basepath",

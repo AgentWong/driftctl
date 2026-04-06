@@ -17,10 +17,12 @@ func (f *terraformPluginFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	return f.Formatter.Format(entry)
 }
 
+// TerraformPluginLogger adapts logrus to the hclog.Logger interface used by Terraform plugins.
 type TerraformPluginLogger struct {
 	logger *logrus.Logger
 }
 
+// NewTerraformPluginLogger creates a TerraformPluginLogger using the current application log config.
 func NewTerraformPluginLogger() TerraformPluginLogger {
 	config := getConfig()
 	logger := logrus.New()
@@ -36,18 +38,22 @@ func NewTerraformPluginLogger() TerraformPluginLogger {
 	return TerraformPluginLogger{logger}
 }
 
+// Trace logs a message at TRACE level.
 func (t TerraformPluginLogger) Trace(msg string, args ...interface{}) {
 	t.logger.Trace(msg, args)
 }
 
+// Debug logs a message at DEBUG level (routed to TRACE).
 func (t TerraformPluginLogger) Debug(msg string, args ...interface{}) {
 	t.Trace(msg, args)
 }
 
+// Info logs a message at INFO level (routed to TRACE).
 func (t TerraformPluginLogger) Info(msg string, args ...interface{}) {
 	t.Trace(msg, args)
 }
 
+// Warn logs a message at WARN level (routed to TRACE).
 func (t TerraformPluginLogger) Warn(msg string, args ...interface{}) {
 	t.Trace(msg, args)
 }
@@ -56,58 +62,77 @@ func (t TerraformPluginLogger) Error(msg string, args ...interface{}) {
 	t.Trace(msg, args)
 }
 
+// IsTrace always returns true; all plugin output is routed to TRACE.
 func (t TerraformPluginLogger) IsTrace() bool {
 	return true
 }
 
+// IsDebug always returns false.
 func (t TerraformPluginLogger) IsDebug() bool {
 	return false
 }
 
+// IsInfo always returns false.
 func (t TerraformPluginLogger) IsInfo() bool {
 	return false
 }
 
+// IsWarn always returns false.
 func (t TerraformPluginLogger) IsWarn() bool {
 	return false
 }
 
+// IsError always returns false.
 func (t TerraformPluginLogger) IsError() bool {
 	return false
 }
 
-func (t TerraformPluginLogger) With(args ...interface{}) hclog.Logger {
+// With returns the logger unchanged (args are ignored).
+func (t TerraformPluginLogger) With(_ ...interface{}) hclog.Logger {
 	return t
 }
 
-func (t TerraformPluginLogger) Named(name string) hclog.Logger {
+// Named returns the logger unchanged (name is ignored).
+func (t TerraformPluginLogger) Named(_ string) hclog.Logger {
 	return t
 }
 
-func (t TerraformPluginLogger) ResetNamed(name string) hclog.Logger {
+// ResetNamed returns the logger unchanged (name is ignored).
+func (t TerraformPluginLogger) ResetNamed(_ string) hclog.Logger {
 	return t
 }
 
-func (t TerraformPluginLogger) SetLevel(level hclog.Level) {}
+// GetLevel always returns hclog.Trace.
+func (t TerraformPluginLogger) GetLevel() hclog.Level {
+	return hclog.Trace
+}
 
-func (t TerraformPluginLogger) StandardLogger(opts *hclog.StandardLoggerOptions) *log.Logger {
+// SetLevel is a no-op; the level is fixed at TRACE.
+func (t TerraformPluginLogger) SetLevel(_ hclog.Level) {}
+
+// StandardLogger returns a standard log.Logger writing to the underlying logrus writer.
+func (t TerraformPluginLogger) StandardLogger(_ *hclog.StandardLoggerOptions) *log.Logger {
 	stdLogger := log.New(t.logger.Writer(), "", log.Flags())
 	stdLogger.SetOutput(t.logger.Writer())
 	return stdLogger
 }
 
-func (t TerraformPluginLogger) StandardWriter(opts *hclog.StandardLoggerOptions) io.Writer {
+// StandardWriter returns the underlying logrus writer.
+func (t TerraformPluginLogger) StandardWriter(_ *hclog.StandardLoggerOptions) io.Writer {
 	return t.logger.Writer()
 }
 
-func (t TerraformPluginLogger) Log(level hclog.Level, msg string, args ...interface{}) {
+// Log logs a message at TRACE level regardless of the provided level.
+func (t TerraformPluginLogger) Log(_ hclog.Level, msg string, args ...interface{}) {
 	t.logger.Log(logrus.TraceLevel, msg, args)
 }
 
+// ImpliedArgs always returns nil.
 func (t TerraformPluginLogger) ImpliedArgs() []interface{} {
 	return nil
 }
 
+// Name returns the fixed logger name "TerraformPlugin".
 func (t TerraformPluginLogger) Name() string {
 	return "TerraformPlugin"
 }

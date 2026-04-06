@@ -1,6 +1,6 @@
 [
  {
-  "Id": "nacl-2880546575",
+  "ID": "nacl-2880546575",
   "Type": "aws_network_acl_rule",
   "Attrs": {
    "cidr_block": "172.31.0.0/16",
@@ -15,7 +15,7 @@
   }
  },
  {
-  "Id": "nacl-1525104124",
+  "ID": "nacl-1525104124",
   "Type": "aws_network_acl_rule",
   "Attrs": {
    "cidr_block": "172.31.0.0/16",

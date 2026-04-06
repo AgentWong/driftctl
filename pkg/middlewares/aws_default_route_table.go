@@ -6,16 +6,17 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Default route table should not be shown as unmanaged as they are present by default
-// This middleware ignores default route table from unmanaged resources if they are not managed by IaC
+// AwsDefaultRouteTable Default route table should not be shown as unmanaged as they are present by default
+// AwsDefaultRouteTable this middleware ignores default route table from unmanaged resources if they are not managed by IaC
 type AwsDefaultRouteTable struct{}
 
+// NewAwsDefaultRouteTable creates a AwsDefaultRouteTable.
 func NewAwsDefaultRouteTable() AwsDefaultRouteTable {
 	return AwsDefaultRouteTable{}
 }
 
+// Execute applies the AwsDefaultRouteTable middleware.
 func (m AwsDefaultRouteTable) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -40,11 +41,10 @@ func (m AwsDefaultRouteTable) Execute(remoteResources, resourcesFromState *[]*re
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default route table as it is not managed by IaC")
 		}
-
 	}
 
 	*remoteResources = newRemoteResources

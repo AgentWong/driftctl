@@ -2,11 +2,12 @@ package terraform
 
 import (
 	"fmt"
-	terraformError "github.com/snyk/driftctl/enumeration/terraform/error"
 	"os"
 	"path"
 	"runtime"
 	"testing"
+
+	terraformError "github.com/snyk/driftctl/enumeration/terraform/error"
 
 	"github.com/snyk/driftctl/mocks"
 	"github.com/stretchr/testify/mock"
@@ -15,7 +16,6 @@ import (
 )
 
 func TestProviderInstallerInstallDoesNotExist(t *testing.T) {
-
 	assert := assert.New(t)
 	fakeTmpHome := t.TempDir()
 
@@ -27,7 +27,7 @@ func TestProviderInstallerInstallDoesNotExist(t *testing.T) {
 	}
 
 	mockDownloader := mocks.ProviderDownloaderInterface{}
-	mockDownloader.On("Download", config.GetDownloadUrl(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
+	mockDownloader.On("Download", config.GetDownloadURL(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
 
 	installer := ProviderInstaller{
 		downloader: &mockDownloader,
@@ -40,15 +40,13 @@ func TestProviderInstallerInstallDoesNotExist(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()), providerPath)
-
 }
 
 func TestProviderInstallerInstallAlreadyExist(t *testing.T) {
-
 	assert := assert.New(t)
 	fakeTmpHome := t.TempDir()
 	expectedSubFolder := fmt.Sprintf("/.driftctl/plugins/%s_%s", runtime.GOOS, runtime.GOARCH)
-	err := os.MkdirAll(path.Join(fakeTmpHome, expectedSubFolder), 0755)
+	err := os.MkdirAll(path.Join(fakeTmpHome, expectedSubFolder), 0750)
 	if err != nil {
 		t.Error(err)
 	}
@@ -58,7 +56,7 @@ func TestProviderInstallerInstallAlreadyExist(t *testing.T) {
 		Version: "3.19.0",
 	}
 
-	_, err = os.Create(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()))
+	_, err = os.Create(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName())) //nolint:gosec // G304: test path from controlled test variable
 	if err != nil {
 		t.Error(err)
 	}
@@ -76,11 +74,9 @@ func TestProviderInstallerInstallAlreadyExist(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()), providerPath)
-
 }
 
 func TestProviderInstallerInstallAlreadyExistButIsDirectory(t *testing.T) {
-
 	assert := assert.New(t)
 	fakeTmpHome := t.TempDir()
 	expectedSubFolder := fmt.Sprintf("/.driftctl/plugins/%s_%s", runtime.GOOS, runtime.GOARCH)
@@ -91,7 +87,7 @@ func TestProviderInstallerInstallAlreadyExistButIsDirectory(t *testing.T) {
 	}
 
 	invalidDirPath := path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName())
-	err := os.MkdirAll(invalidDirPath, 0755)
+	err := os.MkdirAll(invalidDirPath, 0750)
 	if err != nil {
 		t.Error(err)
 	}
@@ -116,16 +112,14 @@ func TestProviderInstallerInstallAlreadyExistButIsDirectory(t *testing.T) {
 		),
 		err.Error(),
 	)
-
 }
 
 // Ensure that if a provider exists with a postfix (_x5) we properly detect it
 func TestProviderInstallerInstallPostfixIsHandler(t *testing.T) {
-
 	assert := assert.New(t)
 	fakeTmpHome := t.TempDir()
 	expectedSubFolder := fmt.Sprintf("/.driftctl/plugins/%s_%s", runtime.GOOS, runtime.GOARCH)
-	err := os.MkdirAll(path.Join(fakeTmpHome, expectedSubFolder), 0755)
+	err := os.MkdirAll(path.Join(fakeTmpHome, expectedSubFolder), 0750)
 	if err != nil {
 		t.Error(err)
 	}
@@ -135,7 +129,7 @@ func TestProviderInstallerInstallPostfixIsHandler(t *testing.T) {
 		Version: "3.19.0",
 	}
 
-	_, err = os.Create(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()+"_x5"))
+	_, err = os.Create(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()+"_x5")) //nolint:gosec // G304: test path
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -153,11 +147,9 @@ func TestProviderInstallerInstallPostfixIsHandler(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()+"_x5"), providerPath)
-
 }
 
 func TestProviderInstallerVersionDoesNotExist(t *testing.T) {
-
 	assert := assert.New(t)
 
 	config := ProviderConfig{
@@ -179,7 +171,6 @@ func TestProviderInstallerVersionDoesNotExist(t *testing.T) {
 }
 
 func TestProviderInstallerWithConfigDirectory(t *testing.T) {
-
 	assert := assert.New(t)
 	fakeTmpHome := t.TempDir()
 
@@ -192,7 +183,7 @@ func TestProviderInstallerWithConfigDirectory(t *testing.T) {
 	}
 
 	mockDownloader := mocks.ProviderDownloaderInterface{}
-	mockDownloader.On("Download", config.GetDownloadUrl(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
+	mockDownloader.On("Download", config.GetDownloadURL(), path.Join(fakeTmpHome, expectedSubFolder)).Return(nil)
 
 	installer, _ := NewProviderInstaller(config)
 	installer.downloader = &mockDownloader
@@ -202,5 +193,4 @@ func TestProviderInstallerWithConfigDirectory(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(path.Join(fakeTmpHome, expectedSubFolder, config.GetBinaryName()), providerPath)
-
 }

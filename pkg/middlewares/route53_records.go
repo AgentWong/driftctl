@@ -6,15 +6,16 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Remote NS and SAO records from remote state if not managed by IAC
+// Route53DefaultZoneRecordSanitizer remote NS and SAO records from remote state if not managed by IAC
 type Route53DefaultZoneRecordSanitizer struct{}
 
+// NewRoute53DefaultZoneRecordSanitizer creates a Route53DefaultZoneRecordSanitizer.
 func NewRoute53DefaultZoneRecordSanitizer() Route53DefaultZoneRecordSanitizer {
 	return Route53DefaultZoneRecordSanitizer{}
 }
 
+// Execute applies the Route53DefaultZoneRecordSanitizer middleware.
 func (m Route53DefaultZoneRecordSanitizer) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	// We iterate on remote resource and adding them to a new slice except for default records
@@ -46,11 +47,10 @@ func (m Route53DefaultZoneRecordSanitizer) Execute(remoteResources, resourcesFro
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default unmanaged record")
 		}
-
 	}
 
 	*remoteResources = newRemoteResources
@@ -58,7 +58,7 @@ func (m Route53DefaultZoneRecordSanitizer) Execute(remoteResources, resourcesFro
 	return nil
 }
 
-// Return true if the record is considered as default one added by aws
+// isDefaultRecord return true if the record is considered as default one added by aws
 func isDefaultRecord(record *resource.Resource) bool {
 	ty, _ := record.Attrs.Get("type")
 	return ty == "NS" || ty == "SOA"

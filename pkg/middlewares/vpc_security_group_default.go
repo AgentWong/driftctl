@@ -6,13 +6,15 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Remove default security group from remote resources
+// VPCDefaultSecurityGroupSanitizer remove default security group from remote resources
 type VPCDefaultSecurityGroupSanitizer struct{}
 
+// NewVPCDefaultSecurityGroupSanitizer creates a VPCDefaultSecurityGroupSanitizer.
 func NewVPCDefaultSecurityGroupSanitizer() VPCDefaultSecurityGroupSanitizer {
 	return VPCDefaultSecurityGroupSanitizer{}
 }
 
+// Execute applies the VPCDefaultSecurityGroupSanitizer middleware.
 func (m VPCDefaultSecurityGroupSanitizer) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 
@@ -38,7 +40,7 @@ func (m VPCDefaultSecurityGroupSanitizer) Execute(remoteResources, resourcesFrom
 
 		if !existInState {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring default unmanaged security group")
 		}

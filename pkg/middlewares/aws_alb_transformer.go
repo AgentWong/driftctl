@@ -7,17 +7,19 @@ import (
 
 // AwsALBTransformer is a simple middleware to turn all aws_alb resources into aws_lb ones
 // Both types provide the same functionality, but we can't know which one was used to provision cloud resources.
-// So we use aws_lb as the common type.
+// AwsALBTransformer so we use aws_lb as the common type.
 type AwsALBTransformer struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewAwsALBTransformer(resourceFactory resource.ResourceFactory) AwsALBTransformer {
+// NewAwsALBTransformer creates a AwsALBTransformer.
+func NewAwsALBTransformer(resourceFactory resource.Factory) AwsALBTransformer {
 	return AwsALBTransformer{
 		resourceFactory: resourceFactory,
 	}
 }
 
+// Execute applies the AwsALBTransformer middleware.
 func (m AwsALBTransformer) Execute(_, resourcesFromState *[]*resource.Resource) error {
 	newStateResources := make([]*resource.Resource, 0, len(*resourcesFromState))
 
@@ -29,7 +31,7 @@ func (m AwsALBTransformer) Execute(_, resourcesFromState *[]*resource.Resource) 
 
 		newStateResources = append(newStateResources, m.resourceFactory.CreateAbstractResource(
 			aws.AwsLoadBalancerResourceType,
-			res.ResourceId(),
+			res.ResourceID(),
 			*res.Attributes(),
 		))
 	}

@@ -6,16 +6,17 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Default network ACL should not be shown as unmanaged as they are present by default
-// This middleware ignores default network ACL from unmanaged resources if they are not managed by IaC
+// AwsDefaultNetworkACL Default network ACL should not be shown as unmanaged as they are present by default
+// AwsDefaultNetworkACL this middleware ignores default network ACL from unmanaged resources if they are not managed by IaC
 type AwsDefaultNetworkACL struct{}
 
+// NewAwsDefaultNetworkACL creates a AwsDefaultNetworkACL.
 func NewAwsDefaultNetworkACL() AwsDefaultNetworkACL {
 	return AwsDefaultNetworkACL{}
 }
 
+// Execute applies the AwsDefaultNetworkACL middleware.
 func (m AwsDefaultNetworkACL) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 
 	for _, remoteResource := range *remoteResources {
@@ -42,7 +43,7 @@ func (m AwsDefaultNetworkACL) Execute(remoteResources, resourcesFromState *[]*re
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   remoteResource.ResourceId(),
+			"id":   remoteResource.ResourceID(),
 			"type": remoteResource.ResourceType(),
 		}).Debug("Ignoring default network ACL as it is not managed by IaC")
 	}

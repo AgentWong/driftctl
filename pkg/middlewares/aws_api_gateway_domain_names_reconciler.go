@@ -5,23 +5,25 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Used to reconcile API Gateway domain names (v1 and v2) from both remote
+// AwsAPIGatewayDomainNamesReconciler Used to reconcile API Gateway domain names (v1 and v2) from both remote
 // and state resources because v1|v2 AWS SDK list endpoints return all domain
-// names without distinction
-type AwsApiGatewayDomainNamesReconciler struct{}
+// AwsAPIGatewayDomainNamesReconciler names without distinction
+type AwsAPIGatewayDomainNamesReconciler struct{}
 
-func NewAwsApiGatewayDomainNamesReconciler() AwsApiGatewayDomainNamesReconciler {
-	return AwsApiGatewayDomainNamesReconciler{}
+// NewAwsAPIGatewayDomainNamesReconciler creates a AwsAPIGatewayDomainNamesReconciler.
+func NewAwsAPIGatewayDomainNamesReconciler() AwsAPIGatewayDomainNamesReconciler {
+	return AwsAPIGatewayDomainNamesReconciler{}
 }
 
-func (m AwsApiGatewayDomainNamesReconciler) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsAPIGatewayDomainNamesReconciler middleware.
+func (m AwsAPIGatewayDomainNamesReconciler) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 	managedDomainNames := make([]*resource.Resource, 0)
 	unmanagedDomainNames := make([]*resource.Resource, 0)
 	for _, res := range *remoteResources {
 		// Ignore all resources other than aws_api_gateway_domain_name and aws_apigatewayv2_domain_name
-		if res.ResourceType() != aws.AwsApiGatewayDomainNameResourceType &&
-			res.ResourceType() != aws.AwsApiGatewayV2DomainNameResourceType {
+		if res.ResourceType() != aws.AwsAPIGatewayDomainNameResourceType &&
+			res.ResourceType() != aws.AwsAPIGatewayV2DomainNameResourceType {
 			newRemoteResources = append(newRemoteResources, res)
 			continue
 		}
@@ -55,7 +57,7 @@ func (m AwsApiGatewayDomainNamesReconciler) Execute(remoteResources, resourcesFr
 		// Remove duplicates (e.g. same id, the opposite type)
 		isDuplicate := false
 		for _, managed := range managedDomainNames {
-			if managed.ResourceId() == unmanaged.ResourceId() {
+			if managed.ResourceID() == unmanaged.ResourceID() {
 				isDuplicate = true
 				break
 			}
@@ -65,7 +67,7 @@ func (m AwsApiGatewayDomainNamesReconciler) Execute(remoteResources, resourcesFr
 		}
 
 		// Now keep only v1 domain names
-		if unmanaged.ResourceType() == aws.AwsApiGatewayDomainNameResourceType {
+		if unmanaged.ResourceType() == aws.AwsAPIGatewayDomainNameResourceType {
 			deduplicatedUnmanagedDomains = append(deduplicatedUnmanagedDomains, unmanaged)
 		}
 	}

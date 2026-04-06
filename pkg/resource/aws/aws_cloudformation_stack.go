@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsCloudformationStackResourceType is the Terraform resource type for aws_cloudformation_stack.
 const AwsCloudformationStackResourceType = "aws_cloudformation_stack"
 
 func initAwsCloudformationStackMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

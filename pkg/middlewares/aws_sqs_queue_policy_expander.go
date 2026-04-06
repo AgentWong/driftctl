@@ -7,19 +7,21 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Explodes policy found in aws_sqs_queue.policy from state resources to dedicated resources
+// AwsSQSQueuePolicyExpander explodes policy found in aws_sqs_queue.policy from state resources to dedicated resources
 type AwsSQSQueuePolicyExpander struct {
-	resourceFactory          resource.ResourceFactory
+	resourceFactory          resource.Factory
 	resourceSchemaRepository dctlresource.SchemaRepositoryInterface
 }
 
-func NewAwsSQSQueuePolicyExpander(resourceFactory resource.ResourceFactory, resourceSchemaRepository dctlresource.SchemaRepositoryInterface) AwsSQSQueuePolicyExpander {
+// NewAwsSQSQueuePolicyExpander creates a AwsSQSQueuePolicyExpander.
+func NewAwsSQSQueuePolicyExpander(resourceFactory resource.Factory, resourceSchemaRepository dctlresource.SchemaRepositoryInterface) AwsSQSQueuePolicyExpander {
 	return AwsSQSQueuePolicyExpander{
 		resourceFactory,
 		resourceSchemaRepository,
 	}
 }
 
+// Execute applies the AwsSQSQueuePolicyExpander middleware.
 func (m AwsSQSQueuePolicyExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	for _, res := range *remoteResources {
 		if res.ResourceType() != aws.AwsSqsQueueResourceType {
@@ -65,15 +67,15 @@ func (m *AwsSQSQueuePolicyExpander) handlePolicy(queue *resource.Resource, resul
 	}
 
 	data := map[string]interface{}{
-		"queue_url": queue.Id,
-		"id":        queue.Id,
+		"queue_url": queue.ID,
+		"id":        queue.ID,
 		"policy":    policy,
 	}
 
-	newPolicy := m.resourceFactory.CreateAbstractResource("aws_sqs_queue_policy", queue.Id, data)
+	newPolicy := m.resourceFactory.CreateAbstractResource("aws_sqs_queue_policy", queue.ID, data)
 	*results = append(*results, newPolicy)
 	logrus.WithFields(logrus.Fields{
-		"id": newPolicy.ResourceId(),
+		"id": newPolicy.ResourceID(),
 	}).Debug("Created new policy from sqs queue")
 
 	queue.Attrs.SafeDelete([]string{"policy"})
@@ -83,11 +85,11 @@ func (m *AwsSQSQueuePolicyExpander) handlePolicy(queue *resource.Resource, resul
 // Return true if the sqs queue has a aws_sqs_queue_policy resource attached to itself.
 // It is mandatory since it's possible to have a aws_sqs_queue with an inline policy
 // AND a aws_sqs_queue_policy resource at the same time. At the end, on the AWS console,
-// the aws_sqs_queue_policy will be used.
+// hasPolicyAttached the aws_sqs_queue_policy will be used.
 func (m *AwsSQSQueuePolicyExpander) hasPolicyAttached(queue *resource.Resource, resourcesFromState *[]*resource.Resource) bool {
 	for _, res := range *resourcesFromState {
 		if res.ResourceType() == aws.AwsSqsQueuePolicyResourceType &&
-			res.ResourceId() == queue.Id {
+			res.ResourceID() == queue.ID {
 			return true
 		}
 	}

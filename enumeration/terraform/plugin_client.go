@@ -10,10 +10,11 @@ import (
 	"github.com/hashicorp/terraform/plugin/discovery"
 )
 
+// ClientConfig returns the plugin client configuration for launching a Terraform provider process.
 func ClientConfig(m discovery.PluginMeta) *plugin.ClientConfig {
 	logger := logger.NewTerraformPluginLogger()
 	return &plugin.ClientConfig{
-		Cmd:              exec.Command(m.Path),
+		Cmd:              exec.Command(m.Path), //nolint:gosec // G204: m.Path is a trusted provider binary from plugin discovery
 		HandshakeConfig:  tfplugin.Handshake,
 		VersionedPlugins: tfplugin.VersionedPlugins,
 		Managed:          true,

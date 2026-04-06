@@ -59,7 +59,6 @@ func TestDriftctlCmd_Completion(t *testing.T) {
 }
 
 func TestDriftctlCmd_Scan(t *testing.T) {
-
 	cases := []struct {
 		env  map[string]string
 		args []string
@@ -70,7 +69,7 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			env: map[string]string{
 				"DCTL_TO": "test",
 			},
-			err: fmt.Errorf("unsupported cloud provider 'test'\nValid values are: aws+tf,github+tf,gcp+tf,azure+tf"),
+			err: fmt.Errorf("unsupported cloud provider 'test'\nValid values are: aws+tf"),
 		},
 		{
 			env: map[string]string{
@@ -82,7 +81,7 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			env: map[string]string{
 				"DCTL_FROM": "test",
 			},
-			err: fmt.Errorf("Unable to parse from flag 'test': \nAccepted schemes are: tfstate://,tfstate+s3://,tfstate+http://,tfstate+https://,tfstate+tfcloud://,tfstate+gs://,tfstate+azurerm://"),
+			err: fmt.Errorf("Unable to parse from flag 'test': \nAccepted schemes are: tfstate://,tfstate+s3://,tfstate+http://,tfstate+https://,tfstate+tfcloud://"),
 		},
 		{
 			env: map[string]string{
@@ -122,12 +121,12 @@ func TestDriftctlCmd_Scan(t *testing.T) {
 			if len(c.env) > 0 {
 				for key, val := range c.env {
 					_ = os.Setenv(key, val)
-					defer os.Unsetenv(key)
+					defer func() { _ = os.Unsetenv(key) }()
 				}
 			}
 			cmd := NewDriftctlCmd(mocks.MockBuild{})
 			scanCmd, _, _ := cmd.Find([]string{"scan"})
-			scanCmd.RunE = func(_ *cobra.Command, args []string) error { return nil }
+			scanCmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 			args := append([]string{"scan"}, c.args...)
 			_, err := test.Execute(&cmd.Command, args...)
 			if c.err == nil && err != nil || c.err != nil && err == nil {
@@ -259,7 +258,7 @@ func TestDriftctlCmd_ShouldCheckVersion(t *testing.T) {
 
 			os.Clearenv()
 			for key, val := range c.env {
-				os.Setenv(key, val)
+				_ = os.Setenv(key, val)
 			}
 
 			cmd := NewDriftctlCmd(mocks.MockBuild{Release: c.IsRelease, UsageReporting: c.UsageReport})

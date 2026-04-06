@@ -1,6 +1,6 @@
 [
  {
-  "Id": "loadbalancer2:test2",
+  "ID": "loadbalancer2:test2",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer2:test2",
@@ -10,7 +10,7 @@
   }
  },
  {
-  "Id": "loadbalancer2:test24",
+  "ID": "loadbalancer2:test24",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer2:test24",
@@ -20,7 +20,7 @@
   }
  },
  {
-  "Id": "loadbalancer3:test3",
+  "ID": "loadbalancer3:test3",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer3:test3",
@@ -30,7 +30,7 @@
   }
  },
  {
-  "Id": "loadbalancer3:test33",
+  "ID": "loadbalancer3:test33",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer3:test33",
@@ -40,7 +40,7 @@
   }
  },
  {
-  "Id": "loadbalancer3:test34",
+  "ID": "loadbalancer3:test34",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer3:test34",
@@ -50,7 +50,7 @@
   }
  },
  {
-  "Id": "loadbalancer:test3",
+  "ID": "loadbalancer:test3",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer:test3",
@@ -60,7 +60,7 @@
   }
  },
  {
-  "Id": "loadbalancer:test4",
+  "ID": "loadbalancer:test4",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer:test4",
@@ -70,7 +70,7 @@
   }
  },
  {
-  "Id": "loadbalancer2:test22",
+  "ID": "loadbalancer2:test22",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer2:test22",
@@ -80,7 +80,7 @@
   }
  },
  {
-  "Id": "loadbalancer2:test23",
+  "ID": "loadbalancer2:test23",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer2:test23",
@@ -90,7 +90,7 @@
   }
  },
  {
-  "Id": "loadbalancer3:test32",
+  "ID": "loadbalancer3:test32",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer3:test32",
@@ -100,7 +100,7 @@
   }
  },
  {
-  "Id": "loadbalancer:test",
+  "ID": "loadbalancer:test",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer:test",
@@ -110,7 +110,7 @@
   }
  },
  {
-  "Id": "loadbalancer:test2",
+  "ID": "loadbalancer:test2",
   "Type": "aws_iam_user_policy",
   "Attrs": {
    "id": "loadbalancer:test2",

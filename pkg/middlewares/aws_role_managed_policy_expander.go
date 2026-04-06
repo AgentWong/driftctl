@@ -12,16 +12,18 @@ import (
 // resources. Note that we do not use `aws_iam_role_policy_attachment` or `aws_iam_user_policy_attachment`
 // Once theses resources created, we remove the old `managed_policy_arns` field to avoid false positive drifts
 
+// AwsRoleManagedPolicyExpander is a middleware.
 type AwsRoleManagedPolicyExpander struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewAwsRoleManagedPolicyExpander(resourceFactory resource.ResourceFactory) *AwsRoleManagedPolicyExpander {
+// NewAwsRoleManagedPolicyExpander creates a AwsRoleManagedPolicyExpander.
+func NewAwsRoleManagedPolicyExpander(resourceFactory resource.Factory) *AwsRoleManagedPolicyExpander {
 	return &AwsRoleManagedPolicyExpander{resourceFactory: resourceFactory}
 }
 
+// Execute applies the AwsRoleManagedPolicyExpander middleware.
 func (a AwsRoleManagedPolicyExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newList := make([]*resource.Resource, 0)
 	for _, res := range *remoteResources {
 		// Ignore all resources other than iam_role
@@ -93,7 +95,6 @@ func (a AwsRoleManagedPolicyExpander) Execute(remoteResources, resourcesFromStat
 		res.Attributes().SafeDelete([]string{"managed_policy_arns"})
 
 		newList = append(newList, res)
-
 	}
 	*resourcesFromState = newList
 	return nil

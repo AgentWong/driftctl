@@ -1,3 +1,4 @@
+// Package enumerator provides state file discovery for local and S3 backends.
 package enumerator
 
 import (
@@ -20,7 +21,6 @@ func extractPrefixAndPattern(path string) (prefix string, pattern string) {
 		}
 
 		prefix = strings.Join([]string{prefix, s}, sep)
-
 	}
 	return strings.Trim(prefix, sep), strings.Trim(pattern, sep)
 }

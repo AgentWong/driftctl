@@ -1,3 +1,4 @@
+// Package state reads and enumerates Terraform state resources.
 package state
 
 import (
@@ -6,23 +7,28 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
-type StateReadingAlert struct {
+// ReadingAlert represents a ReadingAlert.
+type ReadingAlert struct {
 	key string
 	err string
 }
 
-func NewStateReadingAlert(key string, err error) *StateReadingAlert {
-	return &StateReadingAlert{key: key, err: err.Error()}
+// NewReadingAlert creates a new instance.
+func NewReadingAlert(key string, err error) *ReadingAlert {
+	return &ReadingAlert{key: key, err: err.Error()}
 }
 
-func (s *StateReadingAlert) Message() string {
+// Message implements the ReadingAlert interface.
+func (s *ReadingAlert) Message() string {
 	return fmt.Sprintf("Your analysis may be incomplete. There was an error reading state file '%s': %s", s.key, s.err)
 }
 
-func (s *StateReadingAlert) ShouldIgnoreResource() bool {
+// ShouldIgnoreResource implements the ReadingAlert interface.
+func (s *ReadingAlert) ShouldIgnoreResource() bool {
 	return false
 }
 
-func (s *StateReadingAlert) Resource() *resource.Resource {
+// Resource implements the ReadingAlert interface.
+func (s *ReadingAlert) Resource() *resource.Resource {
 	return nil
 }

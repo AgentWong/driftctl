@@ -1,17 +1,16 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
 func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
-
 	tests := []struct {
 		name               string
 		remoteResources    []*resource.Resource
@@ -22,33 +21,33 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 			"test that default account is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "a-dummy-account",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					ID:    "a-dummy-account",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
-					Attrs: &resource.Attributes{},
-				},
-			},
-			[]*resource.Resource{
-				{
-					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					ID:    "default-managed-by-IaC",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID:    "default-managed-by-IaC",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
+					Attrs: &resource.Attributes{},
+				},
+			},
+			[]*resource.Resource{
+				{
+					ID: "fake",
 				},
 				{
-					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					ID:    "default-managed-by-IaC",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -57,30 +56,30 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 			"test that default account is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:    "a-dummy-account",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					ID:    "a-dummy-account",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "default-managed-by-IaC",
-					Type:  aws.AwsApiGatewayAccountResourceType,
+					ID:    "default-managed-by-IaC",
+					Type:  aws.AwsAPIGatewayAccountResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewAwsDefaultApiGatewayAccount()
+			m := NewAwsDefaultAPIGatewayAccount()
 			err := m.Execute(&tt.remoteResources, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)
@@ -91,7 +90,7 @@ func TestAwsDefaultApiGatewayAccount_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
@@ -23,21 +23,21 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			mocks: func(factory *dctlresource.MockResourceFactory) {
 				factory.On(
 					"CreateAbstractResource",
-					aws.AwsApiGatewayResourceResourceType,
+					aws.AwsAPIGatewayResourceResourceType,
 					"bar",
 					map[string]interface{}{
 						"rest_api_id": "foo",
 						"path":        "/",
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "bar",
-					Type: aws.AwsApiGatewayResourceResourceType,
+					ID:   "bar",
+					Type: aws.AwsAPIGatewayResourceResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					ID:   "foo",
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "bar",
 					},
@@ -45,15 +45,15 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					ID:   "foo",
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "bar",
 					},
 				},
 				{
-					Id:   "bar",
-					Type: aws.AwsApiGatewayResourceResourceType,
+					ID:   "bar",
+					Type: aws.AwsAPIGatewayResourceResourceType,
 				},
 			},
 		},
@@ -61,29 +61,29 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			name: "empty or unknown root_resource_id",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					ID:   "foo",
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "",
 					},
 				},
 				{
-					Id:    "bar",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					ID:    "bar",
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					ID:   "foo",
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"root_resource_id": "",
 					},
 				},
 				{
-					Id:    "bar",
-					Type:  aws.AwsApiGatewayRestApiResourceType,
+					ID:    "bar",
+					Type:  aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -96,7 +96,7 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 				tt.mocks(factory)
 			}
 
-			m := NewAwsApiGatewayResourceExpander(factory)
+			m := NewAwsAPIGatewayResourceExpander(factory)
 			err := m.Execute(&[]*resource.Resource{}, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)
@@ -107,7 +107,7 @@ func TestAwsApiGatewayResourceExpander_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

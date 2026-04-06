@@ -11,21 +11,21 @@ func TestDefaultVPCSecurityGroupShouldBeIgnored(t *testing.T) {
 	middleware := NewVPCDefaultSecurityGroupSanitizer()
 	remoteResources := []*resource.Resource{
 		{
-			Id:   "sg-test",
+			ID:   "sg-test",
 			Type: aws.AwsSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "test",
 			},
 		},
 		{
-			Id:   "sg-foo",
+			ID:   "sg-foo",
 			Type: aws.AwsSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "foo",
 			},
 		},
 		{
-			Id:   "sg-default",
+			ID:   "sg-default",
 			Type: aws.AwsDefaultSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "default",
@@ -34,7 +34,7 @@ func TestDefaultVPCSecurityGroupShouldBeIgnored(t *testing.T) {
 	}
 	stateResources := []*resource.Resource{
 		{
-			Id:   "sg-bar",
+			ID:   "sg-bar",
 			Type: aws.AwsSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "bar",
@@ -54,21 +54,21 @@ func TestDefaultVPCSecurityGroupShouldNotBeIgnoredWhenManaged(t *testing.T) {
 	middleware := NewVPCDefaultSecurityGroupSanitizer()
 	remoteResources := []*resource.Resource{
 		{
-			Id:   "sg-test",
+			ID:   "sg-test",
 			Type: aws.AwsSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "test",
 			},
 		},
 		{
-			Id:   "sg-foo",
+			ID:   "sg-foo",
 			Type: aws.AwsSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "foo",
 			},
 		},
 		{
-			Id:   "sg-default",
+			ID:   "sg-default",
 			Type: aws.AwsDefaultSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "default",
@@ -77,7 +77,7 @@ func TestDefaultVPCSecurityGroupShouldNotBeIgnoredWhenManaged(t *testing.T) {
 	}
 	stateResources := []*resource.Resource{
 		{
-			Id:   "sg-default",
+			ID:   "sg-default",
 			Type: aws.AwsDefaultSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"name": "default",

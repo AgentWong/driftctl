@@ -1,3 +1,4 @@
+// Package version provides build version information and update checking.
 package version
 
 import (
@@ -12,11 +13,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Current software version
-// Could be injected on build with -ldflags
-var version string = "dev"
+// version is the current software version, injected at build time.
+var version = "dev"
 
-// Return the current version as string
+// Current returns the current version string, with a "-dev" suffix for non-release builds.
 func Current() string {
 	currentVersion := version
 	build := build.Build{}
@@ -26,15 +26,11 @@ func Current() string {
 	return currentVersion
 }
 
-/**
- * Return "" if current version is the last version,
- * else return the latest version string
- **/
+// CheckLatest returns the latest version string if a newer version is available, or "" if current is up to date.
 func CheckLatest() string {
-
 	client := &http.Client{}
 
-	req, _ := http.NewRequest("GET", "https://telemetry.driftctl.com/version", nil)
+	req, _ := http.NewRequest(http.MethodGet, "https://telemetry.driftctl.com/version", nil)
 	req.Header.Set("driftctl-version", Current())
 	req.Header.Set("driftctl-os", runtime.GOOS)
 	req.Header.Set("driftctl-arch", runtime.GOARCH)
@@ -44,8 +40,9 @@ func CheckLatest() string {
 		logrus.Debugf("Unable to check for a newer version: %+v", err)
 		return ""
 	}
+	defer func() { _ = res.Body.Close() }()
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		logrus.Debugf("Unable to check for a newer version: %s", res.Status)
 		return ""
 	}

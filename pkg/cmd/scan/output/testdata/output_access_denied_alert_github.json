@@ -4,6 +4,10 @@
 		"total_unmanaged": 0,
 		"total_missing": 0,
 		"total_managed": 0,
+		"total_drifted": 0,
+		"total_unsupported": 0,
+		"total_cloudformation_managed": 0,
+		"total_default_resources": 0,
 		"total_iac_source_count": 0
 	},
 	"managed": null,
@@ -13,10 +17,10 @@
 	"alerts": {
 		"": [
 			{
-				"message": "An error occured listing github_team: listing github_team is forbidden: dummy error"
+				"message": "An error occurred listing github_team: listing github_team is forbidden: dummy error"
 			},
 			{
-				"message": "An error occured listing github_team_membership: listing github_team is forbidden: dummy error"
+				"message": "An error occurred listing github_team_membership: listing github_team is forbidden: dummy error"
 			}
 		]
 	},

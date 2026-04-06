@@ -7,21 +7,26 @@ import (
 	"github.com/hashicorp/terraform/configs/configschema"
 )
 
+// AttributeSchema wraps a Terraform config schema attribute with additional metadata.
 type AttributeSchema struct {
 	ConfigSchema configschema.Attribute
-	JsonString   bool
+	JSONString   bool
 }
 
+// Flags is a bitfield for resource schema flags.
 type Flags uint32
 
+// HasFlag reports whether the given flag is set.
 func (f Flags) HasFlag(flag Flags) bool {
 	return f&flag != 0
 }
 
+// AddFlag sets the given flag.
 func (f *Flags) AddFlag(flag Flags) {
 	*f |= flag
 }
 
+// Schema holds the metadata for a single resource type.
 type Schema struct {
 	ProviderVersion             *version.Version
 	Flags                       Flags
@@ -32,6 +37,7 @@ type Schema struct {
 	DiscriminantFunc            func(*Resource, *Resource) bool
 }
 
+// IsComputedField reports whether the attribute at the given path is computed.
 func (s *Schema) IsComputedField(path []string) bool {
 	metadata, exist := s.Attributes[strings.Join(path, ".")]
 	if !exist {
@@ -40,10 +46,11 @@ func (s *Schema) IsComputedField(path []string) bool {
 	return metadata.ConfigSchema.Computed
 }
 
-func (s *Schema) IsJsonStringField(path []string) bool {
+// IsJSONStringField reports whether the attribute at the given path is a JSON string.
+func (s *Schema) IsJSONStringField(path []string) bool {
 	metadata, exist := s.Attributes[strings.Join(path, ".")]
 	if !exist {
 		return false
 	}
-	return metadata.JsonString
+	return metadata.JSONString
 }

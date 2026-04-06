@@ -7,17 +7,19 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Explodes policy found in aws_s3_bucket.policy from state resources to dedicated resources
+// AwsBucketPolicyExpander explodes policy found in aws_s3_bucket.policy from state resources to dedicated resources
 type AwsBucketPolicyExpander struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewAwsBucketPolicyExpander(resourceFactory resource.ResourceFactory) AwsBucketPolicyExpander {
+// NewAwsBucketPolicyExpander creates a AwsBucketPolicyExpander.
+func NewAwsBucketPolicyExpander(resourceFactory resource.Factory) AwsBucketPolicyExpander {
 	return AwsBucketPolicyExpander{
 		resourceFactory: resourceFactory,
 	}
 }
 
+// Execute applies the AwsBucketPolicyExpander middleware.
 func (m AwsBucketPolicyExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
 	newList := make([]*resource.Resource, 0)
 	for _, res := range *resourcesFromState {
@@ -29,7 +31,7 @@ func (m AwsBucketPolicyExpander) Execute(_, resourcesFromState *[]*resource.Reso
 
 		newList = append(newList, res)
 
-		if hasPolicyAttached(res.ResourceId(), resourcesFromState) {
+		if hasPolicyAttached(res.ResourceID(), resourcesFromState) {
 			res.Attrs.SafeDelete([]string{"policy"})
 			continue
 		}
@@ -50,16 +52,16 @@ func (m *AwsBucketPolicyExpander) handlePolicy(bucket *resource.Resource, result
 	}
 
 	data := map[string]interface{}{
-		"id":     bucket.ResourceId(),
+		"id":     bucket.ResourceID(),
 		"bucket": (*bucket.Attrs)["bucket"],
 		"policy": (*bucket.Attrs)["policy"],
 	}
 
-	newPolicy := m.resourceFactory.CreateAbstractResource(aws.AwsS3BucketPolicyResourceType, bucket.ResourceId(), data)
+	newPolicy := m.resourceFactory.CreateAbstractResource(aws.AwsS3BucketPolicyResourceType, bucket.ResourceID(), data)
 
 	*results = append(*results, newPolicy)
 	logrus.WithFields(logrus.Fields{
-		"id": newPolicy.ResourceId(),
+		"id": newPolicy.ResourceID(),
 	}).Debug("Created new policy from bucket")
 
 	bucket.Attrs.SafeDelete([]string{"policy"})
@@ -69,11 +71,11 @@ func (m *AwsBucketPolicyExpander) handlePolicy(bucket *resource.Resource, result
 // Return true if the bucket has a aws_bucket_policy resource attached to itself.
 // It is mandatory since it's possible to have a aws_bucket with an inline policy
 // AND a aws_bucket_policy resource at the same time. At the end, on the AWS console,
-// the aws_bucket_policy will be used.
+// hasPolicyAttached the aws_bucket_policy will be used.
 func hasPolicyAttached(bucket string, resourcesFromState *[]*resource.Resource) bool {
 	for _, res := range *resourcesFromState {
 		if res.ResourceType() == aws.AwsS3BucketPolicyResourceType &&
-			res.ResourceId() == bucket {
+			res.ResourceID() == bucket {
 			return true
 		}
 	}

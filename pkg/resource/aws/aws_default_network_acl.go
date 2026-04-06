@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsDefaultNetworkACLResourceType is the Terraform resource type for default network ACLs.
 const AwsDefaultNetworkACLResourceType = "aws_default_network_acl"
 
 func initAwsDefaultNetworkACLMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
@@ -13,7 +14,5 @@ func initAwsDefaultNetworkACLMetaData(resourceSchemaRepository dctlresource.Sche
 
 		// https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/default_network_acl#managing-subnets-in-a-default-network-acl
 		res.Attrs.SafeDelete([]string{"subnet_ids"})
-
 	})
-
 }

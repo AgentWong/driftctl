@@ -1,6 +1,6 @@
 [
  {
-  "Id": "arn:aws:sns:eu-west-3:526954929923:user-updates-topic",
+  "ID": "arn:aws:sns:eu-west-3:526954929923:user-updates-topic",
   "Type": "aws_sns_topic",
   "Attrs": {
    "application_failure_feedback_role_arn": "",
@@ -21,7 +21,7 @@
   }
  },
  {
-  "Id": "arn:aws:sns:eu-west-3:526954929923:user-updates-topic2",
+  "ID": "arn:aws:sns:eu-west-3:526954929923:user-updates-topic2",
   "Type": "aws_sns_topic",
   "Attrs": {
    "application_failure_feedback_role_arn": "",
@@ -42,7 +42,7 @@
   }
  },
  {
-  "Id": "arn:aws:sns:eu-west-3:526954929923:user-updates-topic3",
+  "ID": "arn:aws:sns:eu-west-3:526954929923:user-updates-topic3",
   "Type": "aws_sns_topic",
   "Attrs": {
    "application_failure_feedback_role_arn": "",

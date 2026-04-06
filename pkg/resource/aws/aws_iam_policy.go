@@ -6,12 +6,13 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsIamPolicyResourceType is the Terraform resource type for aws_iam_policy.
 const AwsIamPolicyResourceType = "aws_iam_policy"
 
 func initAwsIAMPolicyMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
 	resourceSchemaRepository.SetNormalizeFunc(AwsIamPolicyResourceType, func(res *resource.Resource) {
 		val := res.Attrs
-		jsonString, err := helpers.NormalizeJsonString((*val)["policy"])
+		jsonString, err := helpers.NormalizeJSONString((*val)["policy"])
 		if err == nil {
 			_ = val.SafeSet([]string{"policy"}, jsonString)
 		}
@@ -20,7 +21,7 @@ func initAwsIAMPolicyMetaData(resourceSchemaRepository dctlresource.SchemaReposi
 	})
 	resourceSchemaRepository.UpdateSchema(AwsIamPolicyResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 }

@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -21,31 +21,31 @@ func TestAwsDefaultRouteTable_Execute(t *testing.T) {
 			"test that default route tables are not excluded when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
@@ -54,23 +54,23 @@ func TestAwsDefaultRouteTable_Execute(t *testing.T) {
 			"test that default route tables are excluded when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 				{
-					Id:   "default-route-table",
+					ID:   "default-route-table",
 					Type: aws.AwsDefaultRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-route-table",
+					ID:   "non-default-route-table",
 					Type: aws.AwsRouteTableResourceType,
 				},
 			},
@@ -90,10 +90,9 @@ func TestAwsDefaultRouteTable_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
-
 		})
 	}
 }

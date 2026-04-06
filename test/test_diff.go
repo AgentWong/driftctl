@@ -2,12 +2,12 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 
 	"github.com/snyk/driftctl/enumeration/terraform"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/test/goldenfile"
@@ -16,15 +16,17 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
-// That method is used to compare the result of the enumeration with the golden file.
-// That method does not use cty and types from the terraform provider to deserialize resources.
+// AgainstGoldenFile compares the result of the enumeration with the golden file.
+// It does not use cty and types from the terraform provider to deserialize resources.
 // Some resources returned by the enumeration may have missing fields, and if we use cty deserialization we're
 // gonna recreate those missing fields to respect the schema.
+//
+//nolint:revive
 func TestAgainstGoldenFileNoCty(
 	got []*resource.Resource,
 	ty string,
 	dirName string,
-	_ terraform.TerraformProvider,
+	_ terraform.Provider,
 	_ *resource.Deserializer,
 	shouldUpdate bool,
 	tt *testing.T) {
@@ -54,7 +56,7 @@ func TestAgainstGoldenFileNoCty(
 	for _, r := range rawResources {
 		res := r
 		expectedResources = append(expectedResources, &resource.Resource{
-			Id:    res["id"].(string),
+			ID:    res["id"].(string),
 			Type:  ty,
 			Attrs: (*resource.Attributes)(&res),
 		})
@@ -76,7 +78,7 @@ func TestAgainstGoldenFileNoCty(
 	}
 	if len(changelog) > 0 {
 		for _, change := range changelog {
-			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 		}
 	}
 }
@@ -85,7 +87,7 @@ func testAgainstGoldenFileCty(
 	got []*resource.Resource,
 	ty string,
 	dirName string,
-	provider terraform.TerraformProvider,
+	provider terraform.Provider,
 	deserializer *resource.Deserializer,
 	shouldUpdate bool,
 	tt *testing.T,
@@ -112,11 +114,11 @@ func testAgainstGoldenFileCty(
 
 	// read golden file
 	file := goldenfile.ReadFile(dirName, goldenfile.ResultsFilename)
-	decodedJson, err := ctyjson.Unmarshal(file, ctyType)
+	decodedJSON, err := ctyjson.Unmarshal(file, ctyType)
 	if err != nil {
 		panic(err)
 	}
-	decodedResources, err := deserializer.Deserialize(ty, decodedJson.AsValueSlice())
+	decodedResources, err := deserializer.Deserialize(ty, decodedJSON.AsValueSlice())
 	if err != nil {
 		panic(err)
 	}
@@ -138,16 +140,17 @@ func testAgainstGoldenFileCty(
 	}
 	if len(changelog) > 0 {
 		for _, change := range changelog {
-			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+			tt.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 		}
 	}
 }
 
-func TestAgainstGoldenFile(
+// AgainstGoldenFile compares enumerated resources against a golden file using cty-based deserialisation.
+func AgainstGoldenFile(
 	got []*resource.Resource,
 	ty string,
 	dirName string,
-	provider terraform.TerraformProvider,
+	provider terraform.Provider,
 	deserializer *resource.Deserializer,
 	shouldUpdate bool,
 	tt *testing.T,

@@ -106,7 +106,7 @@ func TestPlan_Write_stdout(t *testing.T) {
 			}()
 
 			// back to normal state
-			w.Close()
+			_ = w.Close()
 			os.Stdout = stdout // restoring the real stdout
 			result := <-outC
 

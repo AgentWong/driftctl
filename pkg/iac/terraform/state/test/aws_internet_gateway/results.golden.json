@@ -1,6 +1,6 @@
 [
  {
-  "Id": "igw-0184eb41aadc62d1c",
+  "ID": "igw-0184eb41aadc62d1c",
   "Type": "aws_internet_gateway",
   "Attrs": {
    "id": "igw-0184eb41aadc62d1c",

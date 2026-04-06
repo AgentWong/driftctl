@@ -129,7 +129,7 @@ func Test_ReadLockFile(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		t.Run(c.test, func(tt *testing.T) {
+		t.Run(c.test, func(_ *testing.T) {
 			locks, err := ReadLocksFromFile(c.filepath)
 			c.assert(t, locks, err)
 		})

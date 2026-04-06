@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsAppAutoscalingTargetResourceType is the Terraform resource type for Application Auto Scaling targets.
 const AwsAppAutoscalingTargetResourceType = "aws_appautoscaling_target"
 
 func initAwsAppAutoscalingTargetMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

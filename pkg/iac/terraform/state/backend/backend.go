@@ -1,3 +1,4 @@
+// Package backend provides Terraform state backend implementations.
 package backend
 
 import (
@@ -7,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/snyk/driftctl/pkg/iac/config"
-	"github.com/snyk/driftctl/pkg/iac/terraform/state/backend/options"
 )
 
 var supportedBackends = []string{
@@ -16,19 +16,19 @@ var supportedBackends = []string{
 	BackendKeyHTTP,
 	BackendKeyHTTPS,
 	BackendKeyTFCloud,
-	BackendKeyGS,
-	BackendKeyAzureRM,
 }
 
+// Backend represents a readable and closable state backend.
 type Backend io.ReadCloser
 
+// Options holds optional configuration for backend readers.
 type Options struct {
 	Headers         map[string]string
 	TFCloudToken    string
 	TFCloudEndpoint string
-	options.AzureRMBackendOptions
 }
 
+// IsSupported reports whether the given backend key is supported.
 func IsSupported(backend string) bool {
 	for _, b := range supportedBackends {
 		if b == backend {
@@ -39,6 +39,7 @@ func IsSupported(backend string) bool {
 	return false
 }
 
+// GetBackend returns a Backend reader for the given supplier configuration.
 func GetBackend(config config.SupplierConfig, opts *Options) (Backend, error) {
 	backend := config.Backend
 
@@ -57,15 +58,12 @@ func GetBackend(config config.SupplierConfig, opts *Options) (Backend, error) {
 		return NewHTTPReader(&http.Client{}, fmt.Sprintf("%s://%s", config.Backend, config.Path), opts)
 	case BackendKeyTFCloud:
 		return NewTFCloudReader(config.Path, opts), nil
-	case BackendKeyGS:
-		return NewGSReader(config.Path)
-	case BackendKeyAzureRM:
-		return NewAzureRMReader(config.Path, opts.AzureRMBackendOptions)
 	default:
 		return nil, errors.Errorf("Unsupported backend '%s'", backend)
 	}
 }
 
+// GetSupportedBackends returns the list of supported backend keys (excluding the default file backend).
 func GetSupportedBackends() []string {
 	return supportedBackends[1:]
 }

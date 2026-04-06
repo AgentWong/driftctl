@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -20,25 +20,25 @@ func TestAwsNatGatewayEipAssoc_Execute(t *testing.T) {
 			name: "test nil values do not crash middleware",
 			input: []*resource.Resource{
 				{
-					Id:    "nat-0a5408508b19ef490",
+					ID:    "nat-0a5408508b19ef490",
 					Type:  aws.AwsNatGatewayResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Type:  aws.AwsEipAssociationResourceType,
-					Id:    "eipassoc-0d32af6acf31df913",
+					ID:    "eipassoc-0d32af6acf31df913",
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:    "nat-0a5408508b19ef490",
+					ID:    "nat-0a5408508b19ef490",
 					Type:  aws.AwsNatGatewayResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
 					Type:  aws.AwsEipAssociationResourceType,
-					Id:    "eipassoc-0d32af6acf31df913",
+					ID:    "eipassoc-0d32af6acf31df913",
 					Attrs: &resource.Attributes{},
 				},
 			},
@@ -94,7 +94,7 @@ func TestAwsNatGatewayEipAssoc_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

@@ -83,7 +83,7 @@ func TestAlerter_IgnoreResources(t *testing.T) {
 			alerts: Alerts{},
 			resource: &resource.Resource{
 				Type: "fakeres",
-				Id:   "foobar",
+				ID:   "foobar",
 			},
 			expected: false,
 		},
@@ -105,7 +105,7 @@ func TestAlerter_IgnoreResources(t *testing.T) {
 			},
 			resource: &resource.Resource{
 				Type: "fakeres",
-				Id:   "foobar",
+				ID:   "foobar",
 			},
 			expected: false,
 		},
@@ -124,7 +124,7 @@ func TestAlerter_IgnoreResources(t *testing.T) {
 			},
 			resource: &resource.Resource{
 				Type: "fakeres",
-				Id:   "foobar",
+				ID:   "foobar",
 			},
 			expected: true,
 		},
@@ -143,7 +143,7 @@ func TestAlerter_IgnoreResources(t *testing.T) {
 			},
 			resource: &resource.Resource{
 				Type: "other",
-				Id:   "foobaz",
+				ID:   "foobaz",
 			},
 			expected: true,
 		},

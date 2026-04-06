@@ -9,15 +9,20 @@ import (
 	"net/http"
 )
 
+// BackendKeyHTTP is the backend key for HTTP state.
 const BackendKeyHTTP = "http"
+
+// BackendKeyHTTPS is the backend key for HTTPS state.
 const BackendKeyHTTPS = "https"
 
+// HTTPBackend reads Terraform state over HTTP(S).
 type HTTPBackend struct {
 	request *http.Request
 	client  pkghttp.HTTPClient
 	reader  io.ReadCloser
 }
 
+// NewHTTPReader creates an HTTPBackend that will fetch state from rawURL.
 func NewHTTPReader(client pkghttp.HTTPClient, rawURL string, opts *Options) (*HTTPBackend, error) {
 	req, err := http.NewRequest(http.MethodGet, rawURL, nil)
 	if err != nil {
@@ -33,7 +38,7 @@ func NewHTTPReader(client pkghttp.HTTPClient, rawURL string, opts *Options) (*HT
 
 func (h *HTTPBackend) Read(p []byte) (n int, err error) {
 	if h.reader == nil {
-		res, err := h.client.Do(h.request)
+		res, err := h.client.Do(h.request) //nolint:bodyclose // body lifecycle is managed by the struct via Close()
 		if err != nil {
 			return 0, err
 		}
@@ -49,6 +54,7 @@ func (h *HTTPBackend) Read(p []byte) (n int, err error) {
 	return h.reader.Read(p)
 }
 
+// Close releases the underlying HTTP response body.
 func (h *HTTPBackend) Close() error {
 	if h.reader != nil {
 		return h.reader.Close()

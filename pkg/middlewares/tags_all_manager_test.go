@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 )
@@ -20,7 +20,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 			name: "With multiple resources that are tags_all compatible",
 			remoteResources: &[]*resource.Resource{
 				{
-					Id:   "dummy-instance",
+					ID:   "dummy-instance",
 					Type: "aws_instance",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -34,7 +34,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-ebs-volume",
+					ID:   "dummy-ebs-volume",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -50,7 +50,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 			},
 			resourcesFromState: &[]*resource.Resource{
 				{
-					Id:   "dummy-instance",
+					ID:   "dummy-instance",
 					Type: "aws_instance",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -63,7 +63,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "dummy-ebs-volume",
+					ID:   "dummy-ebs-volume",
 					Type: "aws_ebs_volume",
 					Attrs: &resource.Attributes{
 						"tags": map[string]interface{}{
@@ -90,7 +90,7 @@ func TestTagsAllManager_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

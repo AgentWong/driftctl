@@ -1,6 +1,6 @@
 [
  {
-  "Id": "MODULE-USER",
+  "ID": "MODULE-USER",
   "Type": "aws_iam_user",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:user/MODULE-USER",
@@ -11,7 +11,7 @@
   }
  },
  {
-  "Id": "AKIA5QYBVVD2VIEMMUIQ",
+  "ID": "AKIA5QYBVVD2VIEMMUIQ",
   "Type": "aws_iam_access_key",
   "Attrs": {
    "id": "AKIA5QYBVVD2VIEMMUIQ",

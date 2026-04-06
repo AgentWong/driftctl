@@ -1,6 +1,6 @@
 [
  {
-  "Id": "rtb-0a946227959883445",
+  "ID": "rtb-0a946227959883445",
   "Type": "aws_route_table",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:282061376516:route-table/rtb-0a946227959883445",

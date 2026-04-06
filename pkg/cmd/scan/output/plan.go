@@ -9,8 +9,13 @@ import (
 	"github.com/snyk/driftctl/pkg/analyser"
 )
 
+// FormatVersion is the version string embedded in plan JSON output.
 const FormatVersion = "0.1"
+
+// PlanOutputType is the key identifying the plan output format.
 const PlanOutputType = "plan"
+
+// PlanOutputExample is the example URI for the plan output format.
 const PlanOutputExample = "plan://PATH/TO/FILE.json"
 
 type plan struct {
@@ -47,10 +52,12 @@ type rsc struct {
 	AttributeValues map[string]interface{} `json:"values,omitempty"`
 }
 
+// Plan writes scan analysis results in Terraform plan JSON format.
 type Plan struct {
 	path string
 }
 
+// NewPlan creates a new Plan output that writes to the given file path.
 func NewPlan(path string) *Plan {
 	return &Plan{path}
 }
@@ -62,7 +69,7 @@ func (c *Plan) Write(analysis *analyser.Analysis) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		file = f
 	}
 	output := plan{FormatVersion: FormatVersion}
@@ -90,9 +97,9 @@ func listRsc(resources []*resource.Resource) []rsc {
 	var ret []rsc
 	for _, res := range resources {
 		r := rsc{
-			Address:         fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId()),
+			Address:         fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceID()),
 			Type:            res.ResourceType(),
-			Name:            res.ResourceId(),
+			Name:            res.ResourceID(),
 			AttributeValues: *res.Attributes(),
 		}
 		ret = append(ret, r)
@@ -110,9 +117,9 @@ func listRscChange(resources []*resource.Resource, action string) []rscChange {
 	var ret []rscChange
 	for _, res := range resources {
 		r := rscChange{
-			Address: fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceId()),
+			Address: fmt.Sprintf("%s.%s", res.ResourceType(), res.ResourceID()),
 			Type:    res.ResourceType(),
-			Name:    res.ResourceId(),
+			Name:    res.ResourceID(),
 			Change: change{
 				Actions: []string{action},
 				After:   *res.Attributes(),
@@ -122,7 +129,6 @@ func listRscChange(resources []*resource.Resource, action string) []rscChange {
 			r.Change.Before = *res.Attributes()
 		}
 		ret = append(ret, r)
-
 	}
 	return ret
 }

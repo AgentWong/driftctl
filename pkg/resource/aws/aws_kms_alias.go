@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsKmsAliasResourceType is the Terraform resource type for aws_kms_alias.
 const AwsKmsAliasResourceType = "aws_kms_alias"
 
 func initAwsKmsAliasMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

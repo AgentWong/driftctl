@@ -1,6 +1,6 @@
 [
  {
-  "Id": "aggr-vryjzimtj1-UNAUTHORIZED",
+  "ID": "aggr-vryjzimtj1-UNAUTHORIZED",
   "Type": "aws_api_gateway_gateway_response",
   "Attrs": {
    "id": "aggr-vryjzimtj1-UNAUTHORIZED",

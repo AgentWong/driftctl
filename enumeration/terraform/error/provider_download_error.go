@@ -1,7 +1,9 @@
+// Package error defines errors returned during Terraform provider operations.
 package error
 
 import "fmt"
 
+// ProviderNotFoundError indicates that a requested provider version does not exist.
 type ProviderNotFoundError struct {
 	Version string
 }

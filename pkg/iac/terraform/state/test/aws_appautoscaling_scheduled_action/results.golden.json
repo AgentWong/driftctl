@@ -1,6 +1,6 @@
 [
  {
-  "Id": "dynamodb-dynamodb-table/GameScores",
+  "ID": "dynamodb-dynamodb-table/GameScores",
   "Type": "aws_appautoscaling_scheduled_action",
   "Attrs": {
    "arn": "arn:aws:autoscaling:us-east-1:533948124879:scheduledAction:cf26c451-97f8-49f9-9cdd-515135e7d0f3:resource/dynamodb/table/GameScores:scheduledActionName/dynamodb",

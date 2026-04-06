@@ -7,20 +7,22 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// Create a aws_api_gateway_stage resource from a aws_api_gateway_deployment resource and ignore the latter resource
-// since we don't support it
-type AwsApiGatewayDeploymentExpander struct {
-	resourceFactory resource.ResourceFactory
+// AwsAPIGatewayDeploymentExpander Create a aws_api_gateway_stage resource from a aws_api_gateway_deployment resource and ignore the latter resource
+// AwsAPIGatewayDeploymentExpander since we don't support it
+type AwsAPIGatewayDeploymentExpander struct {
+	resourceFactory resource.Factory
 }
 
-func NewAwsApiGatewayDeploymentExpander(resourceFactory resource.ResourceFactory) AwsApiGatewayDeploymentExpander {
-	return AwsApiGatewayDeploymentExpander{resourceFactory}
+// NewAwsAPIGatewayDeploymentExpander creates a AwsAPIGatewayDeploymentExpander.
+func NewAwsAPIGatewayDeploymentExpander(resourceFactory resource.Factory) AwsAPIGatewayDeploymentExpander {
+	return AwsAPIGatewayDeploymentExpander{resourceFactory}
 }
 
-func (m AwsApiGatewayDeploymentExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
+// Execute applies the AwsAPIGatewayDeploymentExpander middleware.
+func (m AwsAPIGatewayDeploymentExpander) Execute(_, resourcesFromState *[]*resource.Resource) error {
 	var newResources []*resource.Resource
 	for _, res := range *resourcesFromState {
-		if res.ResourceType() != aws.AwsApiGatewayDeploymentResourceType {
+		if res.ResourceType() != aws.AwsAPIGatewayDeploymentResourceType {
 			newResources = append(newResources, res)
 			continue
 		}
@@ -31,7 +33,7 @@ func (m AwsApiGatewayDeploymentExpander) Execute(_, resourcesFromState *[]*resou
 		}
 
 		newStage := m.resourceFactory.CreateAbstractResource(
-			aws.AwsApiGatewayStageResourceType,
+			aws.AwsAPIGatewayStageResourceType,
 			strings.Join([]string{"ags", *(res.Attributes().GetString("rest_api_id")), *stageName}, "-"),
 			map[string]interface{}{},
 		)

@@ -24,17 +24,17 @@ func fakeAnalysis() *analyser.Analysis {
 	a.Duration = 12 * time.Second
 	a.AddUnmanaged(
 		&resource.Resource{
-			Id:   "unmanaged-id-1",
+			ID:   "unmanaged-id-1",
 			Type: "aws_unmanaged_resource",
 		},
 		&resource.Resource{
-			Id:   "unmanaged-id-2",
+			ID:   "unmanaged-id-2",
 			Type: "aws_unmanaged_resource",
 		},
 	)
 	a.AddDeleted(
 		&resource.Resource{
-			Id:   "deleted-id-1",
+			ID:   "deleted-id-1",
 			Type: "aws_deleted_resource",
 			Source: &resource.TerraformStateSource{
 				State:  "tfstate://delete_state.tfstate",
@@ -42,17 +42,17 @@ func fakeAnalysis() *analyser.Analysis {
 				Name:   "name",
 			},
 		}, &resource.Resource{
-			Id:   "deleted-id-2",
+			ID:   "deleted-id-2",
 			Type: "aws_deleted_resource",
 		},
 	)
 	a.AddManaged(
 		&resource.Resource{
-			Id:   "diff-id-1",
+			ID:   "diff-id-1",
 			Type: "aws_diff_resource",
 		},
 		&resource.Resource{
-			Id:   "no-diff-id-1",
+			ID:   "no-diff-id-1",
 			Type: "aws_no_diff_resource",
 		},
 	)
@@ -80,7 +80,7 @@ func fakeAnalysisNoDrift() *analyser.Analysis {
 	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)
 	for i := 0; i < 5; i++ {
 		a.AddManaged(&resource.Resource{
-			Id:   "managed-id-" + fmt.Sprintf("%d", i),
+			ID:   "managed-id-" + fmt.Sprintf("%d", i),
 			Type: "aws_managed_resource",
 		})
 	}
@@ -94,7 +94,7 @@ func fakeAnalysisWithoutAttrs() *analyser.Analysis {
 	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)
 	a.AddDeleted(
 		&resource.Resource{
-			Id:    "dfjkgnbsgj",
+			ID:    "dfjkgnbsgj",
 			Type:  "FakeResourceStringer",
 			Attrs: &resource.Attributes{},
 			Source: &resource.TerraformStateSource{
@@ -106,14 +106,14 @@ func fakeAnalysisWithoutAttrs() *analyser.Analysis {
 	)
 	a.AddManaged(
 		&resource.Resource{
-			Id:    "usqyfsdbgjsdgjkdfg",
+			ID:    "usqyfsdbgjsdgjkdfg",
 			Type:  "FakeResourceStringer",
 			Attrs: &resource.Attributes{},
 		},
 	)
 	a.AddUnmanaged(
 		&resource.Resource{
-			Id:    "duysgkfdjfdgfhd",
+			ID:    "duysgkfdjfdgfhd",
 			Type:  "FakeResourceStringer",
 			Attrs: &resource.Attributes{},
 		},
@@ -138,33 +138,19 @@ func fakeAnalysisWithAWSEnumerationError() *analyser.Analysis {
 	return &a
 }
 
-func fakeAnalysisWithGithubEnumerationError() *analyser.Analysis {
-	a := analyser.Analysis{}
-	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)
-	a.SetAlerts(alerter.Alerts{
-		"": []alerter.Alert{
-			alerts.NewRemoteAccessDeniedAlert(common.RemoteGithubTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("dummy error"), "github_team", "github_team"), alerts.EnumerationPhase),
-			alerts.NewRemoteAccessDeniedAlert(common.RemoteGithubTerraform, remoteerr.NewResourceListingErrorWithType(errors.New("dummy error"), "github_team_membership", "github_team"), alerts.EnumerationPhase),
-		},
-	})
-	a.ProviderName = "AWS"
-	a.ProviderVersion = "3.19.0"
-	return &a
-}
-
 func fakeAnalysisForJSONPlan() *analyser.Analysis {
 	a := analyser.Analysis{}
 	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)
 	a.AddUnmanaged(
 		&resource.Resource{
-			Id:   "unmanaged-id-1",
+			ID:   "unmanaged-id-1",
 			Type: "aws_unmanaged_resource",
 			Attrs: &resource.Attributes{
 				"name": "First unmanaged resource",
 			},
 		},
 		&resource.Resource{
-			Id:   "unmanaged-id-2",
+			ID:   "unmanaged-id-2",
 			Type: "aws_unmanaged_resource",
 			Attrs: &resource.Attributes{
 				"name": "Second unmanaged resource",
@@ -173,14 +159,14 @@ func fakeAnalysisForJSONPlan() *analyser.Analysis {
 	)
 	a.AddManaged(
 		&resource.Resource{
-			Id:   "managed-id-1",
+			ID:   "managed-id-1",
 			Type: "aws_managed_resource",
 			Attrs: &resource.Attributes{
 				"name": "First managed resource",
 			},
 		},
 		&resource.Resource{
-			Id:   "managed-id-2",
+			ID:   "managed-id-2",
 			Type: "aws_managed_resource",
 			Attrs: &resource.Attributes{
 				"name": "Second managed resource",
@@ -197,7 +183,7 @@ func fakeAnalysisWithoutDeep() *analyser.Analysis {
 	a.Date = time.Date(2022, 4, 8, 10, 35, 0, 0, time.UTC)
 	a.AddUnmanaged(
 		&resource.Resource{
-			Id:   "unmanaged-id-1",
+			ID:   "unmanaged-id-1",
 			Type: "aws_unmanaged_resource",
 			Attrs: &resource.Attributes{
 				"name": "First unmanaged resource",
@@ -288,7 +274,7 @@ func TestGetPrinter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetPrinter(OutputConfig{
+			if got := GetPrinter(Config{
 				Key:  tt.key,
 				Path: tt.path,
 			}, tt.quiet); !reflect.DeepEqual(got, tt.want) {
@@ -301,13 +287,13 @@ func TestGetPrinter(t *testing.T) {
 func TestShouldPrint(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs []OutputConfig
+		outputs []Config
 		quiet   bool
 		want    bool
 	}{
 		{
 			name: "test stdout should not prevents printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "stdout",
 					Key:  JSONOutputType,
@@ -317,7 +303,7 @@ func TestShouldPrint(t *testing.T) {
 		},
 		{
 			name: "test output to file doesn't prevent printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "result.json",
 					Key:  JSONOutputType,
@@ -327,7 +313,7 @@ func TestShouldPrint(t *testing.T) {
 		},
 		{
 			name: "test quiet should prevents printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "result.json",
 					Key:  JSONOutputType,
@@ -338,7 +324,7 @@ func TestShouldPrint(t *testing.T) {
 		},
 		{
 			name: "test stdout should not prevents printing",
-			outputs: []OutputConfig{
+			outputs: []Config{
 				{
 					Path: "result.json",
 					Key:  JSONOutputType,

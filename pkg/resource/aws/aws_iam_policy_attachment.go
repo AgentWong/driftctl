@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsIamPolicyAttachmentResourceType is the Terraform resource type for aws_iam_policy_attachment.
 const AwsIamPolicyAttachmentResourceType = "aws_iam_policy_attachment"
 
 func initAwsIAMPolicyAttachmentMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

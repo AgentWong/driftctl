@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsDbInstanceResourceType is the Terraform resource type for aws_db_instance.
 const AwsDbInstanceResourceType = "aws_db_instance"
 
 func initAwsDbInstanceMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

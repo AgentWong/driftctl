@@ -1,3 +1,4 @@
+// Package enumeration defines the core interfaces and types for resource enumeration and refresh.
 package enumeration
 
 import (
@@ -7,10 +8,12 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
+// EnumerateInput holds the input parameters for an enumeration operation.
 type EnumerateInput struct {
 	ResourceTypes []string
 }
 
+// EnumerateOutput holds the output of an enumeration operation.
 type EnumerateOutput struct {
 	// Resources is a map of resources by type. Every listed resource type will
 	// have a key in the map. The value will be either nil or an empty slice if
@@ -28,6 +31,7 @@ type EnumerateOutput struct {
 	Diagnostics diagnostic.Diagnostics
 }
 
+// Enumerator enumerates cloud resources.
 type Enumerator interface {
 	Enumerate(*EnumerateInput) (*EnumerateOutput, error)
 }

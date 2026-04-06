@@ -25,12 +25,12 @@ func TestProviderConfig_GetBinaryName(t *testing.T) {
 			want: "terraform-provider-aws_v3.24.1",
 		},
 		{
-			name: "test for github provider",
+			name: "test for aws provider with different version",
 			fields: fields{
-				Key:     "github",
-				Version: "4.4.0",
+				Key:     "aws",
+				Version: "3.19.0",
 			},
-			want: "terraform-provider-github_v4.4.0",
+			want: "terraform-provider-aws_v3.19.0",
 		},
 	}
 	for _, tt := range tests {
@@ -46,11 +46,7 @@ func TestProviderConfig_GetBinaryName(t *testing.T) {
 	}
 }
 
-func TestProviderConfig_GetDownloadUrl(t *testing.T) {
-	arch := runtime.GOARCH
-	if runtime.GOOS == "darwin" && runtime.GOARCH == "arm64" {
-		arch = "amd64"
-	}
+func TestProviderConfig_GetDownloadURL(t *testing.T) {
 	type fields struct {
 		Key     string
 		Version string
@@ -70,7 +66,7 @@ func TestProviderConfig_GetDownloadUrl(t *testing.T) {
 			want: fmt.Sprintf(
 				"https://releases.hashicorp.com/terraform-provider-aws/3.24.1/terraform-provider-aws_3.24.1_%s_%s.zip",
 				runtime.GOOS,
-				arch,
+				runtime.GOARCH,
 			),
 		},
 	}
@@ -80,8 +76,8 @@ func TestProviderConfig_GetDownloadUrl(t *testing.T) {
 				Key:     tt.fields.Key,
 				Version: tt.fields.Version,
 			}
-			if got := c.GetDownloadUrl(); got != tt.want {
-				t.Errorf("GetDownloadUrl() = %v, want %v", got, tt.want)
+			if got := c.GetDownloadURL(); got != tt.want {
+				t.Errorf("GetDownloadURL() = %v, want %v", got, tt.want)
 			}
 		})
 	}

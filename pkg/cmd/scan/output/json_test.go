@@ -39,14 +39,6 @@ func TestJSON_Write(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{
-			name:       "test json output with Github enumeration alerts",
-			goldenfile: "output_access_denied_alert_github.json",
-			args: args{
-				analysis: fakeAnalysisWithGithubEnumerationError(),
-			},
-			wantErr: false,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -65,7 +57,7 @@ func TestJSON_Write(t *testing.T) {
 			}
 			expectedFilePath := path.Join("./testdata/", tt.goldenfile)
 			if *goldenfile.Update == tt.goldenfile {
-				if err := os.WriteFile(expectedFilePath, result, 0600); err != nil {
+				if err := os.WriteFile(expectedFilePath, result, 0600); err != nil { //nolint:gosec // G703: test golden file update
 					t.Fatal(err)
 				}
 			}
@@ -111,7 +103,6 @@ func TestJSON_Write_stdout(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			stdout := os.Stdout // keep backup of the real stdout
 			r, w, _ := os.Pipe()
 			os.Stdout = w
@@ -130,7 +121,7 @@ func TestJSON_Write_stdout(t *testing.T) {
 			}()
 
 			// back to normal state
-			w.Close()
+			_ = w.Close()
 			os.Stdout = stdout // restoring the real stdout
 			result := <-outC
 
@@ -174,7 +165,7 @@ func TestJSON_WriteMultiplesTimesInSameFile(t *testing.T) {
 	goldenFileName := "output_multiples_times.json"
 	expectedFilePath := path.Join("./testdata/", goldenFileName)
 	if *goldenfile.Update == goldenFileName {
-		if err := os.WriteFile(expectedFilePath, result, 0600); err != nil {
+		if err := os.WriteFile(expectedFilePath, result, 0600); err != nil { //nolint:gosec // G703: test golden file update
 			t.Fatal(err)
 		}
 	}

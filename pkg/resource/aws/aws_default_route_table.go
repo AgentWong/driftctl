@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsDefaultRouteTableResourceType is the Terraform resource type for aws_default_route_table.
 const AwsDefaultRouteTableResourceType = "aws_default_route_table"
 
 func initAwsDefaultRouteTableMetadata(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

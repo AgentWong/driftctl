@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 
 	"github.com/snyk/driftctl/enumeration/resource"
@@ -22,7 +22,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			"test default sqs queue policy managed by IaC",
 			[]*resource.Resource{
 				{
-					Id:   "non-default-sqs-queue-policy",
+					ID:   "non-default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "non-default-sqs-queue-policy",
@@ -31,7 +31,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-sqs-queue-policy",
+					ID:   "default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "default-sqs-queue-policy",
@@ -42,7 +42,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-sqs-queue-policy",
+					ID:   "non-default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "non-default-sqs-queue-policy",
@@ -51,7 +51,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-sqs-queue-policy",
+					ID:   "default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "default-sqs-queue-policy",
@@ -62,7 +62,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "non-default-sqs-queue-policy",
+					ID:   "non-default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "non-default-sqs-queue-policy",
@@ -71,7 +71,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-sqs-queue-policy",
+					ID:   "default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "default-sqs-queue-policy",
@@ -85,7 +85,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			"test default sqs queue policy not managed by IaC",
 			[]*resource.Resource{
 				&resource.Resource{
-					Id:   "non-default-sqs-queue-policy",
+					ID:   "non-default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "non-default-sqs-queue-policy",
@@ -94,7 +94,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 					},
 				},
 				&resource.Resource{
-					Id:   "default-sqs-queue-policy",
+					ID:   "default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "default-sqs-queue-policy",
@@ -105,7 +105,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				&resource.Resource{
-					Id:   "non-default-sqs-queue-policy",
+					ID:   "non-default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "non-default-sqs-queue-policy",
@@ -116,7 +116,7 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				&resource.Resource{
-					Id:   "non-default-sqs-queue-policy",
+					ID:   "non-default-sqs-queue-policy",
 					Type: aws.AwsSqsQueuePolicyResourceType,
 					Attrs: &resource.Attributes{
 						"queue_url": "non-default-sqs-queue-policy",
@@ -141,10 +141,9 @@ func TestAwsDefaultSQSQueuePolicy_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
-
 		})
 	}
 }

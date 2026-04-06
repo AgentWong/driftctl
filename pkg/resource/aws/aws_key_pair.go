@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsKeyPairResourceType is the Terraform resource type for aws_key_pair.
 const AwsKeyPairResourceType = "aws_key_pair"
 
 func initAwsKeyPairMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

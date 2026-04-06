@@ -6,13 +6,14 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsSnsTopicPolicyResourceType is the Terraform resource type for aws_sns_topic_policy.
 const AwsSnsTopicPolicyResourceType = "aws_sns_topic_policy"
 
 func initSnsTopicPolicyMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
 	resourceSchemaRepository.SetNormalizeFunc(AwsSnsTopicPolicyResourceType, func(res *resource.Resource) {
 		val := res.Attrs
 		val.SafeDelete([]string{"owner"})
-		jsonString, err := helpers.NormalizeJsonString((*val)["policy"])
+		jsonString, err := helpers.NormalizeJSONString((*val)["policy"])
 		if err != nil {
 			return
 		}
@@ -20,7 +21,7 @@ func initSnsTopicPolicyMetaData(resourceSchemaRepository dctlresource.SchemaRepo
 	})
 	resourceSchemaRepository.UpdateSchema(AwsSnsTopicPolicyResourceType, map[string]func(attributeSchema *resource.AttributeSchema){
 		"policy": func(attributeSchema *resource.AttributeSchema) {
-			attributeSchema.JsonString = true
+			attributeSchema.JSONString = true
 		},
 	})
 }

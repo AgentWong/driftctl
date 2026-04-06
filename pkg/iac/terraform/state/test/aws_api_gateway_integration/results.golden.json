@@ -1,6 +1,6 @@
 [
  {
-  "Id": "agi-u7jce3lokk-z9ag20-GET",
+  "ID": "agi-u7jce3lokk-z9ag20-GET",
   "Type": "aws_api_gateway_integration",
   "Attrs": {
    "cache_namespace": "z9ag20",

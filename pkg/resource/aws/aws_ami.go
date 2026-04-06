@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsAmiResourceType is the Terraform resource type for aws_ami.
 const AwsAmiResourceType = "aws_ami"
 
 func initAwsAmiMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

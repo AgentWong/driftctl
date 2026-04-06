@@ -7,17 +7,19 @@ import (
 
 // AwsEbsEncryptionByDefaultReconciler is a middleware that either creates an 'aws_ebs_encryption_by_default' resource
 // based on its equivalent state one just for the purpose of getting the Terraform custom Id, or removes the resource
-// from our list of remote resources if it is not managed and is disabled.
+// AwsEbsEncryptionByDefaultReconciler from our list of remote resources if it is not managed and is disabled.
 type AwsEbsEncryptionByDefaultReconciler struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewAwsEbsEncryptionByDefaultReconciler(resourceFactory resource.ResourceFactory) AwsEbsEncryptionByDefaultReconciler {
+// NewAwsEbsEncryptionByDefaultReconciler creates a AwsEbsEncryptionByDefaultReconciler.
+func NewAwsEbsEncryptionByDefaultReconciler(resourceFactory resource.Factory) AwsEbsEncryptionByDefaultReconciler {
 	return AwsEbsEncryptionByDefaultReconciler{
 		resourceFactory: resourceFactory,
 	}
 }
 
+// Execute applies the AwsEbsEncryptionByDefaultReconciler middleware.
 func (m AwsEbsEncryptionByDefaultReconciler) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newStateResources := make([]*resource.Resource, 0)
 	newRemoteResources := make([]*resource.Resource, 0)
@@ -51,9 +53,9 @@ func (m AwsEbsEncryptionByDefaultReconciler) Execute(remoteResources, resourcesF
 		// The reason why is that the id is a random string created by Terraform that we need to compare two resources.
 		newRemoteResources = append(newRemoteResources, m.resourceFactory.CreateAbstractResource(
 			res.ResourceType(),
-			res.ResourceId(),
+			res.ResourceID(),
 			map[string]interface{}{
-				"id":      res.ResourceId(),
+				"id":      res.ResourceID(),
 				"enabled": *defaultEbsEncryption.Attributes().GetBool("enabled"),
 			},
 		))

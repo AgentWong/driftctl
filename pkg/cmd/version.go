@@ -8,13 +8,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NewVersionCmd creates a new command instance.
 func NewVersionCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Display driftctl version",
 		Long:  "Display driftctl version",
 		Args:  cobra.NoArgs,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			data := struct {
 				Version string
 			}{Version: version.Current()}

@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsDefaultSecurityGroupResourceType is the Terraform resource type for default security groups.
 const AwsDefaultSecurityGroupResourceType = "aws_default_security_group"
 
 func initAwsDefaultSecurityGroupMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

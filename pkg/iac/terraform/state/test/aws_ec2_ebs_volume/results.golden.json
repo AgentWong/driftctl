@@ -1,6 +1,6 @@
 [
  {
-  "Id": "vol-01ddc91d3d9d1318b",
+  "ID": "vol-01ddc91d3d9d1318b",
   "Type": "aws_ebs_volume",
   "Attrs": {
    "availability_zone": "eu-west-3a",

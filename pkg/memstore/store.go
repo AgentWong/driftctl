@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+// Store provides named in-memory buckets.
 type Store interface {
 	Bucket(BucketName) Bucket
 }
@@ -13,6 +14,7 @@ type store struct {
 	buckets map[int]*bucket
 }
 
+// New creates an empty Store.
 func New() Store {
 	return &store{
 		m:       &sync.Mutex{},

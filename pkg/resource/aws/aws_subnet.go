@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsSubnetResourceType is the Terraform resource type for VPC subnets.
 const AwsSubnetResourceType = "aws_subnet"
 
 func initAwsSubnetMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

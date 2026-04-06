@@ -6,12 +6,15 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
+// AwsNatGatewayEipAssoc is a middleware.
 type AwsNatGatewayEipAssoc struct{}
 
+// NewAwsNatGatewayEipAssoc creates a AwsNatGatewayEipAssoc.
 func NewAwsNatGatewayEipAssoc() AwsNatGatewayEipAssoc {
 	return AwsNatGatewayEipAssoc{}
 }
 
+// Execute removes aws_eip_association resources created implicitly by NAT gateways.
 // When creating a nat gateway, we associate an EIP to the gateway
 // It implies that driftctl read a aws_eip_association resource from remote
 // As we cannot use aws_eip_association in terraform to assign an eip to an aws_nat_gateway
@@ -29,7 +32,7 @@ func (a AwsNatGatewayEipAssoc) Execute(remoteResources, resourcesFromState *[]*r
 
 		if a.isAssociatedToNatGateway(remoteResource, remoteResources) {
 			logrus.WithFields(logrus.Fields{
-				"id":   remoteResource.ResourceId(),
+				"id":   remoteResource.ResourceID(),
 				"type": remoteResource.ResourceType(),
 			}).Debug("Ignoring aws_eip_association from remote resource list as it is associated to a nat gateway")
 			continue
@@ -47,7 +50,7 @@ func (a AwsNatGatewayEipAssoc) Execute(remoteResources, resourcesFromState *[]*r
 
 		if a.isAssociatedToNatGateway(stateResource, remoteResources) {
 			logrus.WithFields(logrus.Fields{
-				"id":   stateResource.ResourceId(),
+				"id":   stateResource.ResourceID(),
 				"type": stateResource.ResourceType(),
 			}).Debug("Ignoring aws_eip_association from state resource list as it is associated to a nat gateway")
 			continue
@@ -66,10 +69,10 @@ func (a AwsNatGatewayEipAssoc) isAssociatedToNatGateway(cur *resource.Resource, 
 	// Search for a nat gateway associated with our EIP
 	for _, res := range *resourceSet {
 		if res.ResourceType() == aws.AwsNatGatewayResourceType {
-			allocationId, allocationIdExist := res.Attrs.Get("allocation_id")
-			eipAssocAllocId, eipAssocAllocIdExist := cur.Attrs.Get("allocation_id")
-			if allocationIdExist && eipAssocAllocIdExist &&
-				allocationId == eipAssocAllocId {
+			allocationID, allocationIDExist := res.Attrs.Get("allocation_id")
+			eipAssocAllocID, eipAssocAllocIDExist := cur.Attrs.Get("allocation_id")
+			if allocationIDExist && eipAssocAllocIDExist &&
+				allocationID == eipAssocAllocID {
 				return true
 			}
 		}

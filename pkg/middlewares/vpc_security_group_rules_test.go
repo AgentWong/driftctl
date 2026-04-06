@@ -10,32 +10,31 @@ import (
 )
 
 func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
-
 	factory := &dctlresource.MockResourceFactory{}
 	factory.On("CreateAbstractResource", aws.AwsSecurityGroupRuleResourceType, "sgrule-1175318309", mock.Anything).Times(1).Return(
 		&resource.Resource{
-			Id:    "sgrule-1175318309",
+			ID:    "sgrule-1175318309",
 			Type:  aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{},
 		}, nil)
 
 	factory.On("CreateAbstractResource", aws.AwsSecurityGroupRuleResourceType, "sgrule-2582518759", mock.Anything).Times(1).Return(
 		&resource.Resource{
-			Id:    "sgrule-2582518759",
+			ID:    "sgrule-2582518759",
 			Type:  aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{},
 		}, nil)
 
 	factory.On("CreateAbstractResource", aws.AwsSecurityGroupRuleResourceType, "sgrule-2165103420", mock.Anything).Times(1).Return(
 		&resource.Resource{
-			Id:    "sgrule-2165103420",
+			ID:    "sgrule-2165103420",
 			Type:  aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{},
 		}, nil)
 
 	factory.On("CreateAbstractResource", aws.AwsSecurityGroupRuleResourceType, "sgrule-350400929", mock.Anything).Times(1).Return(
 		&resource.Resource{
-			Id:    "sgrule-350400929",
+			ID:    "sgrule-350400929",
 			Type:  aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{},
 		}, nil)
@@ -44,7 +43,7 @@ func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
 	var remoteResources []*resource.Resource
 	stateResources := []*resource.Resource{
 		{
-			Id:   "sg-test",
+			ID:   "sg-test",
 			Type: aws.AwsSecurityGroupResourceType,
 			Attrs: &resource.Attributes{
 				"id":   "sg-test",
@@ -52,7 +51,7 @@ func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
 			},
 		},
 		{
-			Id:   "sgrule-3970541193",
+			ID:   "sgrule-3970541193",
 			Type: aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{
 				"id":                       "sgrule-3970541193",
@@ -66,7 +65,7 @@ func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
 			},
 		},
 		{
-			Id:   "sgrule-845917806",
+			ID:   "sgrule-845917806",
 			Type: aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{
 				"id":                "sgrule-845917806",
@@ -80,7 +79,7 @@ func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
 			},
 		},
 		{
-			Id:   "sgrule-294318973",
+			ID:   "sgrule-294318973",
 			Type: aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{
 				"id":                "sgrule-294318973",
@@ -93,7 +92,7 @@ func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
 			},
 		},
 		{
-			Id:   "sgrule-2471889226",
+			ID:   "sgrule-2471889226",
 			Type: aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{
 				"id":                "sgrule-2471889226",
@@ -106,7 +105,7 @@ func TestVPCSecurityGroupRuleSanitizer(t *testing.T) {
 			},
 		},
 		{
-			Id:   "sgrule-3587309474",
+			ID:   "sgrule-3587309474",
 			Type: aws.AwsSecurityGroupRuleResourceType,
 			Attrs: &resource.Attributes{
 				"id":                "sgrule-3587309474",

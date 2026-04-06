@@ -7,6 +7,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsRoute53HealthCheckResourceType is the Terraform resource type for aws_route53_health_check.
 const AwsRoute53HealthCheckResourceType = "aws_route53_health_check"
 
 func initAwsRoute53HealthCheckMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

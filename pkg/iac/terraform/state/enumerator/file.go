@@ -8,25 +8,30 @@ import (
 	"github.com/snyk/driftctl/pkg/iac/config"
 )
 
+// FileEnumeratorConfig holds configuration for file-based state enumeration.
 type FileEnumeratorConfig struct {
 	Bucket *string
 	Prefix *string
 }
 
+// FileEnumerator discovers Terraform state files on the local filesystem.
 type FileEnumerator struct {
 	config config.SupplierConfig
 }
 
+// NewFileEnumerator creates a FileEnumerator.
 func NewFileEnumerator(config config.SupplierConfig) *FileEnumerator {
 	return &FileEnumerator{
 		config,
 	}
 }
 
+// Origin returns the source path of this enumerator.
 func (s *FileEnumerator) Origin() string {
 	return s.config.String()
 }
 
+// Enumerate returns the list of matching state file paths.
 func (s *FileEnumerator) Enumerate() ([]string, error) {
 	path := s.config.Path
 

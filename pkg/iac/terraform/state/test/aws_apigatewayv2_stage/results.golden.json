@@ -1,6 +1,6 @@
 [
  {
-  "Id": "example-stage",
+  "ID": "example-stage",
   "Type": "aws_apigatewayv2_stage",
   "Attrs": {
    "api_id": "hn5fxpwfae",

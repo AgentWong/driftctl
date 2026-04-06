@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsRoute53ZoneResourceType is the Terraform resource type for aws_route53_zone.
 const AwsRoute53ZoneResourceType = "aws_route53_zone"
 
 func initAwsRoute53ZoneMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

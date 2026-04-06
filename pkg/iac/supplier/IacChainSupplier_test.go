@@ -48,7 +48,7 @@ func TestIacChainSupplier_Resources(t *testing.T) {
 				sup = &resource2.MockIaCSupplier{}
 				sup.On("Resources").Return([]*resource.Resource{
 					&resource.Resource{
-						Id:    "ID",
+						ID:    "ID",
 						Type:  "TYPE",
 						Attrs: nil,
 					},
@@ -57,7 +57,7 @@ func TestIacChainSupplier_Resources(t *testing.T) {
 			},
 			want: []*resource.Resource{
 				&resource.Resource{
-					Id:    "ID",
+					ID:    "ID",
 					Type:  "TYPE",
 					Attrs: nil,
 				},

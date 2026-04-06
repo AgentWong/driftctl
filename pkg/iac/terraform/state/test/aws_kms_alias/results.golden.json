@@ -1,6 +1,6 @@
 [
  {
-  "Id": "alias/bar",
+  "ID": "alias/bar",
   "Type": "aws_kms_alias",
   "Attrs": {
    "arn": "arn:aws:kms:eu-west-3:047081014315:alias/bar",
@@ -10,7 +10,7 @@
   }
  },
  {
-  "Id": "alias/baz20210225124429210500000001",
+  "ID": "alias/baz20210225124429210500000001",
   "Type": "aws_kms_alias",
   "Attrs": {
    "arn": "arn:aws:kms:eu-west-3:047081014315:alias/baz20210225124429210500000001",
@@ -20,7 +20,7 @@
   }
  },
  {
-  "Id": "alias/foo",
+  "ID": "alias/foo",
   "Type": "aws_kms_alias",
   "Attrs": {
    "arn": "arn:aws:kms:eu-west-3:047081014315:alias/foo",

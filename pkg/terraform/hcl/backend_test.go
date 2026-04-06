@@ -47,33 +47,6 @@ func TestBackend_SupplierConfig(t *testing.T) {
 			},
 		},
 		{
-			name:     "test with GCS backend block",
-			filename: "testdata/gcs_backend_block.tf",
-			want: &config.SupplierConfig{
-				Key:     "tfstate",
-				Backend: "gs",
-				Path:    "tf-state-prod/terraform/state/default.tfstate",
-			},
-		},
-		{
-			name:     "test with Azure backend block",
-			filename: "testdata/azurerm_backend_block.tf",
-			want: &config.SupplierConfig{
-				Key:     "tfstate",
-				Backend: "azurerm",
-				Path:    "states/prod.terraform.tfstate",
-			},
-		},
-		{
-			name:     "test with Azure backend block with non-default workspace",
-			filename: "testdata/azurerm_backend_workspace/azurerm_backend_block.tf",
-			want: &config.SupplierConfig{
-				Key:     "tfstate",
-				Backend: "azurerm",
-				Path:    "states/prod.terraform.tfstateenv:bar",
-			},
-		},
-		{
 			name:     "test with unknown backend",
 			filename: "testdata/unknown_backend_block.tf",
 			want:     nil,

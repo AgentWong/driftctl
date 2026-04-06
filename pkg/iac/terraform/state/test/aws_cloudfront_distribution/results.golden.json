@@ -1,6 +1,6 @@
 [
  {
-  "Id": "E1M9CNS0XSHI19",
+  "ID": "E1M9CNS0XSHI19",
   "Type": "aws_cloudfront_distribution",
   "Attrs": {
    "arn": "arn:aws:cloudfront::047081014315:distribution/E1M9CNS0XSHI19",

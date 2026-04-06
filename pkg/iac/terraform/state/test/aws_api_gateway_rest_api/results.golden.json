@@ -1,6 +1,6 @@
 [
  {
-  "Id": "3of73v5ob4",
+  "ID": "3of73v5ob4",
   "Type": "aws_api_gateway_rest_api",
   "Attrs": {
    "api_key_source": "HEADER",
@@ -24,7 +24,7 @@
   }
  },
  {
-  "Id": "1jitcobwol",
+  "ID": "1jitcobwol",
   "Type": "aws_api_gateway_rest_api",
   "Attrs": {
    "api_key_source": "HEADER",

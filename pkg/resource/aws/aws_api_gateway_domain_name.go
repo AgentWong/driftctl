@@ -1,3 +1,4 @@
 package aws
 
-const AwsApiGatewayDomainNameResourceType = "aws_api_gateway_domain_name"
+// AwsAPIGatewayDomainNameResourceType is the Terraform resource type for aws_api_gateway_domain_name.
+const AwsAPIGatewayDomainNameResourceType = "aws_api_gateway_domain_name"

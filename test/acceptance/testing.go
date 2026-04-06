@@ -1,12 +1,14 @@
+// Package acceptance provides helpers for running driftctl acceptance tests against real AWS infrastructure.
 package acceptance
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"io"
-	"io/fs"
+	iofs "io/fs"
 	"os"
 	"path"
 	"strings"
@@ -14,25 +16,28 @@ import (
 	"time"
 
 	"github.com/eapache/go-resiliency/retrier"
+	goversion "github.com/hashicorp/go-version"
+	install "github.com/hashicorp/hc-install"
+	hcfs "github.com/hashicorp/hc-install/fs"
+	"github.com/hashicorp/hc-install/product"
+	"github.com/hashicorp/hc-install/releases"
+	"github.com/hashicorp/hc-install/src"
+	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/pkg/errors"
-	"github.com/snyk/driftctl/pkg/analyser"
-	cmderrors "github.com/snyk/driftctl/pkg/cmd/errors"
-
 	"github.com/sirupsen/logrus"
-
-	"github.com/snyk/driftctl/test"
-
 	"github.com/spf13/cobra"
 
 	"github.com/snyk/driftctl/logger"
+	"github.com/snyk/driftctl/pkg/analyser"
 	"github.com/snyk/driftctl/pkg/cmd"
-
-	"github.com/hashicorp/terraform-exec/tfexec"
-	"github.com/hashicorp/terraform-exec/tfinstall"
+	cmderrors "github.com/snyk/driftctl/pkg/cmd/errors"
+	"github.com/snyk/driftctl/test"
 )
 
+// ShouldRetryFunc decides whether a scan should be retried.
 type ShouldRetryFunc func(result *test.ScanResult, retryDuration time.Duration, retryCount uint8) bool
 
+// AccCheck defines a single check step in an acceptance test.
 type AccCheck struct {
 	PreExec     func()
 	PostExec    func()
@@ -42,6 +47,7 @@ type AccCheck struct {
 	Check       func(result *test.ScanResult, stdout string, err error)
 }
 
+// AccTestCase defines a full acceptance test scenario.
 type AccTestCase struct {
 	DoNotRunTerraform          bool
 	TerraformVersion           string
@@ -59,25 +65,37 @@ type AccTestCase struct {
 
 func (c *AccTestCase) initTerraformExecutor() error {
 	logrus.Debug("Initializing terraform...")
-	installPath := path.Join(os.TempDir(), "terraform-bin", c.TerraformVersion)
-	binPath := path.Join(installPath, "terraform")
-	execPathFinderOptions := make([]tfinstall.ExecPathFinder, 0)
+	installDir := path.Join(os.TempDir(), "terraform-bin", c.TerraformVersion)
+	binPath := path.Join(installDir, "terraform")
 
-	err := os.MkdirAll(installPath, fs.ModePerm)
+	err := os.MkdirAll(installDir, iofs.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	_, err = os.Stat(binPath)
-	if os.IsNotExist(err) {
-		execPathFinderOptions = append(execPathFinderOptions, tfinstall.ExactVersion(c.TerraformVersion, installPath))
+	var execPath string
+	if _, statErr := os.Stat(binPath); os.IsNotExist(statErr) {
+		installer := install.NewInstaller()
+		v := goversion.Must(goversion.NewVersion(c.TerraformVersion))
+		execPath, err = installer.Ensure(context.Background(), []src.Source{
+			&releases.ExactVersion{
+				Product:    product.Terraform,
+				Version:    v,
+				InstallDir: installDir,
+			},
+		})
+		if err != nil {
+			return err
+		}
 	} else {
-		execPathFinderOptions = append(execPathFinderOptions, tfinstall.ExactPath(binPath))
-	}
-
-	execPath, err := tfinstall.Find(context.Background(), execPathFinderOptions...)
-	if err != nil {
-		return err
+		execPath, err = install.NewInstaller().Ensure(context.Background(), []src.Source{
+			&hcfs.AnyVersion{
+				ExactBinPath: binPath,
+			},
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	c.tf = make(map[string]*tfexec.Terraform, 1)
@@ -100,7 +118,7 @@ func (c *AccTestCase) createResultFile(t *testing.T) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 	c.tmpResultFilePath = file.Name()
 	return nil
 }
@@ -111,7 +129,7 @@ func (c *AccTestCase) validate() error {
 	}
 
 	if len(c.Paths) < 1 && !c.DoNotRunTerraform {
-		return fmt.Errorf("Paths attribute must be defined")
+		return fmt.Errorf("paths attribute must be defined")
 	}
 
 	for _, arg := range c.Args {
@@ -146,7 +164,6 @@ func (c *AccTestCase) getResult(t *testing.T) *test.ScanResult {
  * e.g. ACC_AWS_PROFILE will override AWS_PROFILE
  */
 func (c *AccTestCase) resolveTerraformEnv() map[string]string {
-
 	environMap := make(map[string]string, len(os.Environ()))
 
 	const PREFIX string = "ACC_"
@@ -257,7 +274,8 @@ func runDriftCtlCmd(driftctlCmd *cmd.DriftctlCmd) (*cobra.Command, string, error
 	os.Stdout = w
 	cmd, cmdErr := driftctlCmd.ExecuteC()
 	// Ignore not in sync errors in acceptance test context
-	if _, isNotInSyncErr := cmdErr.(cmderrors.InfrastructureNotInSync); isNotInSyncErr {
+	var notInSync cmderrors.InfrastructureNotInSync
+	if stderrors.As(cmdErr, &notInSync) {
 		cmdErr = nil
 	}
 	outC := make(chan string)
@@ -269,7 +287,7 @@ func runDriftCtlCmd(driftctlCmd *cmd.DriftctlCmd) (*cobra.Command, string, error
 	}()
 
 	// back to normal state
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old // restoring the real stdout
 	out := <-outC
 	return cmd, out, cmdErr
@@ -298,12 +316,12 @@ func (c *AccTestCase) setEnv(env []string) {
 	os.Clearenv()
 	for _, e := range env {
 		envKeyValue := strings.SplitN(e, "=", 2)
-		os.Setenv(envKeyValue[0], envKeyValue[1])
+		_ = os.Setenv(envKeyValue[0], envKeyValue[1])
 	}
 }
 
+// Run executes an acceptance test case.
 func Run(t *testing.T, c AccTestCase) {
-
 	logger.Init()
 
 	if os.Getenv("DRIFTCTL_ACC") == "" {
@@ -330,7 +348,7 @@ func Run(t *testing.T, c AccTestCase) {
 	// Disable terraform version checks
 	// @link https://www.terraform.io/docs/commands/index.html#upgrade-and-security-bulletin-checks
 	checkpoint := os.Getenv("CHECKPOINT_DISABLE")
-	os.Setenv("CHECKPOINT_DISABLE", "true")
+	_ = os.Setenv("CHECKPOINT_DISABLE", "true")
 
 	// Retry after 2s, 4s, 8s, 16s, 32s, 64s, 2m, 2m, 2m, 2m
 	// Try tweaking the backoff interval limit and/or the retry count limit in
@@ -347,7 +365,7 @@ func Run(t *testing.T, c AccTestCase) {
 		defer func() {
 			c.restoreEnv()
 			err := limitedExponentialBackoff.Run(c.terraformDestroy)
-			os.Setenv("CHECKPOINT_DISABLE", checkpoint)
+			_ = os.Setenv("CHECKPOINT_DISABLE", checkpoint)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -401,7 +419,7 @@ func Run(t *testing.T, c AccTestCase) {
 		}
 		if len(check.Env) > 0 {
 			for key, value := range check.Env {
-				os.Setenv(key, value)
+				_ = os.Setenv(key, value)
 			}
 		}
 		if check.PreExec != nil {
@@ -429,12 +447,9 @@ func Run(t *testing.T, c AccTestCase) {
 		driftctlCmd := cmd.NewDriftctlCmd(test.Build{})
 		_, out, cmdErr := runDriftCtlCmd(driftctlCmd)
 		result := c.getResult(t)
-		var retryCount uint8 = 0
+		var retryCount uint8
 		timeBeforeRetry := time.Now()
-		for {
-			if check.ShouldRetry == nil || !check.ShouldRetry(result, time.Since(timeBeforeRetry), retryCount) {
-				break
-			}
+		for check.ShouldRetry != nil && check.ShouldRetry(result, time.Since(timeBeforeRetry), retryCount) {
 			logrus.
 				WithField("count", fmt.Sprintf("%d", retryCount)).
 				WithField("retry_duration", time.Since(timeBeforeRetry).Round(time.Second)).

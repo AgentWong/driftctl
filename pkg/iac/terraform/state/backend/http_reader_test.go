@@ -59,7 +59,7 @@ func TestHTTPBackend_Read(t *testing.T) {
 				bodyReadCloser := io.NopCloser(bodyReader)
 
 				m.On("Do", req).Return(&http.Response{
-					StatusCode: 200,
+					StatusCode: http.StatusOK,
 					Body:       bodyReadCloser,
 				}, nil)
 
@@ -85,7 +85,7 @@ func TestHTTPBackend_Read(t *testing.T) {
 				bodyReadCloser := io.NopCloser(bodyReader)
 
 				m.On("Do", req).Return(&http.Response{
-					StatusCode: 404,
+					StatusCode: http.StatusNotFound,
 					Body:       bodyReadCloser,
 				}, nil)
 
@@ -104,9 +104,8 @@ func TestHTTPBackend_Read(t *testing.T) {
 			if tt.wantErr != nil {
 				assert.EqualError(t, err, tt.wantErr.Error())
 				return
-			} else {
-				assert.NoError(t, err)
 			}
+			assert.NoError(t, err)
 			assert.NotNil(t, got)
 			assert.Equal(t, tt.expected, string(got))
 		})

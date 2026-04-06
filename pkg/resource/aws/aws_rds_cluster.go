@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsRDSClusterResourceType is the Terraform resource type for AWS RDS clusters.
 const AwsRDSClusterResourceType = "aws_rds_cluster"
 
 func initAwsRDSClusterMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

@@ -1,17 +1,16 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
 func TestAwsDefaultRoute_Execute(t *testing.T) {
-
 	tests := []struct {
 		name               string
 		remoteResources    []*resource.Resource
@@ -22,10 +21,10 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 			"test that default routes are not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "a-dummy-route",
+					ID:   "a-dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -33,7 +32,7 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-managed-by-IaC",
+					ID:   "default-managed-by-IaC",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -43,7 +42,7 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-managed-by-IaC",
+					ID:   "default-managed-by-IaC",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -53,10 +52,10 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "a-dummy-route",
+					ID:   "a-dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -64,7 +63,7 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-managed-by-IaC",
+					ID:   "default-managed-by-IaC",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -77,10 +76,10 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 			"test that default routes are ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "a-dummy-route",
+					ID:   "a-dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -88,7 +87,7 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-managed-by-IaC",
+					ID:   "default-managed-by-IaC",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -99,10 +98,10 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "a-dummy-route",
+					ID:   "a-dummy-route",
 					Type: aws.AwsRouteResourceType,
 					Attrs: &resource.Attributes{
 						"route_table_id": "fake-table-id",
@@ -125,7 +124,7 @@ func TestAwsDefaultRoute_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

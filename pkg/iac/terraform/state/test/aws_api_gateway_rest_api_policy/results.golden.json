@@ -1,6 +1,6 @@
 [
  {
-  "Id": "c3n3aqga5d",
+  "ID": "c3n3aqga5d",
   "Type": "aws_api_gateway_rest_api_policy",
   "Attrs": {
    "id": "c3n3aqga5d",
@@ -9,7 +9,7 @@
   }
  },
  {
-  "Id": "uwk4xvbm04",
+  "ID": "uwk4xvbm04",
   "Type": "aws_api_gateway_rest_api_policy",
   "Attrs": {
    "id": "uwk4xvbm04",

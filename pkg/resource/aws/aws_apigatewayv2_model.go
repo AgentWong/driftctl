@@ -5,11 +5,12 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
-const AwsApiGatewayV2ModelResourceType = "aws_apigatewayv2_model"
+// AwsAPIGatewayV2ModelResourceType is the Terraform resource type for aws_apigatewayv2_model.
+const AwsAPIGatewayV2ModelResourceType = "aws_apigatewayv2_model"
 
-func initAwsApiGatewayV2ModelMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
+func initAwsAPIGatewayV2ModelMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {
 	resourceSchemaRepository.SetHumanReadableAttributesFunc(
-		AwsApiGatewayV2ModelResourceType,
+		AwsAPIGatewayV2ModelResourceType,
 		func(res *resource.Resource) map[string]string {
 			return map[string]string{
 				"name": *res.Attributes().GetString("name"),

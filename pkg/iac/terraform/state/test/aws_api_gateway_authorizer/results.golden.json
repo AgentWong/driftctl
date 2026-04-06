@@ -1,6 +1,6 @@
 [
  {
-  "Id": "ypcpde",
+  "ID": "ypcpde",
   "Type": "aws_api_gateway_authorizer",
   "Attrs": {
    "authorizer_credentials": "arn:aws:iam::047081014315:role/api_gateway_auth_invocation",
@@ -15,7 +15,7 @@
   }
  },
  {
-  "Id": "bwhebj",
+  "ID": "bwhebj",
   "Type": "aws_api_gateway_authorizer",
   "Attrs": {
    "authorizer_credentials": "arn:aws:iam::047081014315:role/api_gateway_auth_invocation",

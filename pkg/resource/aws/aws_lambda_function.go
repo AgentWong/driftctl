@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsLambdaFunctionResourceType is the Terraform resource type for aws_lambda_function.
 const AwsLambdaFunctionResourceType = "aws_lambda_function"
 
 func initAwsLambdaFunctionMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

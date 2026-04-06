@@ -1,6 +1,8 @@
 package remote
 
 import (
+	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/snyk/driftctl/enumeration/alerter"
@@ -8,84 +10,54 @@ import (
 	"github.com/snyk/driftctl/enumeration/remote/common"
 	remoteerror "github.com/snyk/driftctl/enumeration/remote/error"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"github.com/aws/smithy-go"
+	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-func HandleResourceEnumerationError(err error, alerter alerter.AlerterInterface) error {
-	listError, ok := err.(*remoteerror.ResourceScanningError)
-	if !ok {
+// HandleResourceEnumerationError inspects a resource enumeration error and raises an alert if appropriate.
+func HandleResourceEnumerationError(err error, alerter alerter.Interface) error {
+	var listError *remoteerror.ResourceScanningError
+	if !errors.As(err, &listError) {
 		return err
 	}
 
 	rootCause := listError.RootCause()
 
-	// We cannot use the status.FromError() method because AWS errors are not well-formed.
-	// Indeed, they compose the error interface without implementing the Error() method and thus triggering a nil panic
-	// when returning an unknown error from status.FromError()
-	// As a workaround we duplicated the logic from status.FromError here
-	if _, ok := rootCause.(interface{ GRPCStatus() *status.Status }); ok {
-		return handleGoogleEnumerationError(alerter, listError, status.Convert(rootCause))
+	// Check for AWS API errors (SDK v2)
+	var respErr *smithyhttp.ResponseError
+	if errors.As(rootCause, &respErr) {
+		return handleAWSError(alerter, listError, respErr)
 	}
 
-	// at least for storage api google sdk does not return grpc error so we parse the error message.
-	if shouldHandleGoogleForbiddenError(listError) {
-		alerts.SendEnumerationAlert(common.RemoteGoogleTerraform, alerter, listError)
-		return nil
+	// Check for smithy API errors without HTTP response
+	var apiErr smithy.APIError
+	if errors.As(rootCause, &apiErr) {
+		if strings.Contains(apiErr.ErrorCode(), "AccessDenied") {
+			alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
+			return nil
+		}
 	}
 
-	reqerr, ok := rootCause.(awserr.RequestFailure)
-	if ok {
-		return handleAWSError(alerter, listError, reqerr)
-	}
-
-	// This handles access denied errors like the following:
+	// handles access denied errors in various message formats, e.g.:
 	// aws_s3_bucket_policy: AccessDenied: Error listing bucket policy <policy_name>
-	if strings.Contains(rootCause.Error(), "AccessDenied") {
+	lowerMsg := strings.ToLower(rootCause.Error())
+	if strings.Contains(lowerMsg, "accessdenied") || strings.Contains(lowerMsg, "access denied") {
 		alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
-		return nil
-	}
-
-	if strings.HasPrefix(
-		rootCause.Error(),
-		"Your token has not been granted the required scopes to execute this query.",
-	) {
-		alerts.SendEnumerationAlert(common.RemoteGithubTerraform, alerter, listError)
 		return nil
 	}
 
 	return err
 }
 
-func handleAWSError(alerter alerter.AlerterInterface, listError *remoteerror.ResourceScanningError, reqerr awserr.RequestFailure) error {
-	if reqerr.StatusCode() == 403 || (reqerr.StatusCode() == 400 && strings.Contains(reqerr.Code(), "AccessDenied")) {
-		alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
-		return nil
+func handleAWSError(alerter alerter.Interface, listError *remoteerror.ResourceScanningError, respErr *smithyhttp.ResponseError) error {
+	statusCode := respErr.HTTPStatusCode()
+	var apiErr smithy.APIError
+	if errors.As(respErr, &apiErr) {
+		if statusCode == http.StatusForbidden || (statusCode == http.StatusBadRequest && strings.Contains(apiErr.ErrorCode(), "AccessDenied")) {
+			alerts.SendEnumerationAlert(common.RemoteAWSTerraform, alerter, listError)
+			return nil
+		}
 	}
 
-	return reqerr
-}
-
-func handleGoogleEnumerationError(alerter alerter.AlerterInterface, err *remoteerror.ResourceScanningError, st *status.Status) error {
-	if st.Code() == codes.PermissionDenied {
-		alerts.SendEnumerationAlert(common.RemoteGoogleTerraform, alerter, err)
-		return nil
-	}
-	return err
-}
-
-func shouldHandleGoogleForbiddenError(err *remoteerror.ResourceScanningError) bool {
-	errMsg := err.RootCause().Error()
-
-	// Check if this is a Google related error
-	if !strings.Contains(errMsg, "googleapi") {
-		return false
-	}
-
-	if strings.Contains(errMsg, "Error 403") {
-		return true
-	}
-
-	return false
+	return respErr
 }

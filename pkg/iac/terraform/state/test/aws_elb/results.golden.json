@@ -1,6 +1,6 @@
 [
  {
-  "Id": "foobar-terraform-elb",
+  "ID": "foobar-terraform-elb",
   "Type": "aws_elb",
   "Attrs": {
    "arn": "arn:aws:elasticloadbalancing:us-east-1:533948124879:loadbalancer/foobar-terraform-elb",

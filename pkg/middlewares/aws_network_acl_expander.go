@@ -5,17 +5,18 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// This middelware goal is to explode aws_network_acl ingress and egress block into a set of aws_network_acl_rule
+// AwsNetworkACLExpander this middelware goal is to explode aws_network_acl ingress and egress block into a set of aws_network_acl_rule
 type AwsNetworkACLExpander struct {
-	resourceFactory resource.ResourceFactory
+	resourceFactory resource.Factory
 }
 
-func NewAwsNetworkACLExpander(resourceFactory resource.ResourceFactory) AwsNetworkACLExpander {
+// NewAwsNetworkACLExpander creates a AwsNetworkACLExpander.
+func NewAwsNetworkACLExpander(resourceFactory resource.Factory) AwsNetworkACLExpander {
 	return AwsNetworkACLExpander{resourceFactory}
 }
 
+// Execute applies the AwsNetworkACLExpander middleware.
 func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newResourcesFromState := make([]*resource.Resource, 0, len(*resourcesFromState))
 
 	for _, stateResource := range *resourcesFromState {
@@ -28,7 +29,7 @@ func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*r
 
 		newResourcesFromState = append(newResourcesFromState, m.expandBlock(
 			resourcesFromState,
-			stateResource.ResourceId(),
+			stateResource.ResourceID(),
 			false,
 			stateResource.Attrs.GetSlice("ingress"),
 		)...)
@@ -36,7 +37,7 @@ func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*r
 
 		newResourcesFromState = append(newResourcesFromState, m.expandBlock(
 			resourcesFromState,
-			stateResource.ResourceId(),
+			stateResource.ResourceID(),
 			true,
 			stateResource.Attrs.GetSlice("egress"),
 		)...)
@@ -66,7 +67,7 @@ func (m AwsNetworkACLExpander) Execute(remoteResources, resourcesFromState *[]*r
 	return nil
 }
 
-func (e *AwsNetworkACLExpander) expandBlock(resourcesFromState *[]*resource.Resource, networkAclId string, egress bool, ruleBlock []interface{}) []*resource.Resource {
+func (m *AwsNetworkACLExpander) expandBlock(resourcesFromState *[]*resource.Resource, networkACLID string, egress bool, ruleBlock []interface{}) []*resource.Resource {
 	results := make([]*resource.Resource, 0, len(ruleBlock))
 
 	for _, rule := range ruleBlock {
@@ -77,15 +78,15 @@ func (e *AwsNetworkACLExpander) expandBlock(resourcesFromState *[]*resource.Reso
 
 		attrs["egress"] = egress
 
-		attrs["network_acl_id"] = networkAclId
+		attrs["network_acl_id"] = networkACLID
 
 		attrs["rule_action"] = attrs["action"]
 		delete(attrs, "action")
 
-		res := e.resourceFactory.CreateAbstractResource(
+		res := m.resourceFactory.CreateAbstractResource(
 			aws.AwsNetworkACLRuleResourceType,
 			aws.CreateNetworkACLRuleID(
-				networkAclId,
+				networkACLID,
 				attrs["rule_number"].(int64),
 				egress,
 				attrs["protocol"].(string),

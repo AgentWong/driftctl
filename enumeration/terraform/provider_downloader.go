@@ -13,16 +13,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// ProviderDownloaderInterface abstracts downloading a provider archive.
 type ProviderDownloaderInterface interface {
 	Download(url, path string) error
 }
 
+// ProviderDownloader downloads and unzips Terraform provider binaries.
 type ProviderDownloader struct {
 	httpclient *http.Client
 	unzip      getter.ZipDecompressor
 	context    context.Context
 }
 
+// NewProviderDownloader creates a ProviderDownloader with default settings.
 func NewProviderDownloader() *ProviderDownloader {
 	return &ProviderDownloader{
 		httpclient: http.DefaultClient,
@@ -31,13 +34,14 @@ func NewProviderDownloader() *ProviderDownloader {
 	}
 }
 
+// Download fetches a provider archive and extracts it to the given path.
 func (p *ProviderDownloader) Download(url, path string) error {
 	logrus.WithFields(logrus.Fields{
 		"url":  url,
 		"path": path,
 	}).Debug("Downloading provider")
 
-	req, err := http.NewRequestWithContext(p.context, "GET", url, nil)
+	req, err := http.NewRequestWithContext(p.context, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
@@ -45,7 +49,7 @@ func (p *ProviderDownloader) Download(url, path string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode == http.StatusForbidden {
 		return tferror.ProviderNotFoundError{}
 	}
@@ -56,8 +60,8 @@ func (p *ProviderDownloader) Download(url, path string) error {
 	if err != nil {
 		return errors.Errorf("failed to open temporary file to download from %s", url)
 	}
-	defer f.Close()
-	defer os.Remove(f.Name())
+	defer func() { _ = f.Close() }()
+	defer func() { _ = os.Remove(f.Name()) }()
 	n, err := getter.Copy(p.context, f, resp.Body)
 	if err == nil && n < resp.ContentLength {
 		err = errors.Errorf(

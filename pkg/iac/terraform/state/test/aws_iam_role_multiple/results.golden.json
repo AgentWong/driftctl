@@ -1,6 +1,6 @@
 [
  {
-  "Id": "test_role_0",
+  "ID": "test_role_0",
   "Type": "aws_iam_role",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:role/test/test_role_0",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "test_role_1",
+  "ID": "test_role_1",
   "Type": "aws_iam_role",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:role/test/test_role_1",
@@ -36,7 +36,7 @@
   }
  },
  {
-  "Id": "test_role_2",
+  "ID": "test_role_2",
   "Type": "aws_iam_role",
   "Attrs": {
    "arn": "arn:aws:iam::929327065333:role/test/test_role_2",

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "AKIA5QYBVVD223VWU32A",
+  "ID": "AKIA5QYBVVD223VWU32A",
   "Type": "aws_iam_access_key",
   "Attrs": {
    "id": "AKIA5QYBVVD223VWU32A",
@@ -9,7 +9,7 @@
   }
  },
  {
-  "Id": "AKIA5QYBVVD2QYI36UZP",
+  "ID": "AKIA5QYBVVD2QYI36UZP",
   "Type": "aws_iam_access_key",
   "Attrs": {
    "id": "AKIA5QYBVVD2QYI36UZP",
@@ -18,7 +18,7 @@
   }
  },
  {
-  "Id": "AKIA5QYBVVD2SWDFVVMG",
+  "ID": "AKIA5QYBVVD2SWDFVVMG",
   "Type": "aws_iam_access_key",
   "Attrs": {
    "id": "AKIA5QYBVVD2SWDFVVMG",
@@ -27,7 +27,7 @@
   }
  },
  {
-  "Id": "AKIA5QYBVVD26EJME25D",
+  "ID": "AKIA5QYBVVD26EJME25D",
   "Type": "aws_iam_access_key",
   "Attrs": {
    "id": "AKIA5QYBVVD26EJME25D",

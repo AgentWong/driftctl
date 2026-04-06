@@ -1,3 +1,4 @@
+// Package schemas manages Terraform provider schemas used for resource normalization and diffing.
 package schemas
 
 import (
@@ -10,21 +11,21 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
-	"github.com/snyk/driftctl/pkg/resource/azurerm"
-	"github.com/snyk/driftctl/pkg/resource/github"
-	"github.com/snyk/driftctl/pkg/resource/google"
 )
 
+// SchemaRepository stores and manages resource schemas indexed by type.
 type SchemaRepository struct {
 	schemas map[string]*resource.Schema
 }
 
+// NewSchemaRepository creates an empty SchemaRepository.
 func NewSchemaRepository() *SchemaRepository {
 	return &SchemaRepository{
 		schemas: make(map[string]*resource.Schema),
 	}
 }
 
+// GetSchema returns the schema for the given resource type and a boolean indicating existence.
 func (r *SchemaRepository) GetSchema(resourceType string) (*resource.Schema, bool) {
 	schema, exist := r.schemas[resourceType]
 	return schema, exist
@@ -46,18 +47,12 @@ func (r *SchemaRepository) fetchNestedBlocks(root string, metadata map[string]re
 	}
 }
 
+// Init populates the repository with schemas from the given provider.
 func (r *SchemaRepository) Init(providerName, providerVersion string, schema map[string]providers.Schema) error {
-
 	if providerVersion == "" {
 		switch providerName {
 		case "aws":
-			providerVersion = "3.19.0"
-		case "github":
-			providerVersion = "4.4.0"
-		case "google":
-			providerVersion = "3.78.0"
-		case "azurerm":
-			providerVersion = "2.71.0"
+			providerVersion = "6.38.0"
 		default:
 			return errors.Errorf("unsupported remote '%s'", providerName)
 		}
@@ -86,18 +81,13 @@ func (r *SchemaRepository) Init(providerName, providerVersion string, schema map
 	switch providerName {
 	case "aws":
 		aws.InitResourcesMetadata(r)
-	case "github":
-		github.InitResourcesMetadata(r)
-	case "google":
-		google.InitResourcesMetadata(r)
-	case "azurerm":
-		azurerm.InitResourcesMetadata(r)
 	default:
 		return errors.Errorf("unsupported remote '%s'", providerName)
 	}
 	return nil
 }
 
+// SetFlags applies the given flags to the schema for the specified resource type.
 func (r SchemaRepository) SetFlags(typ string, flags ...resource.Flags) {
 	metadata, exist := r.GetSchema(typ)
 	if !exist {
@@ -109,6 +99,7 @@ func (r SchemaRepository) SetFlags(typ string, flags ...resource.Flags) {
 	}
 }
 
+// UpdateSchema applies attribute-level mutators to the schema for the specified resource type.
 func (r *SchemaRepository) UpdateSchema(typ string, schemasMutators map[string]func(attributeSchema *resource.AttributeSchema)) {
 	for s, f := range schemasMutators {
 		metadata, exist := r.GetSchema(typ)
@@ -116,35 +107,38 @@ func (r *SchemaRepository) UpdateSchema(typ string, schemasMutators map[string]f
 			logrus.WithFields(logrus.Fields{"type": typ}).Warning("Unable to set metadata, no schema found")
 			return
 		}
-		m := (*metadata).Attributes[s]
+		m := metadata.Attributes[s]
 		f(&m)
-		(*metadata).Attributes[s] = m
+		metadata.Attributes[s] = m
 	}
 }
 
+// SetNormalizeFunc registers a normalization function for the given resource type.
 func (r *SchemaRepository) SetNormalizeFunc(typ string, normalizeFunc func(res *resource.Resource)) {
 	metadata, exist := r.GetSchema(typ)
 	if !exist {
 		logrus.WithFields(logrus.Fields{"type": typ}).Warning("Unable to set normalize func, no schema found")
 		return
 	}
-	(*metadata).NormalizeFunc = normalizeFunc
+	metadata.NormalizeFunc = normalizeFunc
 }
 
+// SetHumanReadableAttributesFunc registers a function that returns human-readable attributes for the given type.
 func (r *SchemaRepository) SetHumanReadableAttributesFunc(typ string, humanReadableAttributesFunc func(res *resource.Resource) map[string]string) {
 	metadata, exist := r.GetSchema(typ)
 	if !exist {
 		logrus.WithFields(logrus.Fields{"type": typ}).Warning("Unable to add human readable attributes, no schema found")
 		return
 	}
-	(*metadata).HumanReadableAttributesFunc = humanReadableAttributesFunc
+	metadata.HumanReadableAttributesFunc = humanReadableAttributesFunc
 }
 
+// SetDiscriminantFunc registers a discriminant function for the given type.
 func (r *SchemaRepository) SetDiscriminantFunc(typ string, fn func(self, res *resource.Resource) bool) {
 	metadata, exist := r.GetSchema(typ)
 	if !exist {
 		logrus.WithFields(logrus.Fields{"type": typ}).Warning("Unable to set discriminant function, no schema found")
 		return
 	}
-	(*metadata).DiscriminantFunc = fn
+	metadata.DiscriminantFunc = fn
 }

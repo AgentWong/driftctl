@@ -7,7 +7,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/build"
 	"github.com/snyk/driftctl/pkg"
-	"github.com/snyk/driftctl/sentry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -30,22 +29,20 @@ LEARN MORE:
 
 var versionTemplate = `{{ printf "%s\n" .Version }}`
 
+// DriftctlCmd wraps the root cobra command.
 type DriftctlCmd struct {
 	cobra.Command
-	build build.BuildInterface
+	build build.Interface
 }
 
-func NewDriftctlCmd(build build.BuildInterface) *DriftctlCmd {
+// NewDriftctlCmd creates a new command instance.
+func NewDriftctlCmd(build build.Interface) *DriftctlCmd {
 	cmd := &DriftctlCmd{
 		cobra.Command{
 			Use:   "driftctl <command> [flags]",
 			Short: "Driftctl CLI",
-			PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-				err := bindEnvToFlags(cmd)
-				if err != nil {
-					return err
-				}
-				return handleReporting(cmd)
+			PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+				return bindEnvToFlags(cmd)
 			},
 			Long:          "Detect, track and alert on infrastructure drift.",
 			SilenceErrors: true,
@@ -64,9 +61,7 @@ func NewDriftctlCmd(build build.BuildInterface) *DriftctlCmd {
 	cmd.PersistentFlags().BoolP("help", "h", false, "Display help for command")
 	if cmd.build.IsUsageReportingEnabled() {
 		cmd.PersistentFlags().BoolP("no-version-check", "", false, "Disable the version check")
-		cmd.PersistentFlags().BoolP("disable-telemetry", "", false, "Disable telemetry")
 	}
-	cmd.PersistentFlags().BoolP("send-crash-report", "", false, "Enable error reporting. Crash data will be sent to us via Sentry.\nWARNING: may leak sensitive data (please read the documentation for more details)\nThis flag should be used only if an error occurs during execution")
 
 	cmd.AddCommand(NewScanCmd(&pkg.ScanOptions{}))
 	cmd.AddCommand(NewFmtCmd(&pkg.FmtOptions{}))
@@ -84,6 +79,7 @@ func contains(args []string, cmd string) bool {
 	return false
 }
 
+// ShouldCheckVersion returns whether the version check should run.
 func (driftctlCmd DriftctlCmd) ShouldCheckVersion() bool {
 	_, noVersionCheckEnv := os.LookupEnv("DCTL_NO_VERSION_CHECK")
 	noVersionCheckVal := contains(os.Args[1:], "--no-version-check")
@@ -91,21 +87,6 @@ func (driftctlCmd DriftctlCmd) ShouldCheckVersion() bool {
 	hasCompletionCmd := contains(os.Args[1:], "completion")
 	isHelp := contains(os.Args[1:], "help") || contains(os.Args[1:], "--help") || contains(os.Args[1:], "-h")
 	return driftctlCmd.build.IsRelease() && driftctlCmd.build.IsUsageReportingEnabled() && !hasVersionCmd && !hasCompletionCmd && !noVersionCheckVal && !isHelp && !noVersionCheckEnv
-}
-
-func IsReportingEnabled(cmd *cobra.Command) bool {
-	enableReporting, err := cmd.Flags().GetBool("send-crash-report")
-	if err != nil {
-		return false
-	}
-	return enableReporting
-}
-
-func handleReporting(cmd *cobra.Command) error {
-	if IsReportingEnabled(cmd) {
-		return sentry.Initialize()
-	}
-	return nil
 }
 
 // Iterate over command flags

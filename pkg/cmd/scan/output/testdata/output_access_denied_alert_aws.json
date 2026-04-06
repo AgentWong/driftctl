@@ -4,22 +4,27 @@
 		"total_unmanaged": 0,
 		"total_missing": 0,
 		"total_managed": 0,
+		"total_drifted": 0,
+		"total_unsupported": 0,
+		"total_cloudformation_managed": 0,
+		"total_default_resources": 0,
 		"total_iac_source_count": 0
 	},
 	"managed": null,
 	"unmanaged": null,
 	"missing": null,
+	"drifted": null,
 	"coverage": 0,
 	"alerts": {
 		"": [
 			{
-				"message": "An error occured listing aws_vpc: listing aws_vpc is forbidden: dummy error"
+				"message": "An error occurred listing aws_vpc: listing aws_vpc is forbidden: dummy error"
 			},
 			{
-				"message": "An error occured listing aws_sqs: listing aws_sqs is forbidden: dummy error"
+				"message": "An error occurred listing aws_sqs: listing aws_sqs is forbidden: dummy error"
 			},
 			{
-				"message": "An error occured listing aws_sns: listing aws_sns is forbidden: dummy error"
+				"message": "An error occurred listing aws_sns: listing aws_sns is forbidden: dummy error"
 			}
 		]
 	},

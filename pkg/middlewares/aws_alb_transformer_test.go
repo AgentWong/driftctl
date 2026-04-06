@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
@@ -20,27 +20,27 @@ func TestAwsALBTransformer_Execute(t *testing.T) {
 	}{
 		{
 			name:  "should not transform anything",
-			mocks: func(factory *dctlresource.MockResourceFactory) {},
+			mocks: func(_ *dctlresource.MockResourceFactory) {},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:    "foo",
+					ID:    "foo",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "bar",
+					ID:    "bar",
 					Type:  aws.AwsLoadBalancerResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:    "foo",
+					ID:    "foo",
 					Type:  aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "bar",
+					ID:    "bar",
 					Type:  aws.AwsLoadBalancerResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -52,7 +52,7 @@ func TestAwsALBTransformer_Execute(t *testing.T) {
 				factory.
 					On("CreateAbstractResource", aws.AwsLoadBalancerResourceType, "alb-test", map[string]interface{}{}).
 					Return(&resource.Resource{
-						Id:    "alb-test",
+						ID:    "alb-test",
 						Type:  aws.AwsLoadBalancerResourceType,
 						Attrs: &resource.Attributes{},
 					}).
@@ -60,38 +60,38 @@ func TestAwsALBTransformer_Execute(t *testing.T) {
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					ID:   "foo",
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"body": "{\"info\":{\"title\":\"example\",\"version\":\"1.0\"},\"openapi\":\"3.0.1\",\"paths\":{\"/path1\":{\"get\":{\"parameters\":[{\"in\":\"query\",\"name\":\"type\",\"schema\":{\"type\":\"string\"}},{\"in\":\"query\",\"name\":\"page\",\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pets\"}}},\"description\":\"200 response\",\"headers\":{\"Access-Control-Allow-Origin\":{\"schema\":{\"type\":\"string\"}}}}},\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\",\"responses\":{\"2\\\\d{2}\":{\"responseTemplates\":{\"application/json\":\"#set ($root=$input.path('$')) { \\\"stage\\\": \\\"$root.name\\\", \\\"user-id\\\": \\\"$root.key\\\" }\",\"application/xml\":\"#set ($root=$input.path('$')) \\u003cstage\\u003e$root.name\\u003c/stage\\u003e \"},\"statusCode\":\"200\"}}}}},\"/path1/path2\":{\"get\":{\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\"}}}}}",
 					},
 				},
 				{
-					Id:    "bar",
+					ID:    "bar",
 					Type:  aws.AwsLoadBalancerResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "alb-test",
+					ID:    "alb-test",
 					Type:  aws.AwsApplicationLoadBalancerResourceType,
 					Attrs: &resource.Attributes{},
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
-					Type: aws.AwsApiGatewayRestApiResourceType,
+					ID:   "foo",
+					Type: aws.AwsAPIGatewayRestAPIResourceType,
 					Attrs: &resource.Attributes{
 						"body": "{\"info\":{\"title\":\"example\",\"version\":\"1.0\"},\"openapi\":\"3.0.1\",\"paths\":{\"/path1\":{\"get\":{\"parameters\":[{\"in\":\"query\",\"name\":\"type\",\"schema\":{\"type\":\"string\"}},{\"in\":\"query\",\"name\":\"page\",\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pets\"}}},\"description\":\"200 response\",\"headers\":{\"Access-Control-Allow-Origin\":{\"schema\":{\"type\":\"string\"}}}}},\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\",\"responses\":{\"2\\\\d{2}\":{\"responseTemplates\":{\"application/json\":\"#set ($root=$input.path('$')) { \\\"stage\\\": \\\"$root.name\\\", \\\"user-id\\\": \\\"$root.key\\\" }\",\"application/xml\":\"#set ($root=$input.path('$')) \\u003cstage\\u003e$root.name\\u003c/stage\\u003e \"},\"statusCode\":\"200\"}}}}},\"/path1/path2\":{\"get\":{\"x-amazon-apigateway-integration\":{\"httpMethod\":\"GET\",\"payloadFormatVersion\":\"1.0\",\"type\":\"HTTP_PROXY\",\"uri\":\"https://ip-ranges.amazonaws.com/ip-ranges.json\"}}}}}",
 					},
 				},
 				{
-					Id:    "bar",
+					ID:    "bar",
 					Type:  aws.AwsLoadBalancerResourceType,
 					Attrs: &resource.Attributes{},
 				},
 				{
-					Id:    "alb-test",
+					ID:    "alb-test",
 					Type:  aws.AwsLoadBalancerResourceType,
 					Attrs: &resource.Attributes{},
 				},
@@ -116,7 +116,7 @@ func TestAwsALBTransformer_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "aurora-cluster-demo",
+  "ID": "aurora-cluster-demo",
   "Type": "aws_rds_cluster",
   "Attrs": {
    "arn": "arn:aws:rds:us-east-1:533948124879:cluster:aurora-cluster-demo",

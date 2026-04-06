@@ -1,6 +1,6 @@
 [
  {
-  "Id": "snap-071ccff0167f3e841",
+  "ID": "snap-071ccff0167f3e841",
   "Type": "aws_ebs_snapshot",
   "Attrs": {
    "arn": "arn:aws:ec2:eu-west-3::snapshot/snap-071ccff0167f3e841",

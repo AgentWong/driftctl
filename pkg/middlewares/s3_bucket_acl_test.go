@@ -25,7 +25,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 			args: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"grant": []map[string]interface{}{
@@ -44,7 +44,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 						Type: aws.AwsAmiResourceType,
 					},
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"acl": "public-read",
@@ -56,11 +56,11 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 				remoteRes := (*remoteResources)[0]
 				stateRes := (*resourcesFromState)[1]
 				_, exist := remoteRes.Attrs.Get("grant")
-				_, stateAclExist := stateRes.Attrs.Get("acl")
-				_, remoteAclExist := remoteRes.Attrs.Get("acl")
+				_, stateACLExist := stateRes.Attrs.Get("acl")
+				_, remoteACLExist := remoteRes.Attrs.Get("acl")
 				assert.False(exist)
-				assert.False(stateAclExist)
-				assert.False(remoteAclExist)
+				assert.False(stateACLExist)
+				assert.False(remoteACLExist)
 			},
 		},
 		{
@@ -68,7 +68,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 			args: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"grant": []map[string]interface{}{
@@ -87,7 +87,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 						Type: aws.AwsAmiResourceType,
 					},
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"acl": "private",
@@ -95,7 +95,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 					},
 				},
 			},
-			assert: func(assert *assert.Assertions, remoteResources, resourcesFromState *[]*resource.Resource) {
+			assert: func(assert *assert.Assertions, remoteResources, _ *[]*resource.Resource) {
 				s3Bucket := (*remoteResources)[0]
 				grantAttr, exist := s3Bucket.Attrs.Get("grant")
 				grant := grantAttr.([]map[string]interface{})
@@ -115,7 +115,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 			args: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"grant": []map[string]interface{}{
@@ -134,13 +134,13 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 						Type: aws.AwsAmiResourceType,
 					},
 					{
-						Id:    "testgrant",
+						ID:    "testgrant",
 						Type:  aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{},
 					},
 				},
 			},
-			assert: func(assert *assert.Assertions, remoteResources, resourcesFromState *[]*resource.Resource) {
+			assert: func(assert *assert.Assertions, remoteResources, _ *[]*resource.Resource) {
 				s3Bucket := (*remoteResources)[0]
 				grantAttr, exist := s3Bucket.Attrs.Get("grant")
 				grant := grantAttr.([]map[string]interface{})
@@ -160,7 +160,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 			args: args{
 				remoteResources: &[]*resource.Resource{
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"grant": []map[string]interface{}{
@@ -179,7 +179,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 						Type: aws.AwsAmiResourceType,
 					},
 					{
-						Id:   "testgrant",
+						ID:   "testgrant",
 						Type: aws.AwsS3BucketResourceType,
 						Attrs: &resource.Attributes{
 							"acl": "",
@@ -187,7 +187,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 					},
 				},
 			},
-			assert: func(assert *assert.Assertions, remoteResources, resourcesFromState *[]*resource.Resource) {
+			assert: func(assert *assert.Assertions, remoteResources, _ *[]*resource.Resource) {
 				s3Bucket := (*remoteResources)[0]
 				grantAttr, exist := s3Bucket.Attrs.Get("grant")
 				grant := grantAttr.([]map[string]interface{})
@@ -206,7 +206,7 @@ func TestS3BucketAcl_Execute(t *testing.T) {
 	for _, c := range tests {
 		t.Run(c.name, func(tt *testing.T) {
 			assert := assert.New(tt)
-			m := S3BucketAcl{}
+			m := S3BucketACL{}
 			if err := m.Execute(c.args.remoteResources, c.args.resourcesFromState); err != nil {
 				tt.Error(err)
 			}

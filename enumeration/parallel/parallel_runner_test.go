@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParallelRunner_RunOk(t *testing.T) {
+func TestRunner_RunOk(t *testing.T) {
 	assert := assert.New(t)
 
-	runner := NewParallelRunner(context.TODO(), 10)
+	runner := NewRunner(context.TODO(), 10)
 
 	for i := 0; i < 100; i++ {
 		runner.Run(func() (interface{}, error) {
@@ -38,10 +38,10 @@ Loop:
 	assert.Equal(100, val)
 }
 
-func TestParallelRunner_RunWithError(t *testing.T) {
+func TestRunner_RunWithError(t *testing.T) {
 	assert := assert.New(t)
 
-	runner := NewParallelRunner(context.TODO(), 10)
+	runner := NewRunner(context.TODO(), 10)
 
 	err := errors.New("test")
 

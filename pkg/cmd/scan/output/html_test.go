@@ -41,7 +41,7 @@ func TestHTML_Write(t *testing.T) {
 				a.Duration = 72 * time.Second
 				a.AddManaged(
 					&resource.Resource{
-						Id:   "deleted-id-3",
+						ID:   "deleted-id-3",
 						Type: "aws_deleted_resource",
 					},
 				)
@@ -60,7 +60,7 @@ func TestHTML_Write(t *testing.T) {
 				a.Duration = 91 * time.Second
 				a.AddManaged(
 					&resource.Resource{
-						Id:   "diff-id-2",
+						ID:   "diff-id-2",
 						Type: "aws_diff_resource",
 						Source: &resource.TerraformStateSource{
 							State:  "tfstate://state.tfstate",
@@ -69,7 +69,7 @@ func TestHTML_Write(t *testing.T) {
 						},
 					},
 					&resource.Resource{
-						Id:   "diff-id-3",
+						ID:   "diff-id-3",
 						Type: "aws_diff_resource",
 						Source: &resource.TerraformStateSource{
 							State: "tfstate+s3://state2.tfstate",
@@ -79,7 +79,7 @@ func TestHTML_Write(t *testing.T) {
 				)
 				a.AddDeleted(
 					&resource.Resource{
-						Id:   "deleted-id-3",
+						ID:   "deleted-id-3",
 						Type: "aws_deleted_resource",
 						Source: &resource.TerraformStateSource{
 							State: "tfstate://deleted/terraform.tfstate",
@@ -87,7 +87,7 @@ func TestHTML_Write(t *testing.T) {
 						},
 					},
 					&resource.Resource{
-						Id:   "deleted-id-4",
+						ID:   "deleted-id-4",
 						Type: "aws_deleted_resource",
 						Source: &resource.TerraformStateSource{
 							State: "tfstate://deleted/terraform.tfstate",
@@ -95,7 +95,7 @@ func TestHTML_Write(t *testing.T) {
 						},
 					},
 					&resource.Resource{
-						Id:   "deleted-id-5",
+						ID:   "deleted-id-5",
 						Type: "aws_deleted_resource",
 						Source: &resource.TerraformStateSource{
 							State:  "tfstate://deleted/terraform.tfstate",
@@ -104,21 +104,21 @@ func TestHTML_Write(t *testing.T) {
 						},
 					},
 					&resource.Resource{
-						Id:   "deleted-id-6",
+						ID:   "deleted-id-6",
 						Type: "aws_deleted_resource",
 					},
 				)
 				a.AddUnmanaged(
 					&resource.Resource{
-						Id:   "unmanaged-id-3",
+						ID:   "unmanaged-id-3",
 						Type: "aws_unmanaged_resource",
 					},
 					&resource.Resource{
-						Id:   "unmanaged-id-4",
+						ID:   "unmanaged-id-4",
 						Type: "aws_unmanaged_resource",
 					},
 					&resource.Resource{
-						Id:   "unmanaged-id-5",
+						ID:   "unmanaged-id-5",
 						Type: "aws_unmanaged_resource",
 					},
 				)
@@ -137,7 +137,7 @@ func TestHTML_Write(t *testing.T) {
 				a.Duration = 91 * time.Second
 				a.AddManaged(
 					&resource.Resource{
-						Id:   "resource-id-1",
+						ID:   "resource-id-1",
 						Type: "aws_resource",
 						Source: &resource.TerraformStateSource{
 							State:  "tfstate://state.tfstate",
@@ -177,7 +177,7 @@ func TestHTML_Write(t *testing.T) {
 
 			expectedFilePath := path.Join("./testdata/", tt.goldenfile)
 			if *goldenfile.Update == tt.goldenfile {
-				if err := os.WriteFile(expectedFilePath, got, 0600); err != nil {
+				if err := os.WriteFile(expectedFilePath, got, 0600); err != nil { //nolint:gosec // G703: test golden file update
 					t.Fatal(err)
 				}
 			}
@@ -207,23 +207,23 @@ func TestHTML_DistinctResourceTypes(t *testing.T) {
 			name: "should return distinct list of resource types",
 			resources: []*resource.Resource{
 				{
-					Id:   "deleted-id-1",
+					ID:   "deleted-id-1",
 					Type: "aws_deleted_resource",
 				},
 				{
-					Id:   "unmanaged-id-1",
+					ID:   "unmanaged-id-1",
 					Type: "aws_unmanaged_resource",
 				},
 				{
-					Id:   "unmanaged-id-2",
+					ID:   "unmanaged-id-2",
 					Type: "aws_unmanaged_resource",
 				},
 				{
-					Id:   "diff-id-1",
+					ID:   "diff-id-1",
 					Type: "aws_diff_resource",
 				},
 				{
-					Id:   "deleted-id-2",
+					ID:   "deleted-id-2",
 					Type: "aws_deleted_resource",
 				},
 			},
@@ -253,7 +253,7 @@ func TestHTML_DistinctIaCSources(t *testing.T) {
 			name: "should return distinct list of iac sources",
 			resources: []*resource.Resource{
 				{
-					Id:   "deleted-id-1",
+					ID:   "deleted-id-1",
 					Type: "aws_deleted_resource",
 					Source: &resource.TerraformStateSource{
 						Module: "module",
@@ -262,7 +262,7 @@ func TestHTML_DistinctIaCSources(t *testing.T) {
 					},
 				},
 				{
-					Id:   "unmanaged-id-1",
+					ID:   "unmanaged-id-1",
 					Type: "aws_unmanaged_resource",
 					Source: &resource.TerraformStateSource{
 						Module: "module",
@@ -271,7 +271,7 @@ func TestHTML_DistinctIaCSources(t *testing.T) {
 					},
 				},
 				{
-					Id:   "unmanaged-id-2",
+					ID:   "unmanaged-id-2",
 					Type: "aws_unmanaged_resource",
 					Source: &resource.TerraformStateSource{
 						Module: "module",
@@ -280,7 +280,7 @@ func TestHTML_DistinctIaCSources(t *testing.T) {
 					},
 				},
 				{
-					Id:   "diff-id-1",
+					ID:   "diff-id-1",
 					Type: "aws_diff_resource",
 					Source: &resource.TerraformStateSource{
 						Module: "module",
@@ -289,7 +289,7 @@ func TestHTML_DistinctIaCSources(t *testing.T) {
 					},
 				},
 				{
-					Id:   "deleted-id-2",
+					ID:   "deleted-id-2",
 					Type: "aws_deleted_resource",
 				},
 			},

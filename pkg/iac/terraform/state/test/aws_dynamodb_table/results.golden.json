@@ -1,6 +1,6 @@
 [
  {
-  "Id": "example",
+  "ID": "example",
   "Type": "aws_dynamodb_table",
   "Attrs": {
    "arn": "arn:aws:dynamodb:us-east-1:526954929923:table/example",
@@ -42,7 +42,7 @@
   }
  },
  {
-  "Id": "GameScores",
+  "ID": "GameScores",
   "Type": "aws_dynamodb_table",
   "Attrs": {
    "arn": "arn:aws:dynamodb:us-east-1:526954929923:table/GameScores",

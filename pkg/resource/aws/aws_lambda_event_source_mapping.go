@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsLambdaEventSourceMappingResourceType is the Terraform resource type for Lambda event source mappings.
 const AwsLambdaEventSourceMappingResourceType = "aws_lambda_event_source_mapping"
 
 func initAwsLambdaEventSourceMappingMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

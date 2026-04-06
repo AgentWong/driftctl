@@ -1,6 +1,6 @@
 [
  {
-  "Id": "eipassoc-05d9c19732254e578",
+  "ID": "eipassoc-05d9c19732254e578",
   "Type": "aws_eip_association",
   "Attrs": {
    "allocation_id": "eipalloc-017d5267e4dda73f1",

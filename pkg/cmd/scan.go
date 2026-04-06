@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	stderrors "errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -15,20 +16,21 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/snyk/driftctl/build"
 	"github.com/snyk/driftctl/enumeration/alerter"
 	"github.com/snyk/driftctl/enumeration/remote"
 	"github.com/snyk/driftctl/enumeration/remote/aws"
+	awsrepo "github.com/snyk/driftctl/enumeration/remote/aws/repository"
+	"github.com/snyk/driftctl/enumeration/remote/cache"
 	"github.com/snyk/driftctl/enumeration/remote/common"
 	"github.com/snyk/driftctl/enumeration/terraform"
 	"github.com/snyk/driftctl/enumeration/terraform/lock"
 	"github.com/snyk/driftctl/pkg/analyser"
+	"github.com/snyk/driftctl/pkg/categorizer"
 	"github.com/snyk/driftctl/pkg/iac/config"
 	"github.com/snyk/driftctl/pkg/iac/terraform/state"
 	"github.com/snyk/driftctl/pkg/memstore"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 	"github.com/snyk/driftctl/pkg/resource/schemas"
-	"github.com/snyk/driftctl/pkg/telemetry"
 	"github.com/snyk/driftctl/pkg/terraform/hcl"
 	"github.com/spf13/cobra"
 
@@ -41,6 +43,7 @@ import (
 	globaloutput "github.com/snyk/driftctl/pkg/output"
 )
 
+// NewScanCmd creates a new command instance.
 func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 	opts.BackendOptions = &backend.Options{}
 
@@ -49,7 +52,7 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 		Short: "Scan",
 		Long:  "Scan",
 		Args:  cobra.NoArgs,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			from, _ := cmd.Flags().GetStringSlice("from")
 
 			iacSource, err := parseFromFlag(from)
@@ -111,13 +114,36 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 			}
 
 			opts.Quiet, _ = cmd.Flags().GetBool("quiet")
-			opts.DisableTelemetry, _ = cmd.Flags().GetBool("disable-telemetry")
 
 			opts.ConfigDir, _ = cmd.Flags().GetString("config-dir")
 
+			opts.Mode, _ = cmd.Flags().GetString("mode")
+			if opts.Mode == "" {
+				opts.Mode = "inventory"
+			}
+			if opts.Mode != "inventory" && opts.Mode != "plan" {
+				return errors.Errorf("unsupported mode '%s', valid values are: inventory, plan", opts.Mode)
+			}
+
+			opts.TerraformDir, _ = cmd.Flags().GetString("terraform-dir")
+			if opts.Mode == "plan" && opts.TerraformDir == "" {
+				return errors.New("--terraform-dir is required when using --mode=plan")
+			}
+
+			validCategories := map[string]bool{
+				"cloudformation_managed": true,
+				"service_linked":         true,
+				"unsupported":            true,
+			}
+			for _, cat := range opts.ExcludeCategories {
+				if !validCategories[cat] {
+					return errors.Errorf("invalid exclude-category '%s', valid values: cloudformation_managed, service_linked, unsupported", cat)
+				}
+			}
+
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			return scanRun(opts)
 		},
 	}
@@ -181,16 +207,6 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 		"Terraform Cloud / Enterprise API endpoint.\n"+
 			"Only used with tfstate+tfcloud backend.\n",
 	)
-	fl.StringVar(&opts.BackendOptions.AzureRMBackendOptions.StorageAccount,
-		"azurerm-storage-account",
-		os.Getenv("AZURE_STORAGE_ACCOUNT"),
-		"Azure storage account name for state backend.\n",
-	)
-	fl.StringVar(&opts.BackendOptions.AzureRMBackendOptions.StorageKey,
-		"azurerm-account-key",
-		os.Getenv("AZURE_STORAGE_KEY"),
-		"Azure storage account key for state backend.\n",
-	)
 	fl.String(
 		"tf-provider-version",
 		"",
@@ -213,6 +229,11 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 			"Example: *,!aws_s3* (everything but resources that are prefixed with aws_s3 are ignored) \n"+
 			"When using this parameter the driftignore file is not processed\n"+
 			"When using multiple instances of this argument, order will be respected")
+	fl.StringSliceVar(&opts.ExcludeCategories,
+		"exclude-category",
+		nil,
+		"Exclude unmanaged resources by category: cloudformation_managed, service_linked, unsupported\n",
+	)
 	fl.String(
 		"tf-lockfile",
 		".terraform.lock.hcl",
@@ -227,6 +248,16 @@ func NewScanCmd(opts *pkg.ScanOptions) *cobra.Command {
 		"config-dir",
 		configDir,
 		"Directory path that driftctl uses for configuration.\n",
+	)
+	fl.String(
+		"mode",
+		"inventory",
+		"Scan mode: 'inventory' (default) or 'plan'\n",
+	)
+	fl.String(
+		"terraform-dir",
+		"",
+		"Path to Terraform root module (required for --mode=plan)\n",
 	)
 	var deprecatedOnlyUnmanaged bool
 	fl.BoolVar(&deprecatedOnlyUnmanaged,
@@ -278,13 +309,10 @@ func scanRun(opts *pkg.ScanOptions) error {
 
 	resFactory := dctlresource.NewDriftctlResourceFactory(resourceSchemaRepository)
 
-	err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
+	awsCfg, err := remote.Activate(opts.To, opts.ProviderVersion, alerter, providerLibrary, remoteLibrary, scanProgress, resFactory, opts.ConfigDir)
 	if err != nil {
-		if err == aws.AWSCredentialsNotFoundError {
-			// special case command-line advice, because AWS is the default cloud
-			// provider, and users may be confused by a cloud-specific error out of
-			// the box
-			return fmt.Errorf("%s\n\n%s", err, "To use a different cloud provider, use --to=\"gcp+tf\" for GCP or --to=\"azure+tf\" for Azure.")
+		if stderrors.Is(err, aws.ErrAWSCredentialsNotFound) {
+			return err
 		}
 		return err
 	}
@@ -339,7 +367,66 @@ func scanRun(opts *pkg.ScanOptions) error {
 
 	analysis.ProviderVersion = opts.ProviderVersion
 	analysis.ProviderName = opts.To
-	store.Bucket(memstore.TelemetryBucket).Set("provider_name", analysis.ProviderName)
+
+	// Categorize unmanaged resources for AWS providers
+	if strings.HasPrefix(opts.To, "aws") {
+		configSupported := aws.ConfigSupportedTerraformTypes()
+
+		if len(analysis.Unmanaged()) > 0 {
+			// Query CloudFormation for the authoritative set of managed physical resource IDs
+			cfnRepo := awsrepo.NewCloudFormationRepository(awsCfg, cache.New(100))
+			cfnManagedIDs, err := cfnRepo.ListAllStackResourcePhysicalIDs()
+			if err != nil {
+				logrus.Warnf("Could not list CloudFormation stack resources: %v", err)
+				cfnManagedIDs = nil
+			}
+
+			chain := categorizer.NewChain(
+				categorizer.NewCloudFormationCategorizer(cfnManagedIDs),
+				categorizer.NewServiceLinkedCategorizer(),
+				categorizer.NewDefaultResourceCategorizer(),
+				categorizer.NewUnsupportedCategorizer(configSupported),
+			)
+			cats := make(map[string]string, len(analysis.Unmanaged()))
+			cfnCount := 0
+			defaultCount := 0
+			for _, r := range analysis.Unmanaged() {
+				key := r.ResourceType() + "." + r.ResourceID()
+				cat := string(chain.Categorize(r))
+				cats[key] = cat
+				if cat == string(categorizer.CategoryCloudFormationManaged) {
+					cfnCount++
+				}
+				if cat == string(categorizer.CategoryDefaultResource) {
+					defaultCount++
+				}
+			}
+			analysis.SetUnmanagedCategories(cats)
+
+			// CloudFormation-managed resources are IaC — count them as managed
+			if cfnCount > 0 {
+				analysis.AdjustSummaryForCloudFormation(cfnCount)
+			}
+
+			// Default resources are auto-created by AWS, not user-managed drift
+			if defaultCount > 0 {
+				analysis.AdjustSummaryForDefaultResources(defaultCount)
+			}
+
+			if len(opts.ExcludeCategories) > 0 {
+				excludeSet := make(map[string]bool, len(opts.ExcludeCategories))
+				for _, c := range opts.ExcludeCategories {
+					excludeSet[c] = true
+				}
+				analysis.FilterUnmanagedByCategory(excludeSet)
+			}
+		}
+
+		// Reclassify missing resources whose type Config can't discover
+		if len(analysis.Deleted()) > 0 {
+			analysis.ReclassifyMissingAsUnsupported(configSupported)
+		}
+	}
 
 	validOutput := false
 	for _, o := range opts.Output {
@@ -360,11 +447,6 @@ func scanRun(opts *pkg.ScanOptions) error {
 
 	globaloutput.Printf(color.WhiteString("Scan duration: %s\n", analysis.Duration.Round(time.Second)))
 	globaloutput.Printf(color.WhiteString("Provider version used to scan: %s. Use --tf-provider-version to use another version.\n"), opts.ProviderVersion)
-
-	if !opts.DisableTelemetry {
-		tl := telemetry.NewTelemetry(&build.Build{})
-		tl.SendTelemetry(store.Bucket(memstore.TelemetryBucket))
-	}
 
 	if !analysis.IsSync() {
 		return cmderrors.InfrastructureNotInSync{}

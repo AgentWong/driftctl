@@ -14,7 +14,10 @@ import (
 	"github.com/snyk/driftctl/pkg/analyser"
 )
 
+// HTMLOutputType is the key identifying the HTML output format.
 const HTMLOutputType = "html"
+
+// HTMLOutputExample is the example URI for the HTML output format.
 const HTMLOutputExample = "html://PATH/TO/FILE.html"
 
 // assets holds our static web content.
@@ -22,26 +25,34 @@ const HTMLOutputExample = "html://PATH/TO/FILE.html"
 //go:embed assets/*
 var assets embed.FS
 
+// HTML writes an analysis report as a self-contained HTML file.
 type HTML struct {
 	path string
 }
 
+// HTMLTemplateParams holds the data passed to the HTML report template.
 type HTMLTemplateParams struct {
-	IsSync          bool
-	ScanDate        string
-	Coverage        int
-	Summary         analyser.Summary
-	Unmanaged       []*resource.Resource
-	Deleted         []*resource.Resource
-	Alerts          alerter.Alerts
-	Stylesheet      template.CSS
-	ScanDuration    string
-	ProviderName    string
-	ProviderVersion string
-	LogoSvg         template.HTML
-	FaviconBase64   string
+	IsSync                bool
+	ScanDate              string
+	Coverage              int
+	Summary               analyser.Summary
+	Managed               []*resource.Resource
+	Unmanaged             []*resource.Resource
+	CloudFormationManaged []*resource.Resource
+	DefaultResources      []*resource.Resource
+	Unsupported           []*resource.Resource
+	Deleted               []*resource.Resource
+	Drifted               []*analyser.DriftedResource
+	Alerts                alerter.Alerts
+	Stylesheet            template.CSS
+	ScanDuration          string
+	ProviderName          string
+	ProviderVersion       string
+	LogoSvg               template.HTML
+	FaviconBase64         string
 }
 
+// NewHTML creates an HTML output writer for the given path.
 func NewHTML(path string) *HTML {
 	return &HTML{path}
 }
@@ -53,7 +64,7 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		file = f
 	}
 
@@ -80,14 +91,20 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 	funcMap := template.FuncMap{
 		"getResourceTypes": func() []string {
 			resources := make([]*resource.Resource, 0)
+			resources = append(resources, analysis.Managed()...)
 			resources = append(resources, analysis.Unmanaged()...)
 			resources = append(resources, analysis.Deleted()...)
+			resources = append(resources, analysis.Unsupported()...)
+			for _, dr := range analysis.Drifted() {
+				resources = append(resources, dr.Res)
+			}
 
 			return distinctResourceTypes(resources)
 		},
 		"getIaCSources": func() []string {
 			resources := make([]*resource.Resource, 0)
 			resources = append(resources, analysis.Deleted()...)
+			resources = append(resources, analysis.Unsupported()...)
 			resources = append(resources, analysis.Managed()...)
 
 			return distinctIaCSources(resources)
@@ -106,20 +123,42 @@ func (c *HTML) Write(analysis *analyser.Analysis) error {
 		return err
 	}
 
+	// split unmanaged resources by category for separate tabs
+	var cfnManaged, defaultResources, otherUnmanaged []*resource.Resource
+	if analysis.HasCategories() {
+		for _, r := range analysis.Unmanaged() {
+			switch analysis.UnmanagedCategory(r) {
+			case "cloudformation_managed":
+				cfnManaged = append(cfnManaged, r)
+			case "default_resource":
+				defaultResources = append(defaultResources, r)
+			default:
+				otherUnmanaged = append(otherUnmanaged, r)
+			}
+		}
+	} else {
+		otherUnmanaged = analysis.Unmanaged()
+	}
+
 	data := &HTMLTemplateParams{
-		IsSync:          analysis.IsSync(),
-		ScanDate:        analysis.Date.Format("Jan 02, 2006"),
-		Coverage:        analysis.Coverage(),
-		Summary:         analysis.Summary(),
-		Unmanaged:       analysis.Unmanaged(),
-		Deleted:         analysis.Deleted(),
-		Alerts:          analysis.Alerts(),
-		Stylesheet:      template.CSS(styleFile),
-		ScanDuration:    analysis.Duration.Round(time.Second).String(),
-		ProviderName:    analysis.ProviderName,
-		ProviderVersion: analysis.ProviderVersion,
-		LogoSvg:         template.HTML(logoSvgFile),
-		FaviconBase64:   base64.StdEncoding.EncodeToString(faviconFile),
+		IsSync:                analysis.IsSync(),
+		ScanDate:              analysis.Date.Format("Jan 02, 2006"),
+		Coverage:              analysis.Coverage(),
+		Summary:               analysis.Summary(),
+		Managed:               analysis.Managed(),
+		Unmanaged:             otherUnmanaged,
+		CloudFormationManaged: cfnManaged,
+		DefaultResources:      defaultResources,
+		Unsupported:           analysis.Unsupported(),
+		Deleted:               analysis.Deleted(),
+		Drifted:               analysis.Drifted(),
+		Alerts:                analysis.Alerts(),
+		Stylesheet:            template.CSS(styleFile), //nolint:gosec // G203: styleFile is a trusted embedded asset
+		ScanDuration:          analysis.Duration.Round(time.Second).String(),
+		ProviderName:          analysis.ProviderName,
+		ProviderVersion:       analysis.ProviderVersion,
+		LogoSvg:               template.HTML(logoSvgFile), //nolint:gosec // G203: logoSvgFile is a trusted embedded asset
+		FaviconBase64:         base64.StdEncoding.EncodeToString(faviconFile),
 	}
 
 	err = tmpl.Execute(file, data)

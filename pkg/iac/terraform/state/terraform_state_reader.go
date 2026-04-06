@@ -1,6 +1,7 @@
 package state
 
 import (
+	stderrors "errors"
 	"fmt"
 	"strings"
 
@@ -26,6 +27,7 @@ import (
 	resdriftctl "github.com/snyk/driftctl/pkg/resource"
 )
 
+// TerraformStateReaderSupplier is the supplier key for Terraform state reading.
 const TerraformStateReaderSupplier = "tfstate"
 
 type decodedRes struct {
@@ -33,6 +35,7 @@ type decodedRes struct {
 	val    cty.Value
 }
 
+// TerraformStateReader represents a TerraformStateReader.
 type TerraformStateReader struct {
 	library        *terraform.ProviderLibrary
 	config         config.SupplierConfig
@@ -55,6 +58,7 @@ func (r *TerraformStateReader) initReader() error {
 	return nil
 }
 
+// NewReader creates a new instance.
 func NewReader(config config.SupplierConfig, library *terraform.ProviderLibrary, backendOpts *backend.Options, progress output.Progress, alerter *alerter.Alerter, deserializer *resource.Deserializer, filter filter.Filter) (*TerraformStateReader, error) {
 	reader := TerraformStateReader{
 		library:        library,
@@ -81,7 +85,7 @@ func (r *TerraformStateReader) retrieve() (map[string][]decodedRes, error) {
 	r.backend = b
 
 	state, err := read(r.config.Path, r.backend)
-	defer r.backend.Close()
+	defer func() { _ = r.backend.Close() }()
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +108,7 @@ func (r *TerraformStateReader) retrieve() (map[string][]decodedRes, error) {
 				continue
 			}
 
-			if r.filter != nil && r.filter.IsTypeIgnored(resource.ResourceType(resType)) {
+			if r.filter != nil && r.filter.IsTypeIgnored(resource.Type(resType)) {
 				logrus.WithFields(logrus.Fields{
 					"name": resName,
 					"type": resType,
@@ -136,7 +140,8 @@ func (r *TerraformStateReader) retrieve() (map[string][]decodedRes, error) {
 					// It will allow driftctl to read state generated with a superior version of provider
 					// than the actually supported one
 					// by ignoring new fields
-					_, isPathError := err.(cty.PathError)
+					var pathError cty.PathError
+					isPathError := stderrors.As(err, &pathError)
 					if isPathError {
 						logrus.WithFields(logrus.Fields{
 							"name": resName,
@@ -182,9 +187,19 @@ func (r *TerraformStateReader) convertInstance(instance *states.ResourceInstance
 		return nil, err
 	}
 
+	// pad missing attributes with typed nulls so conversion succeeds when
+	// state was written by a newer provider that dropped attributes
+	input = padMissingAttributes(input, ty)
+
 	convertedVal, err := ctyconvert.Convert(input, ty)
 	if err != nil {
-		return nil, err
+		// per-attribute fallback: convert each attribute individually,
+		// using a typed null for any that fail (e.g. type mismatches
+		// between provider versions)
+		convertedVal, err = convertAttributeByAttribute(input, ty)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	instanceObj := &states.ResourceInstanceObject{
@@ -198,6 +213,75 @@ func (r *TerraformStateReader) convertInstance(instance *states.ResourceInstance
 	logrus.Debug("Successfully converted resource")
 
 	return instanceObj, nil
+}
+
+// padMissingAttributes adds typed null values for any object attributes that
+// exist in the target type but are absent from the input value. This handles
+// state files written by a newer provider version that removed attributes
+// still present in the older schema driftctl uses.
+func padMissingAttributes(input cty.Value, targetType cty.Type) cty.Value {
+	if !targetType.IsObjectType() || !input.Type().IsObjectType() {
+		return input
+	}
+
+	inputAttrs := input.Type().AttributeTypes()
+	targetAttrs := targetType.AttributeTypes()
+
+	needsPadding := false
+	for name := range targetAttrs {
+		if _, ok := inputAttrs[name]; !ok {
+			needsPadding = true
+			break
+		}
+	}
+	if !needsPadding {
+		return input
+	}
+
+	vals := make(map[string]cty.Value, len(targetAttrs))
+	for name, attrType := range targetAttrs {
+		if _, ok := inputAttrs[name]; ok {
+			vals[name] = input.GetAttr(name)
+		} else {
+			vals[name] = cty.NullVal(attrType)
+		}
+	}
+	// preserve input attributes not in the target (handled by convert later)
+	for name := range inputAttrs {
+		if _, ok := targetAttrs[name]; !ok {
+			vals[name] = input.GetAttr(name)
+		}
+	}
+
+	return cty.ObjectVal(vals)
+}
+
+// convertAttributeByAttribute builds a target-typed object by converting each
+// attribute individually, falling back to a typed null when an attribute's type
+// is incompatible (e.g. a string in state where the schema expects a number).
+func convertAttributeByAttribute(input cty.Value, ty cty.Type) (cty.Value, error) {
+	if !ty.IsObjectType() {
+		return cty.NilVal, fmt.Errorf("target type is not an object")
+	}
+
+	targetAttrs := ty.AttributeTypes()
+	vals := make(map[string]cty.Value, len(targetAttrs))
+
+	for name, attrType := range targetAttrs {
+		if !input.Type().HasAttribute(name) {
+			vals[name] = cty.NullVal(attrType)
+			continue
+		}
+		srcVal := input.GetAttr(name)
+		converted, err := ctyconvert.Convert(srcVal, attrType)
+		if err != nil {
+			vals[name] = cty.NullVal(attrType)
+			continue
+		}
+		vals[name] = converted
+	}
+
+	return cty.ObjectVal(vals), nil
 }
 
 func (r *TerraformStateReader) decode(valFromState map[string][]decodedRes) ([]*resource.Resource, error) {
@@ -222,6 +306,7 @@ func (r *TerraformStateReader) decode(valFromState map[string][]decodedRes) ([]*
 	return results, nil
 }
 
+// Resources implements the TerraformStateReader interface.
 func (r *TerraformStateReader) Resources() ([]*resource.Resource, error) {
 	if r.enumerator == nil {
 		return r.retrieveForState(r.config.Path)
@@ -230,13 +315,14 @@ func (r *TerraformStateReader) Resources() ([]*resource.Resource, error) {
 	return r.retrieveMultiplesStates()
 }
 
+// SourceCount implements the TerraformStateReader interface.
 func (r *TerraformStateReader) SourceCount() uint {
 	return r.sourceCount
 }
 
 func (r *TerraformStateReader) retrieveForState(path string) ([]*resource.Resource, error) {
 	r.config.Path = path
-	r.sourceCount += 1
+	r.sourceCount++
 	logrus.WithFields(logrus.Fields{
 		"path":    r.config.Path,
 		"backend": r.config.Backend,
@@ -253,7 +339,7 @@ func (r *TerraformStateReader) retrieveForState(path string) ([]*resource.Resour
 func (r *TerraformStateReader) retrieveMultiplesStates() ([]*resource.Resource, error) {
 	keys, err := r.enumerator.Enumerate()
 	if err != nil {
-		r.alerter.SendAlert("", NewStateReadingAlert(r.enumerator.Origin(), err))
+		r.alerter.SendAlert("", NewReadingAlert(r.enumerator.Origin(), err))
 		return nil, errors.Wrap(err, r.config.String())
 	}
 
@@ -269,7 +355,7 @@ func (r *TerraformStateReader) retrieveMultiplesStates() ([]*resource.Resource, 
 		resources, err := r.retrieveForState(key)
 		if err != nil {
 			readingError.Add(err)
-			r.alerter.SendAlert("", NewStateReadingAlert(key, err))
+			r.alerter.SendAlert("", NewReadingAlert(key, err))
 			continue
 		}
 		isSuccess = true

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "Z09368953G729AFEX5048",
+  "ID": "Z09368953G729AFEX5048",
   "Type": "aws_route53_zone",
   "Attrs": {
    "comment": "Managed by Terraform",

@@ -1,6 +1,6 @@
 [
  {
-  "Id": "table/GameScores",
+  "ID": "table/GameScores",
   "Type": "aws_appautoscaling_target",
   "Attrs": {
    "id": "table/GameScores",

@@ -47,12 +47,28 @@
             <span class="strong">{{rate .Summary.TotalDeleted}}%</span>
             <span class="fraction">{{.Summary.TotalDeleted}}/{{.Summary.TotalResources}}</span>
         </div>
+        {{if (gt .Summary.TotalDrifted 0)}}
+        <div class="card">
+            <span>Drifted:</span>
+            <span class="strong">{{rate .Summary.TotalDrifted}}%</span>
+            <span class="fraction">{{.Summary.TotalDrifted}}/{{.Summary.TotalResources}}</span>
+        </div>
+        {{end}}
+        {{if (gt .Summary.TotalUnsupported 0)}}
+        <div class="card">
+            <span>Unsupported:</span>
+            <span class="strong">{{rate .Summary.TotalUnsupported}}%</span>
+            <span class="fraction">{{.Summary.TotalUnsupported}}/{{.Summary.TotalResources}}</span>
+        </div>
+        {{end}}
     </section>
     <main>
-        {{ if not .IsSync }}
+        {{ if .IsSync }}
+        <p class="congrats">Your infrastructure is in sync.</p>
+        {{ end }}
         <form role="search">
-            <label for="search" class="visuallyhidden">Search resources by id:</label>
-            <input type="search" id="search" name="search" placeholder="Search resources by id...">
+            <label for="search" class="visuallyhidden">Search resources by id or name:</label>
+            <input type="search" id="search" name="search" placeholder="Search resources by id or name...">
             <label for="resource-type-select" class="visuallyhidden">Select a resource type:</label>
             <select id="resource-type-select" name="resource-type-select">
                 <option value="">Select a resource type</option>
@@ -72,15 +88,45 @@
 
         <div class="tabs-wrapper">
             <div role="tablist" aria-label="List of tabs">
+                {{if (gt (len .Managed) 0)}}
+                <button type="button" role="tab" aria-selected="true" aria-controls="managed-tab" id="managed">
+                    Terraform Managed (<span data-count="resource-managed">{{len .Managed}}</span>)
+                </button>
+                {{end}}
                 {{if (gt (len .Unmanaged) 0)}}
-                <button type="button" role="tab" aria-selected="true" aria-controls="unmanaged-tab" id="unmanaged">
+                <button type="button" role="tab" aria-selected="false" aria-controls="unmanaged-tab" id="unmanaged"
+                        tabindex="-1">
                     Unmanaged Resources (<span data-count="resource-unmanaged">{{len .Unmanaged}}</span>)
+                </button>
+                {{end}}
+                {{if (gt (len .CloudFormationManaged) 0)}}
+                <button type="button" role="tab" aria-selected="false" aria-controls="cfn-tab" id="cfn"
+                        tabindex="-1">
+                    CloudFormation Managed (<span data-count="resource-cfn">{{len .CloudFormationManaged}}</span>)
+                </button>
+                {{end}}
+                {{if (gt (len .DefaultResources) 0)}}
+                <button type="button" role="tab" aria-selected="false" aria-controls="default-tab" id="default-res"
+                        tabindex="-1">
+                    Default Resources (<span data-count="resource-default">{{len .DefaultResources}}</span>)
                 </button>
                 {{end}}
                 {{if (gt (len .Deleted) 0)}}
                 <button type="button" role="tab" aria-selected="false" aria-controls="missing-tab" id="missing"
                         tabindex="-1">
                     Missing Resources (<span data-count="resource-deleted">{{len .Deleted}}</span>)
+                </button>
+                {{end}}
+                {{if (gt (len .Drifted) 0)}}
+                <button type="button" role="tab" aria-selected="false" aria-controls="drifted-tab" id="drifted"
+                        tabindex="-1">
+                    Drifted Resources (<span data-count="resource-drifted">{{len .Drifted}}</span>)
+                </button>
+                {{end}}
+                {{if (gt (len .Unsupported) 0)}}
+                <button type="button" role="tab" aria-selected="false" aria-controls="unsupported-tab" id="unsupported-btn"
+                        tabindex="-1">
+                    Unsupported (<span data-count="resource-unsupported">{{len .Unsupported}}</span>)
                 </button>
                 {{end}}
                 {{if (gt (len .Alerts) 0)}}
@@ -91,20 +137,99 @@
                 {{end}}
             </div>
             <div class="panels">
-                {{ if (gt (len .Unmanaged) 0) }}
-                <div tabindex="0" role="tabpanel" id="unmanaged-tab" aria-labelledby="unmanaged">
+                {{ if (gt (len .Managed) 0) }}
+                <div tabindex="0" role="tabpanel" id="managed-tab" aria-labelledby="managed">
                     <table>
                         <thead>
                         <tr class="table-header">
-                            <th>Resource ID</th>
+                            <th>Name</th>
                             <th>Resource Type</th>
+                            <th>Resource ID</th>
+                            <th>IaC Source</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $res := .Managed}}
+                        <tr data-kind="resource-managed" class="resource-item row">
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
+                            {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ else }}<td></td>{{ end }}
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .Unmanaged) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="unmanaged-tab" aria-labelledby="unmanaged">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{range $res := .Unmanaged}}
                         <tr data-kind="resource-unmanaged" class="resource-item row">
-                            <td data-type="resource-id">{{$res.ResourceId}}</td>
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
                             <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .CloudFormationManaged) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="cfn-tab" aria-labelledby="cfn">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $res := .CloudFormationManaged}}
+                        <tr data-kind="resource-cfn" class="resource-item row">
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .DefaultResources) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="default-tab" aria-labelledby="default-res">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $res := .DefaultResources}}
+                        <tr data-kind="resource-default" class="resource-item row">
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
                         </tr>
                         {{end}}
                         </tbody>
@@ -119,19 +244,77 @@
                     <table>
                         <thead>
                         <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
                             <th>Resource ID</th>
-                            <th>IaC source</th>
+                            <th>IaC Source</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{range $res := .Deleted}}
                         <tr data-kind="resource-deleted" class="resource-item row">
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
+                            {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ else }}<td></td>{{ end }}
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .Drifted) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="drifted-tab" aria-labelledby="drifted">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
+                            <th>Changes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $dr := .Drifted}}
+                        <tr data-kind="resource-drifted" class="resource-item row">
+                            <td data-type="resource-name">{{$dr.Res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$dr.Res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$dr.Res.ResourceID}}</td>
                             <td>
-                                <span data-type="resource-id">{{$res.ResourceId}}</span>
-                                {{ if $res.Src }}<span>({{$res.SourceString}})</span>{{ else }}<span>({{$res.ResourceType}})</span>{{ end }}
-                                <span data-type="resource-type" style="display:none;">{{$res.ResourceType}}</span>
+                                {{range $change := $dr.AttributeChanges}}
+                                <div>~ {{$change.Path}}: {{$change.Before}} =&gt; {{$change.After}}</div>
+                                {{end}}
                             </td>
-                            {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ end }}
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                    <div class="empty-panel is-hidden">
+                        <p>No results matched your filters</p>
+                    </div>
+                </div>
+                {{end}}
+                {{ if (gt (len .Unsupported) 0) }}
+                <div class="is-hidden" tabindex="0" role="tabpanel" id="unsupported-tab" aria-labelledby="unsupported-btn">
+                    <table>
+                        <thead>
+                        <tr class="table-header">
+                            <th>Name</th>
+                            <th>Resource Type</th>
+                            <th>Resource ID</th>
+                            <th>IaC Source</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range $res := .Unsupported}}
+                        <tr data-kind="resource-unsupported" class="resource-item row">
+                            <td data-type="resource-name">{{$res.DisplayName}}</td>
+                            <td data-type="resource-type">{{$res.ResourceType}}</td>
+                            <td data-type="resource-id">{{$res.ResourceID}}</td>
+                            {{ if $res.Src }}<td data-type="resource-source">{{$res.Src.Source}}</td>{{ else }}<td></td>{{ end }}
                         </tr>
                         {{end}}
                         </tbody>
@@ -162,9 +345,6 @@
                 {{end}}
             </div>
         </div>
-        {{else}}
-        <h1 class="congrats">Congrats! Your infrastructure is in sync</h1>
-        {{end}}
     </main>
 </div>
 <script>
@@ -201,8 +381,13 @@
 
     function refreshCounters() {
         const map = {
+            "[data-kind='resource-managed']": "[data-count='resource-managed']",
             "[data-kind='resource-unmanaged']": "[data-count='resource-unmanaged']",
+            "[data-kind='resource-cfn']": "[data-count='resource-cfn']",
+            "[data-kind='resource-default']": "[data-count='resource-default']",
             "[data-kind='resource-deleted']": "[data-count='resource-deleted']",
+            "[data-kind='resource-drifted']": "[data-count='resource-drifted']",
+            "[data-kind='resource-unsupported']": "[data-count='resource-unsupported']",
             "[data-kind='resource-alerts']": "[data-count='resource-alerts']",
         };
         for (const key in map) {
@@ -221,11 +406,16 @@
         if (id === "") {
             return true;
         }
-        const el = res.querySelector("[data-type='resource-id']");
-        if (!el) {
-            return false;
+        const idEl = res.querySelector("[data-type='resource-id']");
+        const nameEl = res.querySelector("[data-type='resource-name']");
+        const needle = id.toLowerCase();
+        if (idEl && idEl.innerText.toLowerCase().includes(needle)) {
+            return true;
         }
-        return el.innerText.toLowerCase().includes(id.toLowerCase());
+        if (nameEl && nameEl.innerText.toLowerCase().includes(needle)) {
+            return true;
+        }
+        return false;
     }
 
     function resourceTypeEquals(res, type) {
@@ -364,6 +554,11 @@
         if (target === document.activeElement) {
             activateTab(target, false)
         }
+    }
+
+    // select the first tab on page load
+    if (tabs.length > 0) {
+        activateTab(tabs[0], false)
     }
 </script>
 </body>

@@ -20,7 +20,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			name: "ensure we ignore resources that are not of the good type",
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "should_not_be_skipped_because_wrong_type",
+					ID:   "should_not_be_skipped_because_wrong_type",
 					Type: "wrong_type",
 					Attrs: &resource.Attributes{
 						"block_public_acls":       false,
@@ -32,7 +32,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "should_not_be_skipped_because_wrong_type",
+					ID:   "should_not_be_skipped_because_wrong_type",
 					Type: "wrong_type",
 					Attrs: &resource.Attributes{
 						"block_public_acls":       false,
@@ -44,7 +44,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "should_not_be_skipped_because_wrong_type",
+					ID:   "should_not_be_skipped_because_wrong_type",
 					Type: "wrong_type",
 					Attrs: &resource.Attributes{
 						"block_public_acls":       false,
@@ -60,7 +60,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			name: "ensure we do not skip non default ones",
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "should_be_present_because_non_default",
+					ID:   "should_be_present_because_non_default",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls":       true,
@@ -72,7 +72,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "should_be_present_because_non_default",
+					ID:   "should_be_present_because_non_default",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls":       true,
@@ -84,7 +84,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "should_be_present_because_non_default",
+					ID:   "should_be_present_because_non_default",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls":       true,
@@ -100,7 +100,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			name: "ensure default public access block are removed",
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "should_be_skipped_because_default",
+					ID:   "should_be_skipped_because_default",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls":       false,
@@ -110,14 +110,14 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 					},
 				},
 				{
-					Id:   "should_be_skipped_because_nil_values",
+					ID:   "should_be_skipped_because_nil_values",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls": false,
 					},
 				},
 				{
-					Id:   "should_not_be_skipped_because_exist_in_iac",
+					ID:   "should_not_be_skipped_because_exist_in_iac",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls": false,
@@ -126,7 +126,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "should_not_be_skipped_because_exist_in_iac",
+					ID:   "should_not_be_skipped_because_exist_in_iac",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls": false,
@@ -135,7 +135,7 @@ func TestAwsS3BucketPublicAccessBlockReconciler(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "should_not_be_skipped_because_exist_in_iac",
+					ID:   "should_not_be_skipped_because_exist_in_iac",
 					Type: aws.AwsS3BucketPublicAccessBlockResourceType,
 					Attrs: &resource.Attributes{
 						"block_public_acls": false,

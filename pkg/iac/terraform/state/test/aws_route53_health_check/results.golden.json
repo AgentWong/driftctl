@@ -1,6 +1,6 @@
 [
  {
-  "Id": "70994c67-b616-4caa-89bc-557153b65845",
+  "ID": "70994c67-b616-4caa-89bc-557153b65845",
   "Type": "aws_route53_health_check",
   "Attrs": {
    "child_health_threshold": 0,
@@ -24,7 +24,7 @@
   }
  },
  {
-  "Id": "45b0a22b-c9db-4271-96b3-23ac49debbf3",
+  "ID": "45b0a22b-c9db-4271-96b3-23ac49debbf3",
   "Type": "aws_route53_health_check",
   "Attrs": {
    "child_health_threshold": 0,

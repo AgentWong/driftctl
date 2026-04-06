@@ -33,4 +33,13 @@
 ### driftctl
 /.driftignore
 
-CHANGELOG.md
+# AI Temp Working Files
+.ai_references
+.env
+*.tfvars
+*.tfplan
+plantest
+
+# Integration test output (HTML/JSON reports)
+/test-output/*
+!/test-output/.gitkeep

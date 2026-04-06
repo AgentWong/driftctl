@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -21,10 +21,10 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 			"default network ACL rule is not ignored when managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl-rule",
+					ID:   "default-acl-rule",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -34,14 +34,14 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(100),
 					},
 				},
 				{
-					Id:   "non-default-acl-2",
+					ID:   "non-default-acl-2",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -49,7 +49,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl-3",
+					ID:   "non-default-acl-3",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -58,7 +58,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl-4",
+					ID:   "non-default-acl-4",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -70,16 +70,16 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 			},
 			[]*resource.Resource{
 				{
-					Id:   "default-acl-rule",
+					ID:   "default-acl-rule",
 					Type: aws.AwsNetworkACLRuleResourceType,
 				},
 			},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl-rule",
+					ID:   "default-acl-rule",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -89,14 +89,14 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(100),
 					},
 				},
 				{
-					Id:   "non-default-acl-2",
+					ID:   "non-default-acl-2",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -104,7 +104,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl-3",
+					ID:   "non-default-acl-3",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -113,7 +113,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl-4",
+					ID:   "non-default-acl-4",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -128,10 +128,10 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 			"default network acl rule is ignored when not managed by IaC",
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "default-acl-rule",
+					ID:   "default-acl-rule",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"network_acl_id": "my-network",
@@ -142,7 +142,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "default-ipv6-acl-rule",
+					ID:   "default-ipv6-acl-rule",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"network_acl_id":  "my-network",
@@ -153,7 +153,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -166,10 +166,10 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 			[]*resource.Resource{},
 			[]*resource.Resource{
 				{
-					Id: "fake",
+					ID: "fake",
 				},
 				{
-					Id:   "non-default-acl",
+					ID:   "non-default-acl",
 					Type: aws.AwsNetworkACLRuleResourceType,
 					Attrs: &resource.Attributes{
 						"rule_number": int64(32767),
@@ -194,7 +194,7 @@ func TestAwsDefaultNetworkACLRule_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

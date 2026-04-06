@@ -33,7 +33,7 @@ func TestConsole_Write(t *testing.T) {
 				a := fakeAnalysis()
 				a.AddDeleted(
 					&resource.Resource{
-						Id:   "test-id-1",
+						ID:   "test-id-1",
 						Type: "aws_test_resource",
 						Source: &resource.TerraformStateSource{
 							State:  "tfstate://test_state.tfstate",
@@ -42,7 +42,7 @@ func TestConsole_Write(t *testing.T) {
 						},
 					},
 					&resource.Resource{
-						Id:   "test-id-2",
+						ID:   "test-id-2",
 						Type: "aws_test_resource",
 						Source: &resource.TerraformStateSource{
 							State:  "tfstate://test_state.tfstate",
@@ -53,11 +53,11 @@ func TestConsole_Write(t *testing.T) {
 				)
 				a.AddUnmanaged(
 					&resource.Resource{
-						Id:   "test-id-1",
+						ID:   "test-id-1",
 						Type: "aws_testing_resource",
 					},
 					&resource.Resource{
-						Id:   "test-id-2",
+						ID:   "test-id-2",
 						Type: "aws_resource",
 					},
 				)
@@ -81,12 +81,6 @@ func TestConsole_Write(t *testing.T) {
 			name:       "test console output with AWS enumeration alerts",
 			goldenfile: "output_access_denied_alert_aws.txt",
 			args:       args{analysis: fakeAnalysisWithAWSEnumerationError()},
-			wantErr:    false,
-		},
-		{
-			name:       "test console output with Github enumeration alerts",
-			goldenfile: "output_access_denied_alert_github.txt",
-			args:       args{analysis: fakeAnalysisWithGithubEnumerationError()},
 			wantErr:    false,
 		},
 		{
@@ -134,7 +128,7 @@ func TestConsole_Write(t *testing.T) {
 				}
 			}
 
-			expected, err := os.ReadFile(expectedFilePath)
+			expected, err := os.ReadFile(expectedFilePath) //nolint:gosec // G304: test golden file path
 			if err != nil {
 				t.Fatal(err)
 			}

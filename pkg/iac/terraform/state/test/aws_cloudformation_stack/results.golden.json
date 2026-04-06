@@ -1,6 +1,6 @@
 [
  {
-  "Id": "arn:aws:cloudformation:us-east-1:047081014315:stack/bar-stack/c7a96e70-0f21-11ec-bd2a-0a2d95c2b2ab",
+  "ID": "arn:aws:cloudformation:us-east-1:047081014315:stack/bar-stack/c7a96e70-0f21-11ec-bd2a-0a2d95c2b2ab",
   "Type": "aws_cloudformation_stack",
   "Attrs": {
    "capabilities": [
@@ -14,7 +14,7 @@
   }
  },
  {
-  "Id": "arn:aws:cloudformation:us-east-1:047081014315:stack/foo-stack/c7aa0ab0-0f21-11ec-ba25-129d8c0b3757",
+  "ID": "arn:aws:cloudformation:us-east-1:047081014315:stack/foo-stack/c7aa0ab0-0f21-11ec-ba25-129d8c0b3757",
   "Type": "aws_cloudformation_stack",
   "Attrs": {
    "disable_rollback": false,

@@ -1,3 +1,4 @@
+// Package terraform provides a gRPC-based Terraform provider wrapper used for reading remote resources.
 package terraform
 
 import (
@@ -22,32 +23,33 @@ import (
 	"github.com/zclconf/go-cty/cty/gocty"
 )
 
-const EXIT_ERROR = 3
+// ExitError is the exit code used when the provider fails to configure.
+const ExitError = 3
 
-// "alias" in these struct are a way to namespace gRPC clients.
-// For example, if we need to read S3 bucket from multiple AWS region,
-// we'll have an alias per region, and the alias IS the region itself.
-// So we can query resources using a specific custom provider configuration
-type TerraformProviderConfig struct {
+// ProviderConfig holds the configuration for a Terraform provider.
+// Aliases namespace gRPC clients (e.g. one per AWS region).
+type ProviderConfig struct {
 	Name              string
 	DefaultAlias      string
 	GetProviderConfig func(alias string) interface{}
 }
 
-type TerraformProvider struct {
+// Provider wraps a set of gRPC plugin.GRPCProvider instances for reading resources.
+type Provider struct {
 	lock              sync.Mutex
 	providerInstaller *tf.ProviderInstaller
 	grpcProviders     map[string]*plugin.GRPCProvider
 	schemas           map[string]providers.Schema
-	Config            TerraformProviderConfig
-	runner            *parallel.ParallelRunner
+	Config            ProviderConfig
+	runner            *parallel.Runner
 	progress          progress2.ProgressCounter
 }
 
-func NewTerraformProvider(installer *tf.ProviderInstaller, config TerraformProviderConfig, progress progress2.ProgressCounter) (*TerraformProvider, error) {
-	p := TerraformProvider{
+// NewProvider creates a new Provider.
+func NewProvider(installer *tf.ProviderInstaller, config ProviderConfig, progress progress2.ProgressCounter) (*Provider, error) {
+	p := Provider{
 		providerInstaller: installer,
-		runner:            parallel.NewParallelRunner(context.TODO(), 10),
+		runner:            parallel.NewRunner(context.TODO(), 10),
 		grpcProviders:     make(map[string]*plugin.GRPCProvider),
 		Config:            config,
 		progress:          progress,
@@ -55,7 +57,8 @@ func NewTerraformProvider(installer *tf.ProviderInstaller, config TerraformProvi
 	return &p, nil
 }
 
-func (p *TerraformProvider) Init() error {
+// Init configures the default alias and sets up signal handling for cleanup.
+func (p *Provider) Init() error {
 	stopCh := make(chan bool)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -64,7 +67,7 @@ func (p *TerraformProvider) Init() error {
 		case <-c:
 			logrus.Warn("Detected interrupt during terraform provider configuration, cleanup ...")
 			p.Cleanup()
-			os.Exit(EXIT_ERROR)
+			os.Exit(ExitError)
 		case <-stopCh:
 			return
 		}
@@ -79,15 +82,17 @@ func (p *TerraformProvider) Init() error {
 	return nil
 }
 
-func (p *TerraformProvider) Schema() map[string]providers.Schema {
+// Schema returns the cached provider schemas.
+func (p *Provider) Schema() map[string]providers.Schema {
 	return p.schemas
 }
 
-func (p *TerraformProvider) Runner() *parallel.ParallelRunner {
+// Runner returns the parallel runner for concurrent resource reads.
+func (p *Provider) Runner() *parallel.Runner {
 	return p.runner
 }
 
-func (p *TerraformProvider) configure(alias string) error {
+func (p *Provider) configure(alias string) error {
 	providerPath, err := p.providerInstaller.Install()
 	if err != nil {
 		return err
@@ -142,8 +147,8 @@ func (p *TerraformProvider) configure(alias string) error {
 	return nil
 }
 
-func (p *TerraformProvider) ReadResource(args tf.ReadResourceArgs) (*cty.Value, error) {
-
+// ReadResource reads a single resource from the Terraform provider.
+func (p *Provider) ReadResource(args tf.ReadResourceArgs) (*cty.Value, error) {
 	logrus.WithFields(logrus.Fields{
 		"id":    args.ID,
 		"type":  args.Ty,
@@ -214,11 +219,12 @@ func (p *TerraformProvider) ReadResource(args tf.ReadResourceArgs) (*cty.Value, 
 	return &newState, nil
 }
 
-func (p *TerraformProvider) Cleanup() {
+// Cleanup shuts down all gRPC provider clients.
+func (p *Provider) Cleanup() {
 	for alias, client := range p.grpcProviders {
 		logrus.WithFields(logrus.Fields{
 			"alias": alias,
 		}).Debug("Closing gRPC client")
-		client.Close()
+		_ = client.Close()
 	}
 }

@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsVpcResourceType is the Terraform resource type for aws_vpc.
 const AwsVpcResourceType = "aws_vpc"
 
 func initAwsVpcMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

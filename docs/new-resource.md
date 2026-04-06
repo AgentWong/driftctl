@@ -1,178 +1,70 @@
-# Add new resources
+# Adding new resource type mappings
 
-First, you need to understand how `driftctl scan` works. Here you'll find a global overview of the steps that compose the scan:
+With the v1.0.0 refactoring, resource discovery is handled by a single AWS Config enumerator rather than individual per-resource enumerators. Adding support for a new AWS resource type is now primarily a mapping exercise.
 
-![Diagram](media/generalflow.png)
+## Prerequisites
 
-Then, you'll find below a more detailed flow of how we handle the enumeration and the fetching of resource's details from the remote:
+The resource type must be [supported by AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html). If AWS Config doesn't track the resource type, it cannot be discovered by driftctl's inventory system.
 
-![Diagram](media/resource.png)
+## Step 1: Add the Config-to-Terraform mapping
 
-## Defining the resource
-
-First step would be to add a file called `pkg/resource/<providername>/<resourcetype>.go`.
-This file will define a string constant that will be the resource type identifier in driftctl.
-
-For example this defines the `aws_iam_role` resource:
+Edit `enumeration/remote/aws/config_resource_mapping.go` and add an entry to the `configToTerraformType` map:
 
 ```go
-const AwsIamRoleResourceType = "aws_iam_role"
-
-func initAwsIAMRoleMetaData(resourceSchemaRepository resource.SchemaRepositoryInterface) {
-	// force_detach_policies should not be compared so it will be removed before the comparison
-	resourceSchemaRepository.SetNormalizeFunc(AwsIamRoleResourceType, func(res *resource.Resource) {
-		val := res.Attrs
-		val.SafeDelete([]string{"force_detach_policies"})
-	})
+var configToTerraformType = map[string]string{
+    // ... existing mappings ...
+    "AWS::NewService::ResourceType": "aws_new_resource",
 }
 ```
 
-When it's done you'll have to add this function to the metadata initialisation located in `pkg/resource/<providername>/metadatas.go`:
+The key is the [AWS Config resource type](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html) and the value is the corresponding [Terraform resource type](https://registry.terraform.io/providers/hashicorp/aws/latest/docs).
+
+## Step 2: Define the resource type constant
+
+Add a file `enumeration/resource/aws/aws_new_resource.go` (if it doesn't already exist) with the type constant and optional metadata:
+
+```go
+const AwsNewResourceResourceType = "aws_new_resource"
+
+func initAwsNewResourceMetaData(resourceSchemaRepository resource.SchemaRepositoryInterface) {
+    // Optional: define normalize functions to exclude fields from comparison
+    resourceSchemaRepository.SetNormalizeFunc(AwsNewResourceResourceType, func(res *resource.Resource) {
+        val := res.Attrs
+        val.SafeDelete([]string{"field_to_ignore"})
+    })
+}
+```
+
+Register the metadata init function in `enumeration/resource/aws/metadatas.go`:
 
 ```go
 func InitResourcesMetadata(resourceSchemaRepository resource.SchemaRepositoryInterface) {
-    initAwsAmiMetaData(resourceSchemaRepository)
+    // ... existing calls ...
+    initAwsNewResourceMetaData(resourceSchemaRepository)
 }
 ```
 
-In order for you new resource to be supported by our terraform state reader you should add it in `pkg/resource/resource_types.go` inside the `supportedTypes` slice.
+## Step 3: Register the type in supported types
+
+Add the type to `pkg/resource/resource_types.go`:
 
 ```go
 var supportedTypes = map[string]struct{}{
-    "aws_ami":                               {},
+    // ... existing types ...
+    "aws_new_resource": {},
 }
 ```
 
+## Step 4: Test
 
-All resources inside driftctl are `resource.Resource` structs.
-All the other attributes are represented inside a `map[string]interface`
+Run the scan to verify the new resource type is discovered:
 
-## Repository, Enumerator
-
-Then you will have to implement one interface:
-
-- Repositories are the way we decided to hide direct calls to SDK and pagination logic. It's a common abstraction pattern for data retrieval.
-- `remote.common.Enumerator` is used to enumerate resources. It will call the cloud provider SDK to get the list of resources.
-
-### Repository
-
-This will be the component that hides all the logic linked to your provider SDK. All providers have different ways to implement pagination or to name function in their API.
-
-Here we will name all listing functions `ListAll<ResourceTypeName>`.
-
-For AWS we decided to split repositories using the Amazon logic. So you'll find repositories for EC2, S3 and so on.
-Some provider does not have this grouping logic. Keep in mind that like all our file/struct repositories should not be too big.
-
-For our GitHub implementation the number of listing functions was not that heavy, so we created a unique repository for everything:
-
-```go
-type GithubRepository interface {
-	ListRepositories() ([]string, error)
-	ListTeams() ([]Team, error)
-	ListMembership() ([]string, error)
-	ListTeamMemberships() ([]string, error)
-	ListBranchProtection() ([]string, error)
-}
-
-type githubRepository struct {
-	client GithubGraphQLClient
-	ctx    context.Context
-	config githubConfig
-	cache  cache.Cache
-}
-
-func NewGithubRepository(config githubConfig, c cache.Cache) *githubRepository {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: config.Token},
-	)
-	oauthClient := oauth2.NewClient(ctx, ts)
-
-	repo := &githubRepository{
-		client: githubv4.NewClient(oauthClient),
-		ctx:    context.Background(),
-		config: config,
-		cache:  c,
-	}
-
-	return repo
-}
+```shell
+driftctl scan --filter "Type=='aws_new_resource'"
 ```
 
-As you can see, this contains the logic to create the GitHub client (it might be created outside the repository if it makes sense to share it between multiple repositories).
-driftctl, sometimes, needs to retrieve the list of resources more than once, so we cache each request to avoid unnecessary call.
+## Notes
 
-### Enumerator
-
-Enumerators can be found in `pkg/remote/<providername>/<type>_enumerator.go`. It will call the cloud provider SDK to get the list of resources.
-
-Note that at this point, resources should not be entirely fetched and most of them will have empty attributes (e.g. only their id and type).
-Most of the resource returned by enumerator have empty attributes: they only represent type and terraform id.
-
-**There are exceptions to this**:
-- Sometimes, you will need more information about resources for them to be fetched in the `DetailsFetcher`. For those cases, you will add specific attributes to the map of data.
-
-You can use an already implemented Enumerator as example.
-
-For example, to implement `aws_instance` resource you will need to add a `ListAllInstances()` function to `repository.EC2Repository`.
-
-Bear in mind it will be called by the Enumerator to retrieve the list of instances.
-
-Enumerator constructor could use these arguments:
-- an instance of `Repository` that you will use to retrieve information about the resource
-- the global resource factory that should always be used to create a new `resource.Resource`
-
-Enumerator then needs to implement:
-- `SupportedType() resource.ResourceType` that will return the constant you defined in the type file
-- `Enumerate() ([]*resource.Resource, error)` that will return the list of resources
-
-```go
-type EC2InstanceEnumerator struct {
-	repository repository.EC2Repository
-	factory    resource.ResourceFactory
-}
-
-func NewEC2InstanceEnumerator(repo repository.EC2Repository, factory resource.ResourceFactory) *EC2InstanceEnumerator {
-	return &EC2InstanceEnumerator{
-		repository: repo,
-		factory:    factory,
-	}
-}
-
-func (e *EC2InstanceEnumerator) SupportedType() resource.ResourceType {
-	return aws.AwsInstanceResourceType
-}
-
-func (e *EC2InstanceEnumerator) Enumerate() ([]*resource.Resource, error) {
-	instances, err := e.repository.ListAllInstances()
-	if err != nil {
-		return nil, remoteerror.NewResourceListingError(err, string(e.SupportedType()))
-	}
-
-	results := make([]*resource.Resource, len(instances))
-
-	for _, instance := range instances {
-		results = append(
-			results,
-			e.factory.CreateAbstractResource(
-				string(e.SupportedType()),
-				*instance.InstanceId,
-				map[string]interface{}{},
-			),
-		)
-	}
-
-	return results, err
-}
-```
-
-As you can see, listing errors are treated in a particular way. Instead of failing and stopping the scan they will be handled, and an alert will be created.
-So please don't forget to wrap these errors inside a `NewResourceListingError`.
-For some provider error handling is not that coherent, so you might need to check in `pkg/remote/resource_enumeration_error_handler.go` and add a new case for your error.
-You should test enumerator behavior when you do not have permission to enumerate resources. In the snippet above, `ListAllInstances` may return an `AccessDenied` error that should be handled.
-
-Once the enumerator is written you have to add it to the remote initialization located in `pkg/remote/<providername>/init.go`:
-
-```go
-    remoteLibrary.AddEnumerator(NewEC2InstanceEnumerator(s3Repository, factory))
-```
+- No enumerator or repository code is needed — the `ConfigEnumerator` handles all Config-supported types automatically via the mapping table.
+- If the resource requires special middleware for reconciliation (e.g. ID format differences between Config and Terraform), add a middleware in `pkg/middlewares/`.
+- The mapping table currently has 132 entries. Run `UnsupportedByConfig()` to check which Terraform types lack Config coverage.

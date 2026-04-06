@@ -5,22 +5,19 @@ import (
 	"github.com/snyk/driftctl/enumeration/terraform/lock"
 )
 
+// RemoteParameter identifies a remote provider.
 type RemoteParameter string
 
+// RemoteAWSTerraform is the parameter for the AWS Terraform provider.
 const (
-	RemoteAWSTerraform    = "aws+tf"
-	RemoteGithubTerraform = "github+tf"
-	RemoteGoogleTerraform = "gcp+tf"
-	RemoteAzureTerraform  = "azure+tf"
+	RemoteAWSTerraform = "aws+tf"
 )
 
 var remoteParameterMapping = map[RemoteParameter]string{
-	RemoteAWSTerraform:    tf.AWS,
-	RemoteGithubTerraform: tf.GITHUB,
-	RemoteGoogleTerraform: tf.GOOGLE,
-	RemoteAzureTerraform:  tf.AZURE,
+	RemoteAWSTerraform: tf.AWS,
 }
 
+// GetProviderAddress returns the registry address for this remote parameter.
 func (p RemoteParameter) GetProviderAddress() *lock.ProviderAddress {
 	return &lock.ProviderAddress{
 		Hostname:  "registry.terraform.io",

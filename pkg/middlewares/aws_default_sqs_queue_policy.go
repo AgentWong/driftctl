@@ -6,18 +6,20 @@ import (
 	"github.com/snyk/driftctl/pkg/resource/aws"
 )
 
-// SQS queues from AWS have a weird behaviour when we fetch them.
+// AwsDefaultSQSQueuePolicy SQS queues from AWS have a weird behaviour when we fetch them.
 // By default they have a Policy attached with only an ID
 // "arn:aws:sqs:eu-west-3:XXXXXXXXXXXX:foobar/SQSDefaultPolicy" but on fetch
 // the SDK return an empty policy (e.g. policy = "").
 // We need to ignore those policy from unmanaged resources if they are not managed
-// by IaC.
+// AwsDefaultSQSQueuePolicy by IaC.
 type AwsDefaultSQSQueuePolicy struct{}
 
+// NewAwsDefaultSQSQueuePolicy creates a AwsDefaultSQSQueuePolicy.
 func NewAwsDefaultSQSQueuePolicy() AwsDefaultSQSQueuePolicy {
 	return AwsDefaultSQSQueuePolicy{}
 }
 
+// Execute applies the AwsDefaultSQSQueuePolicy middleware.
 func (m AwsDefaultSQSQueuePolicy) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
 	newRemoteResources := make([]*resource.Resource, 0)
 	for _, res := range *remoteResources {
@@ -52,7 +54,7 @@ func (m AwsDefaultSQSQueuePolicy) Execute(remoteResources, resourcesFromState *[
 
 		// Else, resource is not added to newRemoteResources slice so it will be ignored
 		logrus.WithFields(logrus.Fields{
-			"id":   res.ResourceId(),
+			"id":   res.ResourceID(),
 			"type": res.ResourceType(),
 		}).Debug("Ignoring default queue policy as it is not managed by IaC")
 	}

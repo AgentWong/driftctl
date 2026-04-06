@@ -1,7 +1,9 @@
+// Package config defines configuration types for IaC state suppliers.
 package config
 
 import "fmt"
 
+// SupplierConfig holds the configuration for an IaC state supplier.
 type SupplierConfig struct {
 	Key     string
 	Backend string

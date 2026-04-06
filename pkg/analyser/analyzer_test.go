@@ -55,7 +55,7 @@ func TestAnalyze(t *testing.T) {
 			name: "TestIgnoreFromCoverageIacNotInCloud",
 			iac: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 			},
 			cloud: []*resource.Resource{},
@@ -66,7 +66,7 @@ func TestAnalyze(t *testing.T) {
 				},
 				deleted: []*resource.Resource{
 					{
-						Id: "foobar",
+						ID: "foobar",
 					},
 				},
 			},
@@ -76,12 +76,12 @@ func TestAnalyze(t *testing.T) {
 			name: "TestResourceIgnoredDeleted",
 			iac: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 			},
 			ignoredRes: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 			},
 			cloud: []*resource.Resource{},
@@ -97,29 +97,29 @@ func TestAnalyze(t *testing.T) {
 			name: "Test100PercentCoverage with ignore",
 			iac: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 				{
-					Id: "foobar2",
+					ID: "foobar2",
 				},
 			},
 			ignoredRes: []*resource.Resource{
 				{
-					Id: "foobar2",
+					ID: "foobar2",
 				},
 			},
 			cloud: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 				{
-					Id: "foobar2",
+					ID: "foobar2",
 				},
 			},
 			expected: Analysis{
 				managed: []*resource.Resource{
 					{
-						Id: "foobar",
+						ID: "foobar",
 					},
 				},
 				summary: Summary{
@@ -132,18 +132,18 @@ func TestAnalyze(t *testing.T) {
 			name: "Test100PercentCoverage",
 			iac: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 			},
 			cloud: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 			},
 			expected: Analysis{
 				managed: []*resource.Resource{
 					{
-						Id: "foobar",
+						ID: "foobar",
 					},
 				},
 				summary: Summary{
@@ -157,7 +157,7 @@ func TestAnalyze(t *testing.T) {
 			iac:  []*resource.Resource{},
 			cloud: []*resource.Resource{
 				{
-					Id: "foobar",
+					ID: "foobar",
 				},
 			},
 			expected: Analysis{
@@ -167,7 +167,7 @@ func TestAnalyze(t *testing.T) {
 				},
 				unmanaged: []*resource.Resource{
 					{
-						Id: "foobar",
+						ID: "foobar",
 					},
 				},
 			},
@@ -177,7 +177,7 @@ func TestAnalyze(t *testing.T) {
 			name: "Test alert on unmanaged security group rules",
 			iac: []*resource.Resource{
 				{
-					Id:   "managed security group",
+					ID:   "managed security group",
 					Type: aws.AwsSecurityGroupResourceType,
 					Attrs: &resource.Attributes{
 						"id": "managed security group",
@@ -186,14 +186,14 @@ func TestAnalyze(t *testing.T) {
 			},
 			cloud: []*resource.Resource{
 				{
-					Id:   "managed security group",
+					ID:   "managed security group",
 					Type: aws.AwsSecurityGroupResourceType,
 					Attrs: &resource.Attributes{
 						"id": "managed security group",
 					},
 				},
 				{
-					Id:   "unmanaged rule",
+					ID:   "unmanaged rule",
 					Type: aws.AwsSecurityGroupRuleResourceType,
 					Attrs: &resource.Attributes{
 						"id": "unmanaged rule",
@@ -203,7 +203,7 @@ func TestAnalyze(t *testing.T) {
 			expected: Analysis{
 				managed: []*resource.Resource{
 					{
-						Id:   "managed security group",
+						ID:   "managed security group",
 						Type: aws.AwsSecurityGroupResourceType,
 						Attrs: &resource.Attributes{
 							"id": "managed security group",
@@ -212,7 +212,7 @@ func TestAnalyze(t *testing.T) {
 				},
 				unmanaged: []*resource.Resource{
 					{
-						Id:   "unmanaged rule",
+						ID:   "unmanaged rule",
 						Type: aws.AwsSecurityGroupRuleResourceType,
 						Attrs: &resource.Attributes{
 							"id": "unmanaged rule",
@@ -236,29 +236,29 @@ func TestAnalyze(t *testing.T) {
 			name: "Test sorted unmanaged & deleted resources",
 			iac: []*resource.Resource{
 				{
-					Id:   "deleted resource 22",
+					ID:   "deleted resource 22",
 					Type: "aws_s3_bucket",
 				},
 				{
-					Id:   "deleted resource 20",
+					ID:   "deleted resource 20",
 					Type: "aws_ebs_volume",
 				},
 				{
-					Id:   "deleted resource 20",
+					ID:   "deleted resource 20",
 					Type: "aws_s3_bucket",
 				},
 			},
 			cloud: []*resource.Resource{
 				{
-					Id:   "unmanaged resource 12",
+					ID:   "unmanaged resource 12",
 					Type: "aws_s3_bucket",
 				},
 				{
-					Id:   "unmanaged resource 10",
+					ID:   "unmanaged resource 10",
 					Type: "aws_s3_bucket",
 				},
 				{
-					Id:   "unmanaged resource 11",
+					ID:   "unmanaged resource 11",
 					Type: "aws_ebs_volume",
 				},
 			},
@@ -266,29 +266,29 @@ func TestAnalyze(t *testing.T) {
 				managed: []*resource.Resource{},
 				unmanaged: []*resource.Resource{
 					{
-						Id:   "unmanaged resource 11",
+						ID:   "unmanaged resource 11",
 						Type: "aws_ebs_volume",
 					},
 					{
-						Id:   "unmanaged resource 10",
+						ID:   "unmanaged resource 10",
 						Type: "aws_s3_bucket",
 					},
 					{
-						Id:   "unmanaged resource 12",
+						ID:   "unmanaged resource 12",
 						Type: "aws_s3_bucket",
 					},
 				},
 				deleted: []*resource.Resource{
 					{
-						Id:   "deleted resource 20",
+						ID:   "deleted resource 20",
 						Type: "aws_ebs_volume",
 					},
 					{
-						Id:   "deleted resource 20",
+						ID:   "deleted resource 20",
 						Type: "aws_s3_bucket",
 					},
 					{
-						Id:   "deleted resource 22",
+						ID:   "deleted resource 22",
 						Type: "aws_s3_bucket",
 					},
 				},
@@ -306,7 +306,7 @@ func TestAnalyze(t *testing.T) {
 			name: "Test Discriminant function",
 			iac: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAppAutoscalingTargetResourceType,
 					Attrs: &resource.Attributes{
 						"scalable_dimension": "test2",
@@ -315,14 +315,14 @@ func TestAnalyze(t *testing.T) {
 			},
 			cloud: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAppAutoscalingTargetResourceType,
 					Attrs: &resource.Attributes{
 						"scalable_dimension": "test1",
 					},
 				},
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsAppAutoscalingTargetResourceType,
 					Attrs: &resource.Attributes{
 						"scalable_dimension": "test2",
@@ -333,7 +333,7 @@ func TestAnalyze(t *testing.T) {
 			expected: Analysis{
 				managed: []*resource.Resource{
 					{
-						Id:   "foo",
+						ID:   "foo",
 						Type: aws.AwsAppAutoscalingTargetResourceType,
 						Attrs: &resource.Attributes{
 							"scalable_dimension": "test2",
@@ -342,7 +342,7 @@ func TestAnalyze(t *testing.T) {
 				},
 				unmanaged: []*resource.Resource{
 					{
-						Id:   "foo",
+						ID:   "foo",
 						Type: aws.AwsAppAutoscalingTargetResourceType,
 						Attrs: &resource.Attributes{
 							"scalable_dimension": "test1",
@@ -475,32 +475,32 @@ func TestAnalysis_MarshalJSON(t *testing.T) {
 	analysis.SetIaCSourceCount(1)
 	analysis.AddManaged(
 		&resource.Resource{
-			Id:   "AKIA5QYBVVD25KFXJHYJ",
+			ID:   "AKIA5QYBVVD25KFXJHYJ",
 			Type: "aws_iam_access_key",
 		}, &resource.Resource{
-			Id:   "driftctl2",
+			ID:   "driftctl2",
 			Type: "aws_managed_resource",
 		},
 	)
 	analysis.AddUnmanaged(
 		&resource.Resource{
-			Id:   "driftctl",
+			ID:   "driftctl",
 			Type: "aws_s3_bucket_policy",
 		}, &resource.Resource{
-			Id:   "driftctl",
+			ID:   "driftctl",
 			Type: "aws_s3_bucket_notification",
 		},
 	)
 	analysis.AddDeleted(
 		&resource.Resource{
-			Id:   "test-driftctl2",
+			ID:   "test-driftctl2",
 			Type: "aws_iam_user",
 			Attrs: &resource.Attributes{
 				"foobar": "test",
 			},
 		},
 		&resource.Resource{
-			Id:   "AKIA5QYBVVD2Y6PBAAPY",
+			ID:   "AKIA5QYBVVD2Y6PBAAPY",
 			Type: "aws_iam_access_key",
 		},
 	)
@@ -540,31 +540,31 @@ func TestAnalysis_UnmarshalJSON(t *testing.T) {
 		},
 		managed: []*resource.Resource{
 			{
-				Id:   "AKIA5QYBVVD25KFXJHYJ",
+				ID:   "AKIA5QYBVVD25KFXJHYJ",
 				Type: "aws_iam_access_key",
 			},
 			{
-				Id:   "test-managed",
+				ID:   "test-managed",
 				Type: "aws_iam_user",
 			},
 		},
 		unmanaged: []*resource.Resource{
 			{
-				Id:   "driftctl",
+				ID:   "driftctl",
 				Type: "aws_s3_bucket_policy",
 			},
 			{
-				Id:   "driftctl",
+				ID:   "driftctl",
 				Type: "aws_s3_bucket_notification",
 			},
 		},
 		deleted: []*resource.Resource{
 			{
-				Id:   "test-driftctl2",
+				ID:   "test-driftctl2",
 				Type: "aws_iam_user",
 			},
 			{
-				Id:   "AKIA5QYBVVD2Y6PBAAPY",
+				ID:   "AKIA5QYBVVD2Y6PBAAPY",
 				Type: "aws_iam_access_key",
 			},
 		},

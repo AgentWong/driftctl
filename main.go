@@ -1,12 +1,12 @@
+// Package main is the entry point for the driftctl CLI.
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/fatih/color"
-	gosentry "github.com/getsentry/sentry-go"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/build"
@@ -16,7 +16,6 @@ import (
 	"github.com/snyk/driftctl/pkg/cmd/scan"
 	"github.com/snyk/driftctl/pkg/config"
 	"github.com/snyk/driftctl/pkg/version"
-	"github.com/snyk/driftctl/sentry"
 )
 
 func init() {
@@ -29,7 +28,6 @@ func main() {
 }
 
 func run() int {
-
 	config.Init()
 	logger.Init()
 	build := build.Build{}
@@ -58,29 +56,13 @@ func run() int {
 		}()
 	}
 
-	// Handle panic and log them to sentry if error reporting is enabled
-	defer func() {
-		if cmd.IsReportingEnabled(&driftctlCmd.Command) {
-			err := recover()
-			if err != nil {
-				gosentry.CurrentHub().Recover(err)
-				flushSentry()
-				logrus.Fatalf("Captured panic: %s", err)
-				os.Exit(scan.EXIT_ERROR)
-			}
-			flushSentry()
-		}
-	}()
-
 	if _, err := driftctlCmd.ExecuteC(); err != nil {
-		if _, isNotInSync := err.(cmderrors.InfrastructureNotInSync); isNotInSync {
-			return scan.EXIT_NOT_IN_SYNC
-		}
-		if cmd.IsReportingEnabled(&driftctlCmd.Command) {
-			sentry.CaptureException(err)
+		var notInSync cmderrors.InfrastructureNotInSync
+		if errors.As(err, &notInSync) {
+			return scan.ExitNotInSync
 		}
 		_, _ = fmt.Fprintln(os.Stderr, color.RedString("%s", err))
-		return scan.EXIT_ERROR
+		return scan.ExitError
 	}
 
 	if checkVersion {
@@ -91,11 +73,5 @@ func run() int {
 		}
 	}
 
-	return scan.EXIT_IN_SYNC
-}
-
-func flushSentry() {
-	ttl := 60 * time.Second
-	ok := gosentry.Flush(ttl)
-	logrus.WithField("timeout", ttl).WithField("success", ok).Debug("Flushed Sentry events")
+	return scan.ExitInSync
 }

@@ -1,11 +1,12 @@
 package aws_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 
 	"github.com/snyk/driftctl/test"
 	"github.com/snyk/driftctl/test/acceptance"
@@ -26,13 +27,13 @@ func TestAcc_Aws_SQSQueue(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				ShouldRetry: acceptance.LinearBackoff(10 * time.Minute),
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(result *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}
 					result.AssertInfrastructureIsInSync()
 					result.Equal(2, result.Summary().TotalManaged)
-					mutatedQueue = result.Managed()[0].ResourceId()
+					mutatedQueue = result.Managed()[0].ResourceID()
 				},
 			},
 			{
@@ -40,10 +41,11 @@ func TestAcc_Aws_SQSQueue(t *testing.T) {
 					"AWS_REGION": "us-east-1",
 				},
 				PreExec: func() {
-					client := sqs.New(awsutils.Session())
-					attributes := make(map[string]*string)
-					attributes["DelaySeconds"] = aws.String("200")
-					_, err := client.SetQueueAttributes(&sqs.SetQueueAttributesInput{
+					client := sqs.NewFromConfig(awsutils.Config())
+					attributes := map[string]string{
+						"DelaySeconds": "200",
+					}
+					_, err := client.SetQueueAttributes(context.TODO(), &sqs.SetQueueAttributesInput{
 						Attributes: attributes,
 						QueueUrl:   aws.String(mutatedQueue),
 					})
@@ -51,7 +53,7 @@ func TestAcc_Aws_SQSQueue(t *testing.T) {
 						t.Fatal(err)
 					}
 				},
-				Check: func(result *test.ScanResult, stdout string, err error) {
+				Check: func(_ *test.ScanResult, _ string, err error) {
 					if err != nil {
 						t.Fatal(err)
 					}

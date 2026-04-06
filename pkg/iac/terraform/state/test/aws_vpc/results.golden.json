@@ -1,6 +1,6 @@
 [
  {
-  "Id": "vpc-41d1d13b",
+  "ID": "vpc-41d1d13b",
   "Type": "aws_default_vpc",
   "Attrs": {
    "arn": "arn:aws:ec2:us-east-1:929327065333:vpc/vpc-41d1d13b",
@@ -23,7 +23,7 @@
   }
  },
  {
-  "Id": "vpc-0a5666c0cfc366714",
+  "ID": "vpc-0a5666c0cfc366714",
   "Type": "aws_vpc",
   "Attrs": {
    "assign_generated_ipv6_cidr_block": false,

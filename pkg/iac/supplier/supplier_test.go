@@ -108,15 +108,12 @@ func TestGetIACSupplier(t *testing.T) {
 }
 
 func TestGetSupportedSchemes(t *testing.T) {
-
 	want := []string{
 		"tfstate://",
 		"tfstate+s3://",
 		"tfstate+http://",
 		"tfstate+https://",
 		"tfstate+tfcloud://",
-		"tfstate+gs://",
-		"tfstate+azurerm://",
 	}
 
 	if got := GetSupportedSchemes(); !reflect.DeepEqual(got, want) {

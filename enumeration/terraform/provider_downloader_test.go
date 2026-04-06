@@ -9,7 +9,7 @@ import (
 
 	terraformError "github.com/snyk/driftctl/enumeration/terraform/error"
 
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jarcoal/httpmock"
@@ -31,7 +31,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 		{
 			name:      "TestBadResponse(404)",
 			responder: httpmock.NewBytesResponder(http.StatusNotFound, []byte{}),
-			assert: func(assert *assert.Assertions, tmpDir string, err error) {
+			assert: func(assert *assert.Assertions, _ string, err error) {
 				assert.Equal(
 					fmt.Sprintf("unsuccessful request to %s: 404", url),
 					err.Error(),
@@ -41,7 +41,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 		{
 			name:      "TestProviderNotFound(403)",
 			responder: httpmock.NewBytesResponder(http.StatusForbidden, []byte{}),
-			assert: func(assert *assert.Assertions, tmpDir string, err error) {
+			assert: func(assert *assert.Assertions, _ string, err error) {
 				assert.IsType(
 					terraformError.ProviderNotFoundError{},
 					err,
@@ -51,7 +51,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 		{
 			name:      "TestHttpError",
 			responder: httpmock.NewErrorResponder(fmt.Errorf("test error")),
-			assert: func(assert *assert.Assertions, tmpDir string, err error) {
+			assert: func(assert *assert.Assertions, _ string, err error) {
 				assert.Contains(err.Error(), "test error")
 			},
 		},
@@ -70,7 +70,7 @@ func TestProviderDownloader_Download(t *testing.T) {
 			testFile: aws.String("terraform-provider-aws_3.5.0_linux_amd64.zip"),
 			assert: func(assert *assert.Assertions, tmpDir string, err error) {
 				assert.Nil(err)
-				file, err := os.ReadFile(path.Join(tmpDir, "terraform-provider-aws_v3.5.0_x5"))
+				file, err := os.ReadFile(path.Join(tmpDir, "terraform-provider-aws_v3.5.0_x5")) //nolint:gosec // G304: test file path from controlled test variable
 				assert.Nil(err)
 				assert.Equal([]byte{0x74, 0x65, 0x73, 0x74, 0xa}, file)
 			},
@@ -78,7 +78,6 @@ func TestProviderDownloader_Download(t *testing.T) {
 	}
 
 	for _, c := range cases {
-
 		t.Run(c.name, func(tt *testing.T) {
 			tmpDir := tt.TempDir()
 
@@ -91,20 +90,17 @@ func TestProviderDownloader_Download(t *testing.T) {
 
 			if c.responder != nil {
 				httpmock.RegisterResponder("GET", url, c.responder)
-			} else {
-				if c.testFile != nil {
-					body, err := os.ReadFile("./testdata/" + *c.testFile)
-					if err != nil {
-						tt.Error(err)
-					}
-					httpmock.RegisterResponder("GET", url, httpmock.NewBytesResponder(*c.httpStatus, body))
+			} else if c.testFile != nil {
+				body, err := os.ReadFile("./testdata/" + *c.testFile)
+				if err != nil {
+					tt.Error(err)
 				}
+				httpmock.RegisterResponder("GET", url, httpmock.NewBytesResponder(*c.httpStatus, body))
 			}
 
 			err := downloader.Download(url, tmpDir)
 
 			c.assert(assert, tmpDir, err)
 		})
-
 	}
 }

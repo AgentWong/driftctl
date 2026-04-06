@@ -1,11 +1,11 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	awssdk "github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awsutil"
+	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
@@ -32,13 +32,13 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 						"policy": "{\"Id\":\"MYINLINEBUCKETPOLICY\",\"Statement\":[{\"Action\":\"s3:*\",\"Condition\":{\"IpAddress\":{\"aws:SourceIp\":\"8.8.8.8/32\"}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":\"arn:aws:s3:::bucket-test-policy-like-sqs/*\",\"Sid\":\"IPAllow\"}],\"Version\":\"2012-10-17\"}",
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -48,14 +48,14 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
 					},
 				},
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 				},
 			},
@@ -73,33 +73,33 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 						"policy": "{\"Id\":\"MYBUCKETPOLICY\",\"Statement\":[{\"Action\":\"s3:*\",\"Condition\":{\"IpAddress\":{\"aws:SourceIp\":\"8.8.8.8/32\"}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":\"arn:aws:s3:::bucket-test-policy-like-sqs/*\",\"Sid\":\"IPAllow\"}],\"Version\":\"2012-10-17\"}",
 					},
 				).Once().Return(&resource.Resource{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 				})
 			},
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
 					},
 				},
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
 					},
 				},
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 				},
 			},
@@ -108,7 +108,7 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 			name: "Inline policy and aws_s3_bucket_policy",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -116,7 +116,7 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 					},
 				},
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -126,14 +126,14 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
 					},
 				},
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketPolicyResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -146,7 +146,7 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 			name: "empty policy ",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -156,7 +156,7 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "foo",
+					ID:   "foo",
 					Type: aws.AwsS3BucketResourceType,
 					Attrs: &resource.Attributes{
 						"bucket": "foo",
@@ -168,7 +168,6 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			factory := &dctlresource.MockResourceFactory{}
 			if tt.mocks != nil {
 				tt.mocks(factory)
@@ -185,7 +184,7 @@ func TestAwsBucketPolicyExpander_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

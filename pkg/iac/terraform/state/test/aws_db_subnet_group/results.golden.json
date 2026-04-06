@@ -1,6 +1,6 @@
 [
  {
-  "Id": "bar",
+  "ID": "bar",
   "Type": "aws_db_subnet_group",
   "Attrs": {
    "arn": "arn:aws:rds:eu-west-3:929327065333:subgrp:bar",
@@ -14,7 +14,7 @@
   }
  },
  {
-  "Id": "foo",
+  "ID": "foo",
   "Type": "aws_db_subnet_group",
   "Attrs": {
    "arn": "arn:aws:rds:eu-west-3:929327065333:subgrp:foo",

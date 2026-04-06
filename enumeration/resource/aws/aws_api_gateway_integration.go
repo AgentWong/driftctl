@@ -1,3 +1,4 @@
 package aws
 
-const AwsApiGatewayIntegrationResourceType = "aws_api_gateway_integration"
+// AwsAPIGatewayIntegrationResourceType is the resource type for AWS API Gateway Integrations.
+const AwsAPIGatewayIntegrationResourceType = "aws_api_gateway_integration"

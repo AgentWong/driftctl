@@ -1,6 +1,6 @@
 [
  {
-  "Id": "web_config",
+  "ID": "web_config",
   "Type": "aws_launch_configuration",
   "Attrs": {
    "arn": "arn:aws:autoscaling:us-east-1:533948124879:launchConfiguration:2cbee675-0d59-454b-866d-e9476e69381d:launchConfigurationName/web_config",

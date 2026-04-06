@@ -1,6 +1,6 @@
 [
  {
-  "Id": "85v536",
+  "ID": "85v536",
   "Type": "aws_api_gateway_model",
   "Attrs": {
    "content_type": "application/json",
@@ -12,7 +12,7 @@
   }
  },
  {
-  "Id": "g68a4s",
+  "ID": "g68a4s",
   "Type": "aws_api_gateway_model",
   "Attrs": {
    "content_type": "application/json",

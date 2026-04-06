@@ -7,22 +7,24 @@ import (
 	"github.com/snyk/driftctl/enumeration/resource"
 )
 
-type FilterEngine struct {
+// Engine evaluates JMESPath expressions against a list of resources.
+type Engine struct {
 	expr *jmespath.JMESPath
 }
 
-func NewFilterEngine(expr *jmespath.JMESPath) *FilterEngine {
-	return &FilterEngine{expr: expr}
+// NewFilterEngine creates an Engine with the given compiled JMESPath expression.
+func NewFilterEngine(expr *jmespath.JMESPath) *Engine {
+	return &Engine{expr: expr}
 }
 
 type filtrableResource struct {
 	Attr     interface{}
 	Res      *resource.Resource
-	Type, Id string
+	Type, ID string
 }
 
-func (e *FilterEngine) Run(resources []*resource.Resource) ([]*resource.Resource, error) {
-
+// Run evaluates the JMESPath expression against the given resources and returns matched ones.
+func (e *Engine) Run(resources []*resource.Resource) ([]*resource.Resource, error) {
 	if e.expr == nil {
 		return nil, errors.New("expression is nil")
 	}
@@ -38,7 +40,7 @@ func (e *FilterEngine) Run(resources []*resource.Resource) ([]*resource.Resource
 		f := filtrableResource{
 			Attr: attrs,
 			Res:  res,
-			Id:   res.ResourceId(),
+			ID:   res.ResourceID(),
 			Type: res.ResourceType(),
 		}
 		filtrableResources = append(

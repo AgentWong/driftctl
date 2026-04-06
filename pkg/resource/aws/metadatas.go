@@ -4,10 +4,11 @@ import (
 	"github.com/snyk/driftctl/pkg/resource"
 )
 
+// InitResourcesMetadata registers AWS-specific schema metadata for all supported resource types.
 func InitResourcesMetadata(resourceSchemaRepository resource.SchemaRepositoryInterface) {
 	initAwsAmiMetaData(resourceSchemaRepository)
-	initAwsApiGatewayV2MappingMetaData(resourceSchemaRepository)
-	initAwsApiGatewayV2ModelMetaData(resourceSchemaRepository)
+	initAwsAPIGatewayV2MappingMetaData(resourceSchemaRepository)
+	initAwsAPIGatewayV2ModelMetaData(resourceSchemaRepository)
 	initAwsAppAutoscalingPolicyMetaData(resourceSchemaRepository)
 	initAwsDefaultRouteTableMetadata(resourceSchemaRepository)
 	initAwsIAMRolePolicyMetaData(resourceSchemaRepository)

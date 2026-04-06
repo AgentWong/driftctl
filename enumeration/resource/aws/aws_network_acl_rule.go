@@ -4,16 +4,18 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/snyk/driftctl/pkg/helpers"
 )
 
+// AwsNetworkACLRuleResourceType is the resource type for AWS Network ACL rules.
 const AwsNetworkACLRuleResourceType = "aws_network_acl_rule"
 
-func CreateNetworkACLRuleID(networkAclId string, ruleNumber int64, egress bool, protocol string) string {
+// CreateNetworkACLRuleID creates a unique identifier for a network ACL rule based on its properties.
+func CreateNetworkACLRuleID(networkACLID string, ruleNumber int64, egress bool, protocol string) string {
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%s-", networkAclId))
-	buf.WriteString(fmt.Sprintf("%d-", ruleNumber))
-	buf.WriteString(fmt.Sprintf("%t-", egress))
-	buf.WriteString(fmt.Sprintf("%s-", protocol))
-	return fmt.Sprintf("nacl-%d", hashcode.String(buf.String()))
+	fmt.Fprintf(&buf, "%s-", networkACLID)
+	fmt.Fprintf(&buf, "%d-", ruleNumber)
+	fmt.Fprintf(&buf, "%t-", egress)
+	fmt.Fprintf(&buf, "%s-", protocol)
+	return fmt.Sprintf("nacl-%d", helpers.HashcodeString(buf.String()))
 }

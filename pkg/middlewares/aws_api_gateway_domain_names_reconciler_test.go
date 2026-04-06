@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -21,40 +21,40 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			name: "with managed resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 		},
@@ -63,30 +63,30 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 		},
@@ -94,12 +94,12 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			name: "with deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{},
@@ -109,63 +109,63 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			name: "with a mix of managed, unmanaged and deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain4",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain4",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain3",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain3",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain3",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain3",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "domain1",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain1",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 				{
-					Id:   "domain2",
-					Type: aws.AwsApiGatewayV2DomainNameResourceType,
+					ID:   "domain2",
+					Type: aws.AwsAPIGatewayV2DomainNameResourceType,
 				},
 				{
-					Id:   "domain3",
-					Type: aws.AwsApiGatewayDomainNameResourceType,
+					ID:   "domain3",
+					Type: aws.AwsAPIGatewayDomainNameResourceType,
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewAwsApiGatewayDomainNamesReconciler()
+			m := NewAwsAPIGatewayDomainNamesReconciler()
 			err := m.Execute(&tt.remoteResources, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)
@@ -176,7 +176,7 @@ func TestAwsApiGatewayDomainNamesReconciler_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

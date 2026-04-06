@@ -63,42 +63,42 @@ func TestFilterEngine_Run(t *testing.T) {
 		},
 		{
 			name: "filter on id",
-			expr: "Id=='foobar'",
+			expr: "ID=='foobar'",
 			resources: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "barfoo",
+					ID:    "barfoo",
 				},
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 				},
 			},
 			want: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 				},
 			},
 		},
 		{
 			name: "filter on id and type",
-			expr: "Id=='foobar' && Type=='filtered_resource'",
+			expr: "ID=='foobar' && Type=='filtered_resource'",
 			resources: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 				},
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 					Type:  "filtered_resource",
 				},
 			},
 			want: []*resource.Resource{
 				{
 					Attrs: &resource.Attributes{},
-					Id:    "foobar",
+					ID:    "foobar",
 					Type:  "filtered_resource",
 				},
 			},

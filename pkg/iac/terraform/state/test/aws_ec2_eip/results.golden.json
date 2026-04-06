@@ -1,6 +1,6 @@
 [
  {
-  "Id": "eipalloc-00d8dc77a6d6bd923",
+  "ID": "eipalloc-00d8dc77a6d6bd923",
   "Type": "aws_eip",
   "Attrs": {
    "associate_with_private_ip": "10.0.0.11",

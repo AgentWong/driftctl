@@ -5,6 +5,7 @@ import (
 	dctlresource "github.com/snyk/driftctl/pkg/resource"
 )
 
+// AwsRoute53RecordResourceType is the Terraform resource type for aws_route53_record.
 const AwsRoute53RecordResourceType = "aws_route53_record"
 
 func initAwsRoute53RecordMetaData(resourceSchemaRepository dctlresource.SchemaRepositoryInterface) {

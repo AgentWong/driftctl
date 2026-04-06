@@ -1,6 +1,6 @@
 [
  {
-  "Id": "sg-0254c038e32f25530",
+  "ID": "sg-0254c038e32f25530",
   "Type": "aws_security_group",
   "Attrs": {
    "arn": "arn:aws:ec2:eu-west-3:047081014315:security-group/sg-0254c038e32f25530",
@@ -16,7 +16,7 @@
   }
  },
  {
-  "Id": "sg-9e0204ff",
+  "ID": "sg-9e0204ff",
   "Type": "aws_default_security_group",
   "Attrs": {
    "arn": "arn:aws:ec2:eu-west-3:047081014315:security-group/sg-9e0204ff",

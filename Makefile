@@ -21,11 +21,8 @@ all: fmt lint test build go.mod
 
 .PHONY: build
 build:
-	SINGLE_TARGET=true ./scripts/build.sh
-
-.PHONY: release
-release:
-	ENV=release ./scripts/build.sh
+	@mkdir -p bin
+	$(GOBUILD) -o bin/driftctl .
 
 .PHONY: test
 test:

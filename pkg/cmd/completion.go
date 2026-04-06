@@ -1,9 +1,11 @@
+// Package cmd implements the driftctl CLI commands.
 package cmd
 
 import (
 	"github.com/spf13/cobra"
 )
 
+// NewCompletionCmd creates a new command instance.
 func NewCompletionCmd() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:                   "completion [bash|zsh|fish|powershell]",
@@ -11,7 +13,7 @@ func NewCompletionCmd() *cobra.Command {
 		Long:                  "Generate completion script for various shells",
 		DisableFlagsInUseLine: true,
 		ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
-		Args:                  cobra.ExactValidArgs(1),
+		Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			switch args[0] {
 			case "bash":

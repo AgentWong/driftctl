@@ -1,25 +1,22 @@
+// Package remote provides remote cloud resource scanning and enumeration.
 package remote
 
 import (
+	awscfg "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/pkg/errors"
 	"github.com/snyk/driftctl/enumeration"
 	"github.com/snyk/driftctl/enumeration/alerter"
 	"github.com/snyk/driftctl/enumeration/remote/aws"
-	"github.com/snyk/driftctl/enumeration/remote/azurerm"
 	"github.com/snyk/driftctl/enumeration/remote/common"
-	"github.com/snyk/driftctl/enumeration/remote/github"
-	"github.com/snyk/driftctl/enumeration/remote/google"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/enumeration/terraform"
 )
 
 var supportedRemotes = []string{
 	common.RemoteAWSTerraform,
-	common.RemoteGithubTerraform,
-	common.RemoteGoogleTerraform,
-	common.RemoteAzureTerraform,
 }
 
+// IsSupported reports whether the given remote identifier is supported.
 func IsSupported(remote string) bool {
 	for _, r := range supportedRemotes {
 		if r == remote {
@@ -29,22 +26,18 @@ func IsSupported(remote string) bool {
 	return false
 }
 
-func Activate(remote, version string, alerter alerter.AlerterInterface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.ResourceFactory, configDir string) error {
+// Activate initializes the given remote provider and returns the AWS config
+// so callers can create additional AWS service clients (e.g. CloudFormation).
+func Activate(remote, version string, alerter alerter.Interface, providerLibrary *terraform.ProviderLibrary, remoteLibrary *common.RemoteLibrary, progress enumeration.ProgressCounter, factory resource.Factory, configDir string) (awscfg.Config, error) {
 	switch remote {
 	case common.RemoteAWSTerraform:
 		return aws.Init(version, alerter, providerLibrary, remoteLibrary, progress, factory, configDir)
-	case common.RemoteGithubTerraform:
-		return github.Init(version, alerter, providerLibrary, remoteLibrary, progress, factory, configDir)
-	case common.RemoteGoogleTerraform:
-		return google.Init(version, alerter, providerLibrary, remoteLibrary, progress, factory, configDir)
-	case common.RemoteAzureTerraform:
-		return azurerm.Init(version, alerter, providerLibrary, remoteLibrary, progress, factory, configDir)
-
 	default:
-		return errors.Errorf("unsupported remote '%s'", remote)
+		return awscfg.Config{}, errors.Errorf("unsupported remote '%s'", remote)
 	}
 }
 
+// GetSupportedRemotes returns the list of supported remote identifiers.
 func GetSupportedRemotes() []string {
 	return supportedRemotes
 }

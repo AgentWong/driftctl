@@ -16,6 +16,7 @@ const (
 	progressRefreshRate = 200 * time.Millisecond
 )
 
+// Progress tracks the state of a long-running operation.
 type Progress interface {
 	Start()
 	Stop()
@@ -23,6 +24,7 @@ type Progress interface {
 	Val() uint64
 }
 
+// ProgressOptions configures a progress indicator.
 type ProgressOptions struct {
 	LoadingText  string
 	FinishedText string
@@ -39,7 +41,8 @@ type progress struct {
 	highestLineLength int
 }
 
-func NewProgress(loadingText, finishedText string, showCount bool) *progress {
+// NewProgress creates a progress indicator with the given labels.
+func NewProgress(loadingText, finishedText string, showCount bool) Progress {
 	return &progress{
 		nil,
 		atomic.NewBool(false),

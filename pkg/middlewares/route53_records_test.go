@@ -17,21 +17,21 @@ func TestDefaultRoute53RecordShouldBeIgnored(t *testing.T) {
 		},
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_NS",
+			ID:   "123_foobar_NS",
 			Attrs: &resource.Attributes{
 				"type": "NS",
 			},
 		},
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_SOA",
+			ID:   "123_foobar_SOA",
 			Attrs: &resource.Attributes{
 				"type": "SOA",
 			},
 		},
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_A",
+			ID:   "123_foobar_A",
 			Attrs: &resource.Attributes{
 				"type": "A",
 			},
@@ -40,7 +40,7 @@ func TestDefaultRoute53RecordShouldBeIgnored(t *testing.T) {
 	stateResources := []*resource.Resource{
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "456_barfoo_NS",
+			ID:   "456_barfoo_NS",
 			Attrs: &resource.Attributes{
 				"type": "NS",
 			},
@@ -71,21 +71,21 @@ func TestDefaultRoute53RecordShouldNotBeIgnoredWhenManaged(t *testing.T) {
 		},
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_NS",
+			ID:   "123_foobar_NS",
 			Attrs: &resource.Attributes{
 				"type": "NS",
 			},
 		},
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_SOA",
+			ID:   "123_foobar_SOA",
 			Attrs: &resource.Attributes{
 				"type": "SOA",
 			},
 		},
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_A",
+			ID:   "123_foobar_A",
 			Attrs: &resource.Attributes{
 				"type": "A",
 			},
@@ -94,7 +94,7 @@ func TestDefaultRoute53RecordShouldNotBeIgnoredWhenManaged(t *testing.T) {
 	stateResources := []*resource.Resource{
 		{
 			Type: aws.AwsRoute53RecordResourceType,
-			Id:   "123_foobar_NS",
+			ID:   "123_foobar_NS",
 			Attrs: &resource.Attributes{
 				"type": "NS",
 			},

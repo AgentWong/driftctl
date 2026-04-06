@@ -7,6 +7,7 @@ import (
 	"github.com/snyk/driftctl/pkg/output"
 )
 
+// Output is the interface implemented by all scan output writers.
 type Output interface {
 	Write(analysis *analyser.Analysis) error
 }
@@ -25,6 +26,7 @@ var supportedOutputExample = map[string]string{
 	PlanOutputType:    PlanOutputExample,
 }
 
+// SupportedOutputsExample returns a sorted list of example URIs for all supported output types.
 func SupportedOutputsExample() []string {
 	examples := make([]string, 0, len(supportedOutputExample))
 	for _, ex := range supportedOutputExample {
@@ -34,10 +36,12 @@ func SupportedOutputsExample() []string {
 	return examples
 }
 
+// Example returns the example URI string for the given output type key.
 func Example(key string) string {
 	return supportedOutputExample[key]
 }
 
+// IsSupported reports whether the given key corresponds to a supported output type.
 func IsSupported(key string) bool {
 	for _, o := range supportedOutputTypes {
 		if o == key {
@@ -47,7 +51,8 @@ func IsSupported(key string) bool {
 	return false
 }
 
-func GetOutput(config OutputConfig) Output {
+// GetOutput returns the Output implementation for the given Config.
+func GetOutput(config Config) Output {
 	switch config.Key {
 	case JSONOutputType:
 		return NewJSON(config.Path)
@@ -63,7 +68,7 @@ func GetOutput(config OutputConfig) Output {
 }
 
 // ShouldPrint indicate if we should use the global output or not (e.g. when outputting to stdout).
-func ShouldPrint(outputs []OutputConfig, quiet bool) bool {
+func ShouldPrint(outputs []Config, quiet bool) bool {
 	for _, c := range outputs {
 		p := GetPrinter(c, quiet)
 		if _, ok := p.(*output.VoidPrinter); ok {
@@ -73,7 +78,8 @@ func ShouldPrint(outputs []OutputConfig, quiet bool) bool {
 	return true
 }
 
-func GetPrinter(config OutputConfig, quiet bool) output.Printer {
+// GetPrinter returns the appropriate Printer for the given Config and quiet flag.
+func GetPrinter(config Config, quiet bool) output.Printer {
 	if quiet {
 		return &output.VoidPrinter{}
 	}

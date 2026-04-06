@@ -13,13 +13,18 @@ import (
 	"github.com/snyk/driftctl/pkg/analyser"
 )
 
+// ConsoleOutputType is the key identifying the console output format.
 const ConsoleOutputType = "console"
+
+// ConsoleOutputExample is the example URI for the console output format.
 const ConsoleOutputExample = "console://"
 
+// Console writes scan analysis results to standard output in human-readable form.
 type Console struct {
 	summary string
 }
 
+// NewConsole creates a new Console output with the default summary template.
 func NewConsole() *Console {
 	return &Console{
 		`Total coverage is {{ analysis.Coverage }}`,
@@ -63,7 +68,7 @@ func (c *Console) Write(analysis *analyser.Analysis) error {
 				if deletedResource.SourceString() != "" {
 					humanStringSource = deletedResource.SourceString()
 				}
-				humanString := fmt.Sprintf("%s- %s (%s)", indentBase, deletedResource.ResourceId(), humanStringSource)
+				humanString := fmt.Sprintf("%s- %s (%s)", indentBase, deletedResource.ResourceID(), humanStringSource)
 
 				if humanAttrs := formatResourceAttributes(deletedResource); humanAttrs != "" {
 					humanString += fmt.Sprintf("\n%s    %s", indentBase, humanAttrs)
@@ -73,17 +78,36 @@ func (c *Console) Write(analysis *analyser.Analysis) error {
 		}
 	}
 
+	if analysis.Summary().TotalDrifted > 0 {
+		fmt.Println("Found drifted resources:")
+		for _, dr := range analysis.Drifted() {
+			fmt.Printf("  - %s (%s):\n", dr.Res.ResourceType(), dr.Res.ResourceID())
+			for _, ch := range dr.AttributeChanges {
+				fmt.Printf("    %s %s: %s => %s\n",
+					color.YellowString("~"),
+					ch.Path,
+					formatChangeValue(ch.Before),
+					formatChangeValue(ch.After),
+				)
+			}
+		}
+	}
+
 	if analysis.Summary().TotalUnmanaged > 0 {
 		fmt.Println("Found resources not covered by IaC:")
-		unmanagedByType, keys := groupByType(analysis.Unmanaged())
-		for _, ty := range keys {
-			fmt.Printf("  %s:\n", ty)
-			for _, res := range unmanagedByType[ty] {
-				humanString := fmt.Sprintf("    - %s", res.ResourceId())
-				if humanAttrs := formatResourceAttributes(res); humanAttrs != "" {
-					humanString += fmt.Sprintf("\n        %s", humanAttrs)
+		if analysis.HasCategories() {
+			writeUnmanagedByCategory(analysis)
+		} else {
+			unmanagedByType, keys := groupByType(analysis.Unmanaged())
+			for _, ty := range keys {
+				fmt.Printf("  %s:\n", ty)
+				for _, res := range unmanagedByType[ty] {
+					humanString := fmt.Sprintf("    - %s", res.ResourceID())
+					if humanAttrs := formatResourceAttributes(res); humanAttrs != "" {
+						humanString += fmt.Sprintf("\n        %s", humanAttrs)
+					}
+					fmt.Println(humanString)
 				}
-				fmt.Println(humanString)
 			}
 		}
 	}
@@ -142,6 +166,10 @@ func (c Console) writeSummary(analysis *analyser.Analysis) {
 		}
 		fmt.Printf(" - %s resource(s) not managed by Terraform\n", unmanaged)
 		fmt.Printf(" - %s resource(s) found in a Terraform state but missing on the cloud provider\n", deleted)
+		if analysis.Summary().TotalDrifted > 0 {
+			drifted := errorWriter.Sprintf("%d", analysis.Summary().TotalDrifted)
+			fmt.Printf(" - %s resource(s) drifted from their Terraform definition\n", drifted)
+		}
 	}
 	if analysis.IsSync() {
 		fmt.Println(color.GreenString("Congrats! Your infrastructure is fully in sync."))
@@ -172,7 +200,7 @@ func formatResourceAttributes(res *resource.Resource) string {
 		return ""
 	}
 	attributes := res.Schema().HumanReadableAttributesFunc(res)
-	if len(attributes) <= 0 {
+	if len(attributes) == 0 {
 		return ""
 	}
 	// sort attributes
@@ -190,4 +218,53 @@ func formatResourceAttributes(res *resource.Resource) string {
 		attrString += fmt.Sprintf("%s: %s", k, attributes[k])
 	}
 	return attrString
+}
+
+func formatChangeValue(v interface{}) string {
+	if v == nil {
+		return "<nil>"
+	}
+	if s, ok := v.(string); ok {
+		return fmt.Sprintf("%q", s)
+	}
+	return fmt.Sprintf("%v", v)
+}
+
+func writeUnmanagedByCategory(analysis *analyser.Analysis) {
+	catOrder := []string{"cloudformation_managed", "service_linked", "default_resource", "unsupported", "unmanaged"}
+	catNames := map[string]string{
+		"cloudformation_managed": "CloudFormation-managed",
+		"service_linked":         "Service-linked",
+		"default_resource":       "Default Resources",
+		"unsupported":            "Unsupported by Config",
+		"unmanaged":              "Unmanaged",
+	}
+
+	groups := make(map[string][]*resource.Resource)
+	for _, r := range analysis.Unmanaged() {
+		cat := analysis.UnmanagedCategory(r)
+		if cat == "" {
+			cat = "unmanaged"
+		}
+		groups[cat] = append(groups[cat], r)
+	}
+
+	for _, catKey := range catOrder {
+		resources := groups[catKey]
+		if len(resources) == 0 {
+			continue
+		}
+		fmt.Printf("  %s (%d):\n", catNames[catKey], len(resources))
+		byType, keys := groupByType(resources)
+		for _, ty := range keys {
+			fmt.Printf("    %s:\n", ty)
+			for _, res := range byType[ty] {
+				humanString := fmt.Sprintf("      - %s", res.ResourceID())
+				if humanAttrs := formatResourceAttributes(res); humanAttrs != "" {
+					humanString += fmt.Sprintf("\n          %s", humanAttrs)
+				}
+				fmt.Println(humanString)
+			}
+		}
+	}
 }

@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/r3labs/diff/v2"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -21,40 +21,40 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			name: "with managed resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 		},
@@ -63,30 +63,30 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			resourcesFromState: []*resource.Resource{},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 			},
 		},
@@ -94,12 +94,12 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			name: "with deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{},
@@ -109,63 +109,63 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			name: "with a mix of managed, unmanaged and deleted resources",
 			resourcesFromState: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping4",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping4",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 			},
 			remoteResources: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping3",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping3",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping3",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping3",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 			},
 			expected: []*resource.Resource{
 				{
-					Id:   "mapping1",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping1",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 				{
-					Id:   "mapping2",
-					Type: aws.AwsApiGatewayV2MappingResourceType,
+					ID:   "mapping2",
+					Type: aws.AwsAPIGatewayV2MappingResourceType,
 				},
 				{
-					Id:   "mapping3",
-					Type: aws.AwsApiGatewayBasePathMappingResourceType,
+					ID:   "mapping3",
+					Type: aws.AwsAPIGatewayBasePathMappingResourceType,
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewAwsApiGatewayBasePathMappingReconciler()
+			m := NewAwsAPIGatewayBasePathMappingReconciler()
 			err := m.Execute(&tt.remoteResources, &tt.resourcesFromState)
 			if err != nil {
 				t.Fatal(err)
@@ -176,7 +176,7 @@ func TestAwsApiGatewayBasePathMappingReconciler_Execute(t *testing.T) {
 			}
 			if len(changelog) > 0 {
 				for _, change := range changelog {
-					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), awsutil.Prettify(change.From), awsutil.Prettify(change.To))
+					t.Errorf("%s got = %v, want %v", strings.Join(change.Path, "."), fmt.Sprintf("%v", change.From), fmt.Sprintf("%v", change.To))
 				}
 			}
 		})

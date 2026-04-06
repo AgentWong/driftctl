@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	awssdk "github.com/aws/aws-sdk-go/aws"
+	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/sirupsen/logrus"
 	"github.com/snyk/driftctl/enumeration/resource"
 	"github.com/snyk/driftctl/pkg/resource/aws"
@@ -32,18 +32,18 @@ import (
 //   - We still have the public block as unmanaged, this is NOT expected since all values are back to default
 //
 // This simple middleware is handling that edge case by removing resource that have every attribute set to false from remote.
-// We do not remove it when a resource is found in IaC
+// AwsS3BucketPublicAccessBlockReconciler we do not remove it when a resource is found in IaC
 type AwsS3BucketPublicAccessBlockReconciler struct{}
 
+// NewAwsS3BucketPublicAccessBlockReconciler creates a AwsS3BucketPublicAccessBlockReconciler.
 func NewAwsS3BucketPublicAccessBlockReconciler() *AwsS3BucketPublicAccessBlockReconciler {
 	return &AwsS3BucketPublicAccessBlockReconciler{}
 }
 
+// Execute applies the AwsS3BucketPublicAccessBlockReconciler middleware.
 func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourcesFromState *[]*resource.Resource) error {
-
 	newRemoteResources := make([]*resource.Resource, 0)
 	for _, res := range *remoteResources {
-
 		// Skip every resource that is not a bucket public access block
 		if res.ResourceType() != aws.AwsS3BucketPublicAccessBlockResourceType {
 			newRemoteResources = append(newRemoteResources, res)
@@ -60,7 +60,7 @@ func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourc
 
 		// Ignore unmanaged default public access blocks
 		if r.isDefaultPublicAccessBlock(res) && !isDefinedInIac {
-			logrus.WithField("id", res.ResourceId()).Debug("Ignored default aws_s3_bucket_public_access_block from remote")
+			logrus.WithField("id", res.ResourceID()).Debug("Ignored default aws_s3_bucket_public_access_block from remote")
 			continue
 		}
 
@@ -72,10 +72,10 @@ func (r AwsS3BucketPublicAccessBlockReconciler) Execute(remoteResources, resourc
 }
 
 func (r AwsS3BucketPublicAccessBlockReconciler) isDefaultPublicAccessBlock(res *resource.Resource) bool {
-	if !awssdk.BoolValue(res.Attributes().GetBool("block_public_acls")) &&
-		!awssdk.BoolValue(res.Attributes().GetBool("block_public_policy")) &&
-		!awssdk.BoolValue(res.Attributes().GetBool("ignore_public_acls")) &&
-		!awssdk.BoolValue(res.Attributes().GetBool("restrict_public_buckets")) {
+	if !awssdk.ToBool(res.Attributes().GetBool("block_public_acls")) &&
+		!awssdk.ToBool(res.Attributes().GetBool("block_public_policy")) &&
+		!awssdk.ToBool(res.Attributes().GetBool("ignore_public_acls")) &&
+		!awssdk.ToBool(res.Attributes().GetBool("restrict_public_buckets")) {
 		return true
 	}
 

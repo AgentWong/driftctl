@@ -1,6 +1,6 @@
 [
  {
-  "Id": "21zk4y",
+  "ID": "21zk4y",
   "Type": "aws_api_gateway_resource",
   "Attrs": {
    "id": "21zk4y",
@@ -11,7 +11,7 @@
   }
  },
  {
-  "Id": "wijcbm",
+  "ID": "wijcbm",
   "Type": "aws_api_gateway_resource",
   "Attrs": {
    "id": "wijcbm",

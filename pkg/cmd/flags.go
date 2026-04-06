@@ -13,7 +13,6 @@ import (
 )
 
 func parseFromFlag(from []string) ([]config.SupplierConfig, error) {
-
 	configs := make([]config.SupplierConfig, 0, len(from))
 
 	for _, flag := range from {
@@ -87,8 +86,8 @@ func parseFromFlag(from []string) ([]config.SupplierConfig, error) {
 	return configs, nil
 }
 
-func parseOutputFlags(out []string) ([]output.OutputConfig, error) {
-	result := make([]output.OutputConfig, 0, len(out))
+func parseOutputFlags(out []string) ([]output.Config, error) {
+	result := make([]output.Config, 0, len(out))
 	for _, v := range out {
 		o, err := parseOutputFlag(v)
 		if err != nil {
@@ -99,7 +98,7 @@ func parseOutputFlags(out []string) ([]output.OutputConfig, error) {
 	return result, nil
 }
 
-func parseOutputFlag(out string) (*output.OutputConfig, error) {
+func parseOutputFlag(out string) (*output.Config, error) {
 	schemeOpts := strings.Split(out, "://")
 	if len(schemeOpts) < 2 || schemeOpts[0] == "" {
 		return nil, errors.Wrapf(
@@ -114,7 +113,7 @@ func parseOutputFlag(out string) (*output.OutputConfig, error) {
 		)
 	}
 
-	o := &output.OutputConfig{
+	o := &output.Config{
 		Key: schemeOpts[0],
 	}
 	if !output.IsSupported(o.Key) {

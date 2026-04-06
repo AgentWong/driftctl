@@ -1,60 +1,69 @@
 package backend
 
 import (
+	"context"
 	"io"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/smithy-go"
 	"github.com/pkg/errors"
 	"github.com/snyk/driftctl/pkg/envproxy"
-
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
+// BackendKeyS3 is the backend key for S3 state.
 const BackendKeyS3 = "s3"
 
-type S3Backend struct {
-	input    s3.GetObjectInput
-	reader   io.ReadCloser
-	S3Client s3iface.S3API
+// S3GetObjectAPI abstracts the S3 GetObject operation for testability.
+type S3GetObjectAPI interface {
+	GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error)
 }
 
-func NewS3Reader(path string) (*S3Backend, error) {
+// S3Backend reads Terraform state from an S3 bucket.
+type S3Backend struct {
+	bucket   string
+	key      string
+	reader   io.ReadCloser
+	S3Client S3GetObjectAPI
+}
 
+// NewS3Reader creates an S3Backend that reads state from the given bucket/key path.
+func NewS3Reader(path string) (*S3Backend, error) {
 	backend := S3Backend{}
 	bucketPath := strings.Split(path, "/")
 	if len(bucketPath) < 2 {
 		return nil, errors.Errorf("Unable to parse S3 path: %s. Must be BUCKET_NAME/PATH/TO/OBJECT", path)
 	}
-	bucket := bucketPath[0]
-	key := strings.Join(bucketPath[1:], "/")
+	backend.bucket = bucketPath[0]
+	backend.key = strings.Join(bucketPath[1:], "/")
 
-	backend.input = s3.GetObjectInput{
-		Key:    &key,
-		Bucket: &bucket,
-	}
 	envProxy := envproxy.NewEnvProxy("DCTL_S3_", "AWS_")
 	envProxy.Apply()
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
+	cfg, err := awsconfig.LoadDefaultConfig(context.Background())
 	envProxy.Restore()
-	backend.S3Client = s3.New(sess)
+	if err != nil {
+		return nil, err
+	}
+	backend.S3Client = s3.NewFromConfig(cfg)
 	return &backend, nil
 }
 
 func (s *S3Backend) Read(p []byte) (n int, err error) {
 	if s.reader == nil {
-		response, err := s.S3Client.GetObject(&s.input)
+		response, err := s.S3Client.GetObject(context.Background(), &s3.GetObjectInput{
+			Key:    aws.String(s.key),
+			Bucket: aws.String(s.bucket),
+		})
 		if err != nil {
-			requestFailure, ok := err.(s3.RequestFailure)
-			if ok {
+			var apiErr smithy.APIError
+			if errors.As(err, &apiErr) {
 				return 0, errors.Errorf(
 					"Error reading state '%s' from s3 bucket '%s': %s",
-					*s.input.Key,
-					*s.input.Bucket,
-					requestFailure.Message(),
+					s.key,
+					s.bucket,
+					apiErr.ErrorMessage(),
 				)
 			}
 			return 0, err
@@ -64,6 +73,7 @@ func (s *S3Backend) Read(p []byte) (n int, err error) {
 	return s.reader.Read(p)
 }
 
+// Close releases the underlying S3 response body.
 func (s *S3Backend) Close() error {
 	if s.reader != nil {
 		return s.reader.Close()
