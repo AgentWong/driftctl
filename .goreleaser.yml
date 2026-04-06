@@ -2,17 +2,13 @@ project_name: driftctl
 dist: bin
 release:
     github:
-        owner: snyk
+        owner: AgentWong
         name: driftctl
     draft: false
     prerelease: auto
 before:
     hooks:
         - go generate ./...
-signs:
-    - signature: "${artifact}.gpg"
-      artifacts: checksum
-      args: [ "--batch", "-u", "team-cloud-config+security@snyk.io", "--output", "${signature}", "--detach-sign", "${artifact}" ]
 builds:
     - id: "driftctl"
       binary: driftctl
@@ -37,8 +33,3 @@ checksum:
     algorithm: sha256
 snapshot:
     name_template: "{{ .Tag }}-next"
-blobs:
-    - provider: s3
-      bucket: snyk-assets
-      region: us-east-1
-      folder: "cli/driftctl/{{.Tag}}"
