@@ -52,7 +52,7 @@ flowchart LR
     iacSupplier --> HTTP[tfstate+http://]
     iacSupplier --> TFC[tfstate+tfcloud://]
     Local & S3 & HTTP & TFC --> Parser[statefilev4 parser<br>hashicorp/terraform]
-    Parser --> Resources([]*resource.Resource)
+    Parser --> Resources([resource.Resource slice])
 ```
 
 Lock file (`.terraform.lock.hcl`) is read to detect the provider version in use.
@@ -161,7 +161,7 @@ flowchart TD
     CloudRes --> |remaining after match| Unmanaged[unmanaged]
     Unmanaged --> Categorizer
 
-    Categorizer --> CF{CloudFormation API<br>or tag/name pattern?}
+    Categorizer --> CF{CloudFormation API<br>physical ID lookup?}
     CF --> |yes| CFManaged[cloudformation_managed]
     CF --> |no| DR{default resource?<br>event bus · SSO role<br>KMS alias/aws/* etc.}
     DR --> |yes| DefManaged[default_resources]
@@ -202,7 +202,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     Resource --> C1[CloudFormationCategorizer]
-    C1 --> |API · tag · name pattern| CFC([cloudformation_managed])
+    C1 --> |physical ID in stack| CFC([cloudformation_managed])
     C1 --> |no match| C2[DefaultResourceCategorizer]
     C2 --> |event bus · SSO role · KMS alias/aws/*| DRC([default_resources])
     C2 --> |no match| C3[ServiceLinkedCategorizer]
