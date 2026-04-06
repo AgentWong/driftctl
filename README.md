@@ -25,7 +25,7 @@ The original `snyk/driftctl` had fundamental limitations that made it unreliable
 
 3. **CloudFormation-aware categorization.** Resources managed by CloudFormation stacks are detected via the CloudFormation API (`ListStacks` + `ListStackResources`) and placed in their own category rather than counting as "Unmanaged". Default AWS-created resources (default event buses, SSO reserved roles, default KMS aliases) and service-linked roles are similarly categorized. This makes the unmanaged count meaningful rather than noise-dominated.
 
-The tool runs with standard `ReadOnlyAccess` IAM permissions — no write access or state locking required.
+The tool runs with standard `ReadOnlyAccess` IAM permissions — no write access or state locking required. For inventory mode specifically, the permission set can be narrowed to just **5 IAM actions** (see [Minimum IAM permissions](#minimum-iam-permissions) below).
 
 ## Example reports
 
@@ -109,6 +109,53 @@ driftctl/
 ```
 
 **Key flow:** `pkg/cmd/scan/` orchestrates the scan → `enumeration/` discovers resources from AWS Config and Terraform state → `pkg/middlewares/` normalizes resources → `pkg/analyser/` compares them → `pkg/categorizer/` classifies drift → `pkg/cmd/scan/output/` renders the report.
+
+## Minimum IAM permissions
+
+Inventory mode has a minimal AWS footprint. It requires only **5 IAM actions** — far less than the broad `ReadOnlyAccess` policy typically required by drift detection tools:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AWSConfigQuery",
+      "Effect": "Allow",
+      "Action": [
+        "config:SelectResourceConfig"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudFormationRead",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:ListStacks",
+        "cloudformation:ListStackResources"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TerraformStateS3Read",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::YOUR-TERRAFORM-STATE-BUCKET",
+        "arn:aws:s3:::YOUR-TERRAFORM-STATE-BUCKET/*"
+      ]
+    }
+  ]
+}
+```
+
+The `TerraformStateS3Read` statement is only needed if your Terraform state is stored in S3; omit it if you use a local state file or a different backend. The policy can be scoped to specific S3 bucket ARNs rather than wildcarded.
+
+> **Note:** Plan mode requires Terraform to run `terraform plan`, which needs its own provider-specific permission set (read access to every resource type Terraform manages). Tools like [pike](https://github.com/JamesWoolfenden/pike) can help narrow that set. Inventory mode's 5-action policy makes it particularly well-suited for use in security-auditing contexts where minimizing AWS permissions is a priority.
+
+A copy of this policy is available at [docs/examples/minimum-iam.json](docs/examples/minimum-iam.json).
 
 ## Quick start
 
