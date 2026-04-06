@@ -179,11 +179,23 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    TF[Terraform working dir<br>--terraform-dir] --> Runner[plan/runner.go]
-    Runner --> Init[terraform init]
-    Init --> PlanCmd[terraform plan -out=driftctl-plan.tfplan]
-    PlanCmd --> Show[terraform show -json]
-    Show --> Parser[plan/parser.go]
+    TF[Terraform module dirs<br>--terraform-dir] --> MR[plan/multi_runner.go<br>RunParallel]
+
+    subgraph Phase1["Phase 1 — sequential init (avoids SSO token file races)"]
+        direction LR
+        I1[terraform init<br>module 1] --> I2[terraform init<br>module 2] --> IN[...]
+    end
+
+    subgraph Phase2["Phase 2 — parallel plan"]
+        direction LR
+        P1[terraform plan + show<br>module 1]
+        P2[terraform plan + show<br>module 2]
+        PN[...]
+    end
+
+    MR --> Phase1
+    Phase1 --> Phase2
+    Phase2 --> Parser[plan/parser.go<br>ParsePlan per module]
     Parser --> DriftResult[DriftResult<br>resource changes + attribute diffs]
 
     DriftResult --> PA[PlanAnalyzer.Analyze]
@@ -229,8 +241,8 @@ classDiagram
     }
     class AttributeChange {
         +Path string
-        +Before interface{}
-        +After interface{}
+        +Before any
+        +After any
     }
     class Summary {
         +TotalManaged int
