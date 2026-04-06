@@ -25,6 +25,9 @@ builds:
           - arm
           - arm64
           - 386
+      ignore:
+          - goos: windows
+            goarch: arm
       ldflags: "-s -w -X github.com/snyk/driftctl/build.env={{ .Env.ENV }} -X github.com/snyk/driftctl/pkg/version.version={{ .Tag }}"
 archives:
     - name_template: '{{ .ProjectName }}_{{ .Os }}_{{- if eq .Arch "armv6" }}arm{{- else }}{{ .Arch }}{{ end }}'
